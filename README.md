@@ -1,8 +1,13 @@
 # A Digital Guitar Pedal
 This is a digital guitar pedal which can be controlled from a handheld device. Created by Nathan, Jay, Joseph, and Christian as our final project for HCI.
 
-## Goal
-- To create digital pedals.
+## Summary
+A product that allows users to experiment with several different guitar pedals digitally.
+
+## Project Goals
+- **Realtime Audio I/O**: @ 16bit, 44.1kHz. This is what CDs use. It is above the Nyquist frequency for the limits of human hearing, and it provides sufficient dynamic range for volume.
+- **Effect Choice**: Users should be able to switch their effect and settings for their effect in real time.
+- **Stretch Goal: Pedalboard**: Users can string multiple effects into another. This may be difficult.
 
 ## Resources On Hand
 - a Rapsberry Pi 1B+. [Datasheet here](https://www.raspberrypi.com/documentation/computers/processors.html).
@@ -14,13 +19,8 @@ This is a digital guitar pedal which can be controlled from a handheld device. C
 - **CPU Clock Speed**: There is conflicting information in terms of clock rate. Raspberry Pi says that the B+ has a 700MHz clock. The BCM2835 documentation states that the CPU is clocked at 250MHz, and also that it has a nominal clock of 150MHz. I'm not sure what a nominal clock is, but we should use the lowest number provided to be safe. This means, for all intents and purposes, our CPU has a 150MHz clock.
 - **RAM**: The RPi has 500MB of RAM, 128KB L2 cache, 16KB L1 data cache, 16KB L1 instruction cache.
 
-## Targets
-- **Audio I/O**: @ 16bit, 44.1kHz. This is what CDs use. It is above the Nyquist frequency for the limits of human hearing, and it provides sufficient dynamic range for volume.
-- **Effect Choice**: Users should be able to switch their effect and settings for their effect in real time.
-- **Stretch Goal: Pedalboard**: Users can string multiple effects into another. This may be difficult.
-
-## Limitations
-- **~1100 CPU cycles per audio sample**: Arbitrarily assumes we can only use about 1/3rd of the CPU clock (due to OS overhead, SSH overhead, WiFi overhead, etc.). 50MHz / 44.1kHz = 1133 cycles
+## Performance Budget / Hardware Limitations
+- **~1100 CPU cycles per audio sample**: Arbitrarily assumes we can only use about 1/3rd of the CPU clock (due to OS overhead, SSH overhead, WiFi overhead, etc.). 50MHz / 44.1kHz = 1133 cycles. This is our throughput. Latency is okay and expected, but our throughput must remain constant.
 - **~0.13s buffer in L1 cache**: With 16 bit (2B) samples, and a 16KB data cache, we can store 8k samples in the L1 cache. Arbitrarily assuming 4KB overhead for shenanigains by other programs, this brings us down to 6k samples in L1 cache. 6k / 44.1kHz = 0.13s
 - **~1.4s buffer in L2 cache**: Should all data exist in the L2 cache, w will be able to store 64k samples, translating to about 1.4s.
 
@@ -85,6 +85,5 @@ Sorted by how distinct, interesting, and plausible they are. A handful of pedals
 ### Flanger
 - ??. Probably hard. No idea how this works.
 
-
-
 ### Rotary
+- ??. idek what this is.
