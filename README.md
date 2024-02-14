@@ -1,26 +1,28 @@
-# Documentation For Our Prototype
-## Our Resources On Hand
+# A Digital Guitar Pedal
+This is a digital guitar pedal which can be controlled from a handheld device. Created by Nathan, Jay, Joseph, and Christian as our final project for HCI.
+
+## Goal
+- To create digital pedals.
+
+## Resources On Hand
 - a Rapsberry Pi 1B+. [Datasheet here](https://www.raspberrypi.com/documentation/computers/processors.html).
 - a dream
 
-## Resource Analysis
-- **SoC Hardware**: RPi 1B+ contains an ARM BCM2835 SoC. This SoC contains many modules, such as the RAM, the CPU, the GPU, etc.
-- **Peripherals**: We have USB input and output. We could use these for an ADC and a DAC in order to get sound in and out of the RPi (analog-to-digital converter & digital-to-analog converter).
-- **CPU Clock Speed**: The BCM2835 documentation states that the CPU is clocked at 250MHz, with a nominal clock of 150MHz. Although the processor states iruns at 700MHz. I'm not sure what a nominal clock is, but I'll use the lowest number (150MHz) as our hard limit.
-- **Audio Requirement**: CD audio is 16bit, 44.1kHz. The upper limit of human hearing is rougly ~20kHz. The Nyquist frequency for this would be 40kHz. So CDs give just a bit of headroom. The 16 bits are used for amplitude (aka loudness).
-- **RAM**: The RPi has 500MB of RAM. More importantly it has 128KB L2 cache, 16KB L1 data cache, 16KB L1 instruction cache.
+## Resource Details
+- **SoC**: RPi 1B+ contains a BCM2835 SoC. This is an SoC from Broadcom that contains many modules, including: RAM, CPU, GPU, etc.
+- **I/O**: The RPi 1B+ has 2 USB ports. This is the easiest way I can see to get sound in and out of the RPi. We would need to use an ADC & DAC (analog-to-digital converter & digital-to-analog converter).
+- **CPU Clock Speed**: There is conflicting information in terms of clock rate. Raspberry Pi says that the B+ has a 700MHz clock. The BCM2835 documentation states that the CPU is clocked at 250MHz, and also that it has a nominal clock of 150MHz. I'm not sure what a nominal clock is, but we should use the lowest number provided to be safe. This means, for all intents and purposes, our CPU has a 150MHz clock.
+- **RAM**: The RPi has 500MB of RAM, 128KB L2 cache, 16KB L1 data cache, 16KB L1 instruction cache.
 
-## Limit Analysis
-- Assume we can only reliable use 1/3rd of the nominal CPU voltage (due to OS overhead, ssh servers, etc.) - so 50MHz.
-- We have a budget of ~1000 CPU cycles per audio sample to run our effect. This is our required throughput. And should be more than enough.
-- Having some latency is okay. Many effects will buffer previous samples and add them to the current sample. (For example, reverb, delay, etc).
-- 16KB data cache & 2B amplitude means we can have (at minimum) an 8K sample buffer fully in L1 cache, and a 64K sample buffer fully in L2 cache. This translates to a 0.18s buffer in L1 or a 1.45s buffer in L2. Not sure what these cache hit latencies are yet for L1 & L2, as these may eat a significant chunk of our budget. Are larger buffer is often not necessary, except for effects like delay, which will replay audio over and over again.
+## Targets
+- **Audio I/O**: @ 16bit, 44.1kHz. This is what CDs use. It is above the Nyquist frequency for the limits of human hearing, and it provides sufficient dynamic range for volume.
+- **Effect Choice**: Users should be able to switch their effect and settings for their effect in real time.
+- **Stretch Goal: Pedalboard**: Users can string multiple effects into another. This may be difficult.
 
-## Limits In Short
-- ~1000 cycle budget per input audio sample
-- ~0.18s buffer in L1 cache
-- ~1.45s buffer in L2 cache
-
+## Limitations
+- **~1100 CPU cycles per audio sample**: Arbitrarily assumes we can only use about 1/3rd of the CPU clock (due to OS overhead, SSH overhead, WiFi overhead, etc.). 50MHz / 44.1kHz = 1133 cycles
+- **~0.13s buffer in L1 cache**: With 16 bit (2B) samples, and a 16KB data cache, we can store 8k samples in the L1 cache. Arbitrarily assuming 4KB overhead for shenanigains by other programs, this brings us down to 6k samples in L1 cache. 6k / 44.1kHz = 0.13s
+- **~1.4s buffer in L2 cache**: Should all data exist in the L2 cache, w will be able to store 64k samples, translating to about 1.4s.
 
 ## Pedals
 Sorted by how distinct, interesting, and plausible they are. A handful of pedals (3-5) is our goal for this project.
