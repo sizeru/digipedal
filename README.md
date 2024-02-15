@@ -1,5 +1,5 @@
 # A Digital Guitar Pedal
-This is a digital guitar pedal which can be controlled from a handheld device. Created by Nathan, Jay, Joseph, and Christian as our final project for HCI.
+This is a digital guitar pedal which can be controlled from a handheld device. Created by Nathan, Jay, Joshua, and Christian as our final project for HCI.
 
 ## Summary
 A product that allows users to experiment with several different guitar pedals digitally.
