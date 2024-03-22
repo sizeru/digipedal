@@ -1,0 +1,18 @@
+.App {
+  text-align: center;
+}
+.container-fluid {
+  background-color: #F6EEE3;
+}
+.App-link {
+  color: #61dafb;
+}
+
+.bungee-regular {
+  font-family: "Bungee", sans-serif;
+  font-weight: 400;
+  font-size: 65px;
+  color: #F05A24;
+  font-style: normal;
+  text-align: center;
+}

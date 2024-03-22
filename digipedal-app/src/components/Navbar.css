@@ -1,0 +1,26 @@
+.logo {
+    height: 8vh;
+    width: 8vh;
+    pointer-events: none;
+}
+
+.navbar {
+    background-color: #F6AEB9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-container {
+    width: 8vh;
+}
+
+
+.bungee-regular {
+    font-family: "Bungee", sans-serif;
+    font-weight: 400;
+    font-size: 65px;
+    color: #F05A24;
+    font-style: normal;
+    text-align: center;
+  }
