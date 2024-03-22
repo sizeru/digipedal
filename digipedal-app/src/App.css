@@ -16,3 +16,9 @@
   font-style: normal;
   text-align: center;
 }
+
+.card-body {
+  padding: 0 !important;
+  text-align:center;
+  background-color: #F6AEB9;
+}

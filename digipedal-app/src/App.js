@@ -51,7 +51,6 @@ function App() {
   const [page, setPage] = useState('home');
 
   return (
-    <>
       <div className="container-fluid">
       <Navbar page={page}/>
         <div>
@@ -62,8 +61,7 @@ function App() {
                   <div className="card">
                     <img src={board.image} className="card-img-top" alt={board.name}/>
                     <div className="card-body">
-                      <h5 className="card-title">{board.name}</h5>
-                      <a href="#" className="btn btn-primary">Go to board</a>
+                      <button className="btn"href="#">{board.name}</button>
                     </div>
                   </div>
                 </div>
@@ -72,7 +70,6 @@ function App() {
           </div>
         </div>
       </div>
-    </>
   );
 }
 
