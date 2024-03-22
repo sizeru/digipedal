@@ -1,9 +1,10 @@
 import './App.css';
 import Navbar from './components/Navbar.js';
+import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle'; 
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const boards = [
   {
@@ -48,20 +49,39 @@ const boards = [
   } 
 ];
 function App() {
-  const [page, setPage] = useState('home');
+  const [isLoading, setLoading] = useState(false);
+  const [page, setPage] = useState('Digipedal');
 
+  useEffect(() => {
+    function simulateNetworkRequest() {
+      return new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+
+    if (isLoading) {
+      simulateNetworkRequest().then(() => {
+        setLoading(false);
+      });
+    }
+  }, [isLoading]);
+
+  const selectPage = (event) => {
+    setLoading(true);
+    let title = event.target.innerText;
+    if (title === 'Create New') { title = 'Digipedal'; }
+    setPage(title);
+  };
   return (
       <div className="container-fluid">
-      <Navbar page={page}/>
+      <Navbar page={isLoading ? "Loading..." : page}/>
         <div>
           <div className="col-12">
-            <div className="row">
+            <div className="row board-margins">
               {boards.map((board) => (
                 <div className="col-12 col-md-6 col-lg-4 col-xl-3" key={board.id}>
                   <div className="card">
                     <img src={board.image} className="card-img-top" alt={board.name}/>
                     <div className="card-body">
-                      <button className="btn"href="#">{board.name}</button>
+                      <Button className="board-title" onClick={selectPage}> {board.name} </Button>
                     </div>
                   </div>
                 </div>

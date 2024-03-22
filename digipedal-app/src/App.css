@@ -1,3 +1,4 @@
+
 .App {
   text-align: center;
 }
@@ -17,8 +18,30 @@
   text-align: center;
 }
 
+.btn {
+  font-family: "Fira Sans Condensed", sans-serif !important;
+  font-weight: 700 !important;
+  width: 100% !important;
+  background-color: #F6AEB9 !important;
+  color: black !important;
+}
+.btn:hover {
+  background-color: #a53911 !important;
+  color: #F6EEE3 !important;
+}
+
 .card-body {
   padding: 0 !important;
   text-align:center;
   background-color: #F6AEB9;
+}
+
+.board-margins {
+  padding: 0 10%;
+}
+
+.card {
+  font-size: 20px;
+  padding-top: 5%;
+  margin-top: 30%;
 }
