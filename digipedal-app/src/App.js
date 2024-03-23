@@ -1,54 +1,20 @@
 import './App.css';
 import Navbar from './components/Navbar.js';
-import Button from 'react-bootstrap/Button';
-import 'bootstrap/dist/css/bootstrap.min.css'; 
-import 'bootstrap/dist/js/bootstrap.bundle'; 
+import Home from './components/Home.js';
+// import Board from './components/Board.js';
 
-import { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
+// import Button from 'react-bootstrap/Button';
 
-const boards = [
-  {
-    "id": 1,
-    "name" : "Create New",
-    "image": "create-new.png"
-  },
-  {
-    "id" : 2,
-    "name" : "My Super Board!!",
-    "image": "super-board.png"
-  },
-  {
-    "id" : 3,
-    "name" : "Pedals of Fury",
-    "image": "pedals-of-fury.png"
-  },
-  {
-    "id": 4,
-    "name" : "Default Board",
-    "image": "default-board.png"
-  }, 
-  {
-    "id": 5,
-    "name" : "Board with long name",
-    "image": "longname.png"
-  }, 
-  {
-    "id" : 6,
-    "name" : "Board-demic",
-    "image": "board-demic.png"
-  }, 
-  {
-    "id" : 7,
-    "name" : "Board of the Rings",
-    "image": "board-of-the-rings.png"
-  },
-  {
-    "id" : 8,
-    "name" : "Brown v Board",
-    "image": "brown-v-board.png"
-  } 
-];
+// import { useState, useEffect } from 'react';
+
+
 function App() {
+  /*
   const [isLoading, setLoading] = useState(false);
   const [page, setPage] = useState('Digipedal');
 
@@ -70,26 +36,36 @@ function App() {
     if (title === 'Create New') { title = 'Digipedal'; }
     setPage(title);
   };
+  */
+  
   return (
-      <div className="container-fluid">
-      <Navbar page={isLoading ? "Loading..." : page}/>
-        <div>
-          <div className="col-12">
-            <div className="row board-margins">
-              {boards.map((board) => (
-                <div className="col-12 col-md-6 col-lg-4 col-xl-3" key={board.id}>
-                  <div className="card">
-                    <img src={board.image} className="card-img-top" alt={board.name}/>
-                    <div className="card-body">
-                      <Button className="board-title" onClick={selectPage}> {board.name} </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <Router>
+        <Navbar page="Digipedal" />
+        <Routes>
+            <Route exact path="/" element={<Home />} />
+            {/* <Route exact path="/board" element={<Board />} />
+              <Route path="/board/:id"> </Route> */}
+        </Routes>
+      </Router>
+      // <div className="container-fluid">
+      // <Navbar page={isLoading ? "Loading..." : page}/>
+      //   <div>
+      //     <div className="col-12">
+      //       <div className="row board-margins">
+      //         {boards.map((board) => (
+      //           <div className="col-12 col-md-6 col-lg-4 col-xl-3" key={board.id}>
+      //             <div className="card">
+      //               <img src={board.image} className="card-img-top" alt={board.name}/>
+      //               <div className="card-body">
+      //                 <Button className="board-title" onClick={selectPage}> {board.name} </Button>
+      //               </div>
+      //             </div>
+      //           </div>
+      //         ))}
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div>
   );
 }
 
