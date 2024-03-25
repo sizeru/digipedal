@@ -1,0 +1,24 @@
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vh;
+    /* padding: 25% 25%; */
+}
+
+.loading-logo {
+    height: 50%;
+    width: 50%;
+    padding: 0 0;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
