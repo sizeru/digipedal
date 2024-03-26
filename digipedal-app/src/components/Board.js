@@ -12,6 +12,7 @@ import Button from 'react-bootstrap/Button';
 import {DndContext} from '@dnd-kit/core';
 import Draggable from './dnd/Draggable';
 import Droppable from './dnd/Droppable';
+import {restrictToParentElement} from '@dnd-kit/modifiers';
 
 function Board( {boards} ) {
     const { id }  = useParams();
@@ -70,8 +71,8 @@ function Board( {boards} ) {
                     <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/>
                 </div>
             </div>
-            <DndContext onDragEnd={handleDragEnd}>
-                <Droppable className="w-100 h-100">
+            <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
+                <Droppable className="w-100 h-100" modifiers={[restrictToParentElement]}>
                     {[...pedalsMap.values()].map((pedal) => {
                         console.log(pedal);
                         return (

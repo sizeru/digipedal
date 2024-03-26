@@ -6,6 +6,7 @@ function Droppable(props) {
     id: 'droppable',
   });
   const style = {
+    ...props.style,
     color: isOver ? 'green' : undefined,
   };
   
