@@ -16,8 +16,9 @@ function Board( {boards} ) {
     const { id }  = useParams();
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
+    const [pedalsMap, setPedalsMap] = useState(new Map());
 
-
+    // setting up loading effect
     useEffect( () => {
         function simulateNetworkRequest() {
             return new Promise((resolve) => setTimeout(resolve, 2000));
@@ -31,8 +32,8 @@ function Board( {boards} ) {
         setCurrBoard(boards.find((board) => board.id == id))
     }, [id, boards, isLoading]);
 
-    const [pedalsMap, setPedalsMap] = useState(new Map());
 
+    // whenever the currboard is changed, we need to remake the pedal map 
     useEffect(() => {
         let tempPedals = new Map();
         let pedalMaxId = 1;
@@ -66,7 +67,10 @@ function Board( {boards} ) {
                 <Droppable className="w-100 h-100">
                     {[...pedalsMap.values()].map((pedal) => {
                         console.log(pedal);
-                        return <Draggable id={pedal.id} x={pedal.x} y={pedal.y}><img className="pedal" src={pedal.image} key={pedal.id}/></Draggable>;
+                        return (
+                        <Draggable id={pedal.id} x={pedal.x} y={pedal.y}>
+                            <img className="pedal" src={pedal.image} key={pedal.id}/>
+                        </Draggable>);
                     })}
                 </Droppable>
             </DndContext>
@@ -74,19 +78,26 @@ function Board( {boards} ) {
     );
     
     
+    // dealing with the ending of drag events
     function handleDragEnd(event) {
-        console.log(event)
+        // getting info about the drag event
         const activePedal = pedalsMap.get(event.active.id);
         const draggedElement = document.getElementById(`${event.active.id}d`);
-        console.log(draggedElement)
         const draggedElementRect = draggedElement.getBoundingClientRect();
+
+        console.log(event)
+        console.log(draggedElement)
         console.log(draggedElementRect)
+
+        // checking that the pedal actually exists 
         if (activePedal) {
+            // remaking the pedal with the x, y corridnates 
             const updatedPedal = {
                 ...activePedal,
-                x: draggedElementRect.x,
-                y: draggedElementRect.y,
+                x: Math.round(draggedElementRect.x),
+                y: Math.round(draggedElementRect.y),
             };
+            // making the new map
             setPedalsMap(prev => new Map(prev).set(activePedal.id, updatedPedal));
         }
     }

@@ -9,7 +9,6 @@ function Draggable(props) {
     id: props.id,
   });
 
-  // Within your component that receives `transform` from `useDraggable`:
   let style = {
     position: `absolute`,
     left: `${props.x}px`,
@@ -18,9 +17,9 @@ function Draggable(props) {
   }
 
   return (
-    <button id={`${props.id}d`} ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <div id={`${props.id}d`} ref={setNodeRef} style={style} {...listeners} {...attributes}>
       {props.children}
-    </button>
+    </div>
   );
 }
 export default Draggable;
