@@ -9,7 +9,7 @@ import {
   Route,
 } from "react-router-dom";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 
 function App() {

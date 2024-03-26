@@ -6,8 +6,17 @@
 }
 
 .logo-container {
-    height: 10vh;
-    width: 10vh;
+    width: 8vw;
+    padding-left: 1%;
+    padding-right: 5%;
+    border-right: 3px solid #F05A24;
+}
+.icon-container {
+    width: 24vw;
+    padding-left: 1%;
+}
+.icon-container-right {
+    width: 20vw;
     padding-left: 1%;
 }
 
@@ -18,9 +27,55 @@
 .bungee-regular {
     font-family: "Bungee", sans-serif;
     font-weight: 400;
-    font-size: 65px;
+    font-size: 90px;
     color: #F05A24;
     font-style: normal;
     text-align: center;
     text-decoration: none;
-  }
+}
+
+.undo {
+    padding: 0% 3%;
+    width:6vw;
+    height:auto;
+    filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
+    /* border-left: 3px solid #F05A24; */
+
+}
+.redo {
+    padding: 0% 3%;
+    width:6vw;
+    height:auto;
+    transform: scale(-1, 1);
+    filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
+    /* border-left: 3px solid #F05A24; */
+}
+
+.right-side {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.play {
+    width:5vw;
+    height:auto;
+    filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
+    padding-right: 8%;
+
+}
+.three-dots {
+    width:4vw;
+    height:auto;
+
+    filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
+    padding-right: 10%;
+}
+
+.share {
+    width:6vw;
+    height:auto;
+
+    filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
+    padding-right: 10%;
+}

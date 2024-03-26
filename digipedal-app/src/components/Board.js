@@ -6,6 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import './Navbar.css';
 import "./Board.css";
 import Loading from './Loading';
+import Button from 'react-bootstrap/Button';
 
 // drag and drop stuff
 import {DndContext} from '@dnd-kit/core';
@@ -21,7 +22,7 @@ function Board( {boards} ) {
     // setting up loading effect
     useEffect( () => {
         function simulateNetworkRequest() {
-            return new Promise((resolve) => setTimeout(resolve, 2000));
+            return new Promise((resolve) => setTimeout(resolve, 2));
         }
     
         if (isLoading) {
@@ -60,7 +61,13 @@ function Board( {boards} ) {
                 <div className="navbar-nav">
                     <a className="bungee-regular"> {currBoard.name} </a>
                 </div>
-                <div className="logo-container">  
+                <a className="bungee-regular"> {
+                currBoard.name.length > 12 ? currBoard.name.substring(0,10) + '...' : currBoard.name 
+                } </a>
+                <div className="right-side icon-container-right"> 
+                    <img src="../navbar_icons/play.png" className="play" alt="Play"/>
+                    <img src="../navbar_icons/share.png" className="share" alt="Share"/>
+                    <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/>
                 </div>
             </div>
             <DndContext onDragEnd={handleDragEnd}>
