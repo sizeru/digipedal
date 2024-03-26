@@ -1,15 +1,18 @@
 .loading {
+    position:fixed;
+    left: 30%;
+    top: 20%;
+    width:100%;
+    height:100%;
+    z-index:9999;
+}
+
+.loading-nav {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vh;
-    /* padding: 25% 25%; */
+    justify-content: space-around;
 }
 
 .loading-logo {
-    height: 50%;
-    width: 50%;
     padding: 0 0;
     animation: rotate 2s linear infinite;
 }

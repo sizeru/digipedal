@@ -9,7 +9,6 @@ import Navbar from './Navbar.js';
 
 function Home( {boards} ) {
   const [isLoading, setLoading] = useState(true);
-  const [page, setPage] = useState('Digipedal');
 
   useEffect(() => {
     function simulateNetworkRequest() {
@@ -23,12 +22,6 @@ function Home( {boards} ) {
     }
   }, [isLoading]);
 
-  const selectPage = (event) => {
-    setLoading(true);
-    let title = event.target.innerText;
-    if (title === 'Create New') { title = 'Digipedal'; }
-  };
-
   return (
     isLoading ? 
     <Loading /> :
@@ -40,7 +33,7 @@ function Home( {boards} ) {
           <div className="navbar-nav">
               <a className="bungee-regular"> Digipedal </a>
           </div>
-          <div className="logo-container">  </div> {/* Empty div to balance the logo */}
+          <div className="logo-container">  </div> 
       </div>
       <div className="container-fluid">
         <div>
