@@ -2,13 +2,13 @@
     {
         "id": 1,
         "name": "Create New",
-        "image": "create-new.png",
+        "image": "/create-new.png",
         "pedals" : []
     },
     {
         "id": 2,
         "name": "My Super Board!!",
-        "image": "super-board.png",
+        "image": "/super-board.png",
         "pedals": [ 
             {
                 "order": 1,
@@ -27,37 +27,37 @@
     {
         "id": 3,
         "name": "Pedals of Fury",
-        "image": "pedals-of-fury.png",
+        "image": "/pedals-of-fury.png",
         "pedals": []
     },
     {
         "id": 4,
         "name": "Default Board",
-        "image": "default-board.png",
+        "image": "/default-board.png",
         "pedals": []
     },
     {
         "id": 5,
         "name": "Board with long name",
-        "image": "longname.png",
+        "image": "/longname.png",
         "pedals": []
     },
     {
         "id": 6,
         "name": "Board-demic",
-        "image": "board-demic.png",
+        "image": "/board-demic.png",
         "pedals": []
     },
     {
         "id": 7,
         "name": "Board of the Rings",
-        "image": "board-of-the-rings.png",
+        "image": "/board-of-the-rings.png",
         "pedals": []
     },
     {
         "id": 8,
         "name": "skateBoard",
-        "image": "skateBoard.png",
+        "image": "/skateBoard.png",
         "pedals": []
     }
 ]

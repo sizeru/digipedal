@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import Button from 'react-bootstrap/Button';
 import './Navbar.css';
 import Loading from './Loading';
+import Navbar from './Navbar.js';
 
 function Home( {boards} ) {
   const [isLoading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ function Home( {boards} ) {
     <div>
       <div className="navbar sticky-top d-flex justify-content-between align-items-center">
           <a className="navbar-brand logo-container" href="/">
-              <img src="logo.png" className="d-inline-block align-top logo-container" alt="Digipedal Logo"/>
+              <img src="/logo.png" className="d-inline-block align-top logo-container" alt="Digipedal Logo"/>
           </a>
           <div className="navbar-nav">
               <a className="bungee-regular"> Digipedal </a>
