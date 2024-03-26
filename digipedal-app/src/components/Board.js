@@ -35,7 +35,7 @@ function Board( {boards} ) {
 
     useEffect(() => {
         let tempPedals = new Map();
-        let pedalMaxId = 0;
+        let pedalMaxId = 1;
         if(currBoard && currBoard.pedals){
             currBoard.pedals.forEach((pedal) => {
                 pedal.id = pedalMaxId++;
@@ -77,7 +77,7 @@ function Board( {boards} ) {
     function handleDragEnd(event) {
         console.log(event)
         const activePedal = pedalsMap.get(event.active.id);
-        const draggedElement = document.getElementById(event.active.id);
+        const draggedElement = document.getElementById(`${event.active.id}d`);
         console.log(draggedElement)
         const draggedElementRect = draggedElement.getBoundingClientRect();
         console.log(draggedElementRect)
