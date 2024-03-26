@@ -26,9 +26,9 @@ function Home( {boards} ) {
     isLoading ? 
     <Loading /> :
     <div>
-      <div className="navbar sticky-top d-flex justify-content-between align-items-center">
-          <a className="navbar-brand logo-container" href="/">
-              <img src="/logo.png" className="d-inline-block align-top logo-container" alt="Digipedal Logo"/>
+      <div className="navbar">
+          <a className="navbar-brand" href="/">
+              <img src="/logo.png" className="logo-container" alt="Digipedal Logo"/>
           </a>
           <div className="navbar-nav">
               <a className="bungee-regular"> Digipedal </a>
