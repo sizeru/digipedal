@@ -2,16 +2,10 @@ import "./Loading.css";
 
 function Loading() {
     return (
-        <>
-            <div className="navbar loading-nav">
-                <div className="navbar-nav">
-                    <a className="bungee-regular"> Loading... </a>
-                </div>
-            </div>
-            <div className="loading">
-                <img src="/logo.png" alt="Loading" className="loading-logo" />
-            </div>
-        </>
+        <div className="loading">
+            <h1 className="bungee-regular"> Loading... </h1>
+            <img src="/logo.png" alt="Loading" className="loading-logo" />
+        </div>
     );
 }
 
