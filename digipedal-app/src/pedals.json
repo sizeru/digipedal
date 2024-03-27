@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "CH-12",
+        "type": "Chorus Pedal",
+        "image": "/pedal1.png",
+        "description": "The chorus effect makes it sound like multiple guitars are being played simultaneously. This is done by duplicating the guitar signal and changing the pitch slightly. It also accomplishes this by delaying the new signal and mixing it back in.",
+        "effects" : [
+            {
+                "effect_id": 1,
+                "effect_name": "Level",
+                "effect_description": "This determines the volume of the effect against your unaffected sound. Turning it up allows you to attain a thicker sound, while turning it down creates a more transparent and less-intrusive tone."
+            }, 
+            {
+                "effect_id": 2,
+                "effect_name": "Rate",
+                "effect_description": "This determines the delay between mixing in the new signal with the original signal. Increasing it increases the delay and can create a vibrato-like effect, while decreasing it minimizes the delay."
+            },
+            {
+                "effect_id": 3,
+                "effect_name": "Depth",
+                "effect_description": "This affects the intensity of the effect and how extreme the chorus warble is. It is similar to level, but a little more subtle."
+            }
+        ]
+    }
+]

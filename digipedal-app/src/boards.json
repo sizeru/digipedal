@@ -1,63 +1,93 @@
 [
-    {
-        "id": 1,
-        "name": "Create New",
-        "image": "/create-new.png",
-        "pedals" : []
-    },
-    {
-        "id": 2,
-        "name": "My Super Board!!",
-        "image": "/super-board.png",
-        "pedals": [ 
-            {
-                "order": 1,
-                "name": "DS-12",
-                "settings": "idk",
-                "image_link" : "ds-12.png"
-            },
-            {
-                "order": 2,
-                "name" : "Infinity Looper",
-                "settings": "idk",
-                "image_link" : "infinity-looper.png"
-            }
-        ]
-    },
-    {
-        "id": 3,
-        "name": "Pedals of Fury",
-        "image": "/pedals-of-fury.png",
-        "pedals": []
-    },
-    {
-        "id": 4,
-        "name": "Default Board",
-        "image": "/default-board.png",
-        "pedals": []
-    },
-    {
-        "id": 5,
-        "name": "Board with long name",
-        "image": "/longname.png",
-        "pedals": []
-    },
-    {
-        "id": 6,
-        "name": "Board-demic",
-        "image": "/board-demic.png",
-        "pedals": []
-    },
-    {
-        "id": 7,
-        "name": "Board of the Rings",
-        "image": "/board-of-the-rings.png",
-        "pedals": []
-    },
-    {
-        "id": 8,
-        "name": "skateBoard",
-        "image": "/skateBoard.png",
-        "pedals": []
-    }
+  {
+    "id": 1,
+    "name": "Create New",
+    "image": "/create-new.png",
+    "pedals": []
+  },
+  {
+    "id": 2,
+    "name": "My Super Board!!",
+    "image": "/super-board.png",
+    "pedals": [
+      {
+        "order": 1,
+        "name": "DS-12",
+        "settings": "idk",
+        "image_link": "ds-12.png"
+      },
+      {
+        "order": 2,
+        "name": "Infinity Looper",
+        "settings": "idk",
+        "image_link": "infinity-looper.png"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Pedals of Fury",
+    "image": "/pedals-of-fury.png",
+    "pedals": []
+  },
+  {
+    "id": 4,
+    "name": "Default Board",
+    "image": "/default-board.png",
+    "pedals": []
+  },
+  {
+    "id": 5,
+    "name": "Board with long name",
+    "image": "/longname.png",
+    "pedals": []
+  },
+  {
+    "id": 6,
+    "name": "Board-demic",
+    "image": "/board-demic.png",
+    "pedals": []
+  },
+  {
+    "id": 7,
+    "name": "Board of the Rings",
+    "image": "/board-of-the-rings.png",
+    "pedals": []
+  },
+  {
+    "id": 8,
+    "name": "skateBoard",
+    "image": "/skateBoard.png",
+    "pedals": []
+  },
+  {
+    "id": 9,
+    "name": "Board9",
+    "image": "",
+    "pedals": []
+  },
+  {
+    "id": 10,
+    "name": "Board10",
+    "image": "",
+    "pedals": []
+  },
+  {
+    "id": 11,
+    "name": "Board11",
+    "image": "",
+    "pedals": []
+  },
+  {
+    "id": 12,
+    "name": "Board12",
+    "image": "",
+    "pedals": []
+  },
+  {
+    "id": 13,
+    "name": "Board13",
+    "image": "",
+    "pedals": []
+  }
 ]
