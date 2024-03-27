@@ -5,9 +5,8 @@ import { Link } from 'react-router-dom'
 import Button from 'react-bootstrap/Button';
 import './Navbar.css';
 import Loading from './Loading';
-import Navbar from './Navbar.js';
 
-function Home( {boards} ) {
+function Home( {boards, /*newBoard*/} ) {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +20,7 @@ function Home( {boards} ) {
       });
     }
   }, [isLoading]);
+
 
   return (
     isLoading ? 
@@ -44,7 +44,9 @@ function Home( {boards} ) {
                   <div className="card">
                     <img src={board.image} className="card-img-top" alt={board.name} key={board.name}/>
                     <div className="card-body">
-                      <Button className="board-title" as={Link} to={"/board/"+ board.id}> {board.name} </Button>
+                      {board.id != 1 ? 
+                      <Button className="board-title btn-full" as={Link} to={"/board/"+ board.id}> {board.name} </Button> : 
+                      <Button className="board-title btn-full" /*onClick={newBoard}*/> {board.name} </Button>}
                     </div>
                   </div>
                 </div>
