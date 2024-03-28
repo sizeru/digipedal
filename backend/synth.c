@@ -1,3 +1,4 @@
+#include "portaudio.h"
 #include "shorttypes.h"
 #include <asm/unistd_64.h>
 #include <stdlib.h>
@@ -75,7 +76,20 @@ int main(int argc, char* argv[]) {
 	effect[0] = (void(*)()) reverb_digi;
 	effectCount = 1;
 	
-	int err = Pa_StartStream(stream);
+	// Port audio API work
+	if (Pa_Initialize() != paNoError) {
+		return -2;
+	}
+	int outId = Pa_GetDefaultOutputDevice();
+	PaStream* stream;
+	if (paNoError != Pa_OpenDefaultStream(&stream, 0, 1, paInt16, wav.sampleRate, paFramesPerBufferUnspecified, NULL /* SLOW. USE CALLBACK */, NULL /* USED FOR PREV STUFF */)) {
+		return -3;
+	}
+	if (paNoError != Pa_StartStream(stream)) {
+		return -4;
+	}
+
+	// int error = Pa_StartStream( PaStream *stream );
 	size_t idx = 0;
 	while (1) {
 		buffer[idx] = wavNext(&wav);
@@ -84,6 +98,8 @@ int main(int argc, char* argv[]) {
 			// TODO: This isn't correct cus it hardcodes the arguments
 			effect[i](buffer, sizeof(buffer), idx, 128);
 		}
+		// Write a single frame
+		Pa_WriteStream(stream, &buffer[idx], 1);
 
 		idx++;
 		if (idx >= bufferLength) { idx=0; }
@@ -91,6 +107,8 @@ int main(int argc, char* argv[]) {
 
 	// Will probably never reach here. Should probably have signals which control
 	// this
+	Pa_StopStream(stream);
+	Pa_CloseStream(stream);
 	return 0;
 }
 

@@ -8,7 +8,7 @@ synth: ${SRCS}
 	${CC} -o ${EXEC} ${SRCS} -Ofast
 
 debug: ${SRCS}
-	${CC} -o ${EXEC} ${SRCS} -Og -g3
+	${CC} -o ${EXEC} ${SRCS} -Og -g3 ${LIBS}
 
 clean:
 	rm -f ${EXEC}
