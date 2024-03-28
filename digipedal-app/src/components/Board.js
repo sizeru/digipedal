@@ -14,11 +14,21 @@ import Draggable from './dnd/Draggable';
 import Droppable from './dnd/Droppable';
 import {restrictToParentElement} from '@dnd-kit/modifiers';
 
+// pedal browser stuff
+import PedalBrowser from './PedalBrowser'
+
 function Board( {boards} ) {
     const { id }  = useParams();
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [pedalsMap, setPedalsMap] = useState(new Map());
+    const [pedalMaxId, setPedalMaxId] = useState(1);
+
+    // pedal browser stuff
+    const [showPedalBrowser, setShowPedalBrowser] = useState(false);
+  
+    const handleClosePedalBrowser = () => setShowPedalBrowser(false);
+    const handleShowPedalBrowser = () => setShowPedalBrowser(true);
 
     // setting up loading effect
     useEffect( () => {
@@ -37,16 +47,32 @@ function Board( {boards} ) {
 
     // whenever the currboard is changed, we need to remake the pedal map 
     useEffect(() => {
+        let tempPedalMaxId = pedalMaxId;
         let tempPedals = new Map();
-        let pedalMaxId = 1;
         if(currBoard && currBoard.pedals){
             currBoard.pedals.forEach((pedal) => {
-                pedal.id = pedalMaxId++;
+                pedal.id = tempPedalMaxId++;
                 tempPedals.set(pedal.id, pedal);
             });
         }
+        setPedalMaxId(tempPedalMaxId);
         setPedalsMap(tempPedals);
     }, [currBoard]);
+
+    function addPedal(event, pedal){
+        console.log(pedal)
+        console.log(event);
+        const activePedal = pedal;
+        // remaking the pedal with the x, y corridnates 
+        let newPedal = {
+            ...activePedal,
+        };
+        newPedal.id = pedalMaxId + 1;
+        // making the new map
+        setPedalMaxId(pedalMaxId + 1);
+        setPedalsMap(prev => new Map(prev).set(newPedal.id, newPedal));
+        console.log(pedalsMap)
+    };
 
     console.log(currBoard)
     console.log(pedalsMap)
@@ -59,9 +85,6 @@ function Board( {boards} ) {
                 <a className="navbar-brand logo-container" href="/">
                     <img src="/logo.png" className="d-inline-block align-top logo-container" alt="Digipedal Logo"/>
                 </a>
-                <div className="navbar-nav">
-                    <a className="bungee-regular"> {currBoard.name} </a>
-                </div>
                 <a className="bungee-regular"> {
                 currBoard.name.length > 12 ? currBoard.name.substring(0,10) + '...' : currBoard.name 
                 } </a>
@@ -72,14 +95,14 @@ function Board( {boards} ) {
                 </div>
             </div>
             <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
-                <Droppable className="w-100 h-100" modifiers={[restrictToParentElement]}>
+                <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
                     {[...pedalsMap.values()].map((pedal) => {
-                        console.log(pedal);
                         return (
                         <Draggable id={pedal.id} x={pedal.x} y={pedal.y}>
                             <img className="pedal" src={pedal.image} key={pedal.id}/>
                         </Draggable>);
                     })}
+                    <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
                 </Droppable>
             </DndContext>
         </>

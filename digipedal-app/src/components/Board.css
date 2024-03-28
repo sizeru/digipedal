@@ -2,3 +2,6 @@
     width: 15vw;
 }
 
+#PedalBrowserButton {
+    z-index: 100000;
+}
