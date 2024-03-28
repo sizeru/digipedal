@@ -16,7 +16,7 @@ import Droppable from './dnd/Droppable';
 import {restrictToParentElement} from '@dnd-kit/modifiers';
 
 // pedal browser stuff
-import PedalBrowser from './PedalBrowser'
+import PedalBrowser from './PedalBrowser';
 
 function Board( {boards, pedalData} ) {
     const { id }  = useParams();
@@ -78,6 +78,29 @@ function Board( {boards, pedalData} ) {
         console.log("More");
     };
 
+    
+    // holding delete detection
+    const [isDeleteHeld, setIsDeleteHeld] = useState(false);
+
+    // detecting if the delete key is held down
+    const handleKeyDown = (event) => {
+        if (event.key === 'Delete') {
+        setIsDeleteHeld(true);
+        }
+    };
+
+    // dealing with if they release the key
+    const handleKeyUp = (event) => {
+        if (event.key === 'Delete') {
+            setIsDeleteHeld(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+
+    }, []);
 
 
     // whenever the currboard is changed, we need to remake the pedal map 
@@ -111,8 +134,18 @@ function Board( {boards, pedalData} ) {
         console.log(pedalsMap)
     };
 
-    console.log(currBoard)
-    console.log(pedalsMap)
+    function deletePedal(event){
+        console.log(`deletePedal:` )
+        console.log(event)
+
+        const activePedal = pedalsMap.get(event.active.id);
+        
+        let newMap = new Map(pedalsMap);
+        newMap.delete(activePedal.id)
+        setPedalMaxId(pedalMaxId - 1);
+        setPedalsMap(newMap);
+        console.log(pedalsMap)
+    }
 
     return (
         isLoading ? 
@@ -161,6 +194,9 @@ function Board( {boards, pedalData} ) {
     
     // dealing with the ending of drag events
     function handleDragEnd(event) {
+        if(isDeleteHeld){
+            return deletePedal(event)
+        }
         // getting info about the drag event
         const activePedal = pedalsMap.get(event.active.id);
         const draggedElement = document.getElementById(`${event.active.id}d`);

@@ -1,5 +1,6 @@
 .pedal {
     width: 15vw;
+    touch-action:initial;
 }
 
 #PedalBrowserButton {
