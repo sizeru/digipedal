@@ -16,3 +16,9 @@ void reverb_digi(BUFFER_ARGS, u8 width) {
 }
 
 // distortion is just multiply by scalar and clamp at max value
+void delay_digi(BUFFER_ARGS, u16 time, u8 strength) {
+	const s16 MAX_WIDTH = INT16_MAX;
+	const s16 MIN_WIDTH = INT16_MAX;
+
+	buffer[idx] += ((buffer[idx-time] * strength) >> 8);
+}

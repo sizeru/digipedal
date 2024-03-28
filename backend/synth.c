@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include "effects.h"
+#include "wav.h"
 
 #define EXEC_NAME "synth"
 
@@ -30,12 +31,6 @@ void initDefaultConfig(SynthConfig* config);
 UsageStatus parseOptions(int argc, char* argv[], SynthConfig* config);
 void printUsage();
 s16 getInputAmplitude();
-
-s16 getInputAmplitude() {
-	// TODO: Read this input from I/O. For now, should probably read this input
-	// from a file
-	return 0;
-}
 
 // Start up the synthesizer and synth server
 int main(int argc, char* argv[]) {
@@ -70,24 +65,31 @@ int main(int argc, char* argv[]) {
 	void(*effect[64])();
 	u8 effectCount = 0;
 	size_t maxEffects = sizeof(effect);
+	/* GOOD CODE ENDS HERE */
+
+	// TODO: Remove this. This is setup for the audio WAV file.
+	Wav wav = wavOpen("./tests/getlucky.wav"); 
 	
 	// TODO: Replace this next part
-	// NOTE(Nate): These are hardcoded values. This is bad for right now
-	effect[0] = (void*) reverb_digi;
+	// NOTE(Nate): These are hardcoded values. This is bad, but okay for Week 1.
+	effect[0] = (void(*)()) reverb_digi;
 	effectCount = 1;
 	
 	size_t idx = 0;
 	while (1) {
-		buffer[idx] = getInputAmplitude();
+		buffer[idx] = wavNext(&wav);
+		// buffer[idx] = getInputAmplitude();
 		for (int i = 0; i < effectCount; i++) {
-			// NOTE(Nate): Hard coded again
-			void(*func)() = effect[0];
-			func(buffer, sizeof(buffer), idx, 128);
-			// NOTE(Nate): End hard coded again
+			// TODO: This isn't correct cus it hardcodes the arguments
+			effect[i](buffer, sizeof(buffer), idx, 128);
 		}
-		// TODO: This isn't correct cus it hardcodes the arguments
+
+		idx++;
+		if (idx >= bufferLength) { idx=0; }
 	}
 
+	// Will probably never reach here. Should probably have signals which control
+	// this
 	return 0;
 }
 
@@ -120,4 +122,11 @@ void printUsage() {
 		"Usage:\n\t%s [-b buffer_size]\n",
 		EXEC_NAME
 	);
+}
+
+s16 getInputAmplitude() {
+
+	// TODO: Read this input from I/O. For now, should probably read this input
+	// from a file
+	return 0;
 }
