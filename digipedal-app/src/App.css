@@ -4,6 +4,9 @@ html, body, #root{
   overflow: hidden;
   touch-action: none;
 }
+a{
+  touch-action: initial;
+}
 
 .App {
   text-align: center;

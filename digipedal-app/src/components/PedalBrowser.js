@@ -11,7 +11,7 @@ function PedalBrowser(props) {
   return (
     <>
       <Button id="PedalBrowserButton" variant="primary" onClick={handleShow}>
-        Click me!
+        Add Pedal!
       </Button>
 
       <Modal show={show} onHide={handleClose}>
@@ -21,7 +21,7 @@ function PedalBrowser(props) {
         <Modal.Body>
             {[...pedalsMap.values()].map((pedal) => {
                 return (
-                <button x={pedal.x} y={pedal.y} onClick={(event) => addPedal(event, pedal)}>
+                <button onClick={(event) => addPedal(event, pedal)}>
                     {pedal.name}
                     <img  className="pedal" src={pedal.image} key={pedal.id}/>
                 </button>);

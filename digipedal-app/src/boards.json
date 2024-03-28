@@ -14,13 +14,13 @@
         "order": 1,
         "name": "DS-12",
         "settings": "idk",
-        "image_link": "ds-12.png"
+        "image": "/ds-12.png"
       },
       {
         "order": 2,
         "name": "Infinity Looper",
         "settings": "idk",
-        "image_link": "infinity-looper.png"
+        "image": "/infinity-looper.png"
       }
     ]
   },

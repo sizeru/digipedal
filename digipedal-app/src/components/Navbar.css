@@ -3,7 +3,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 16vh;
+    max-height: 16vh;
+    overflow-y: scroll;
 }
 
 .logo-container {
@@ -28,7 +29,7 @@
 .bungee-regular {
     font-family: "Bungee", sans-serif;
     font-weight: 400;
-    font-size: 10vh;
+    font-size: 6vw;
     color: #F05A24;
     font-style: normal;
     text-align: center;
@@ -92,5 +93,5 @@
 }
 
 .modal-DELETE {
-    margin-top:20%;
+    /* margin-top:20%; this makes it way down from the top?? */
 }

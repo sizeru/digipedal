@@ -6,7 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import './Navbar.css';
 import "./Board.css";
 import Loading from './Loading';
-import Button from 'react-bootstrap/Button';
+import {Row, Col, Button} from 'react-bootstrap';
 import InfoModal from './InfoModal';
 
 // drag and drop stuff
@@ -102,6 +102,8 @@ function Board( {boards, pedalData} ) {
         let newPedal = {
             ...activePedal,
         };
+        newPedal.x = null;
+        newPedal.y = null;
         newPedal.id = pedalMaxId + 1;
         // making the new map
         setPedalMaxId(pedalMaxId + 1);
@@ -133,10 +135,16 @@ function Board( {boards, pedalData} ) {
                     <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
                     <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button>
                 </div>
-            </div>
-            <div>                 
-                <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
-            </div>
+            </div>  
+            <Row>       
+                <Col>   
+                    <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
+                </Col>
+                <Col>
+                    <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
+                </Col>
+            </Row>
+            <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} />
             <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
                     {[...pedalsMap.values()].map((pedal) => {
@@ -145,7 +153,6 @@ function Board( {boards, pedalData} ) {
                             <img className="pedal" src={pedal.image} key={pedal.id}/>
                         </Draggable>);
                     })}
-                    <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
                 </Droppable>
             </DndContext>
         </>
