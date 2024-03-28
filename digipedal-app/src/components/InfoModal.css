@@ -2,6 +2,7 @@
     font-family: "Fira Sans Condensed", sans-serif !important;
     background-color: #F6AEB9 !important;
     color: black !important;
+    touch-action: initial;
 }
 
 .pedal-image {
