@@ -104,7 +104,7 @@ function Board( {boards, pedalData} ) {
 
     function getPedalXY(pedal){
         console.log(pedal)
-        if(pedal.x != null && pedal.y != null){
+        if(pedal.x && pedal.y && pedal.height && pedal.width){
             console.log('already have x and y')
         } else {
             console.log('need x or y')
@@ -133,6 +133,8 @@ function Board( {boards, pedalData} ) {
         canvas.height = window.innerHeight;
 
         let ctx = canvas.getContext('2d');
+        
+
         let prevX = null
         let prevY = null;
         console.log(pedalsMap)
@@ -143,10 +145,15 @@ function Board( {boards, pedalData} ) {
             console.log([currX, currY])
             if(prevX != null){
                 ctx.beginPath();
+                // https://stackoverflow.com/questions/61122649/how-to-add-gradient-to-strokestyle-canvas-in-javascript#:~:text=You%20can%20create%20a%20CanvasGradient%20by%20calling%20the,it%20by%20calling%20the%20method%20addColorStop%20%28offset%2C%20color%29.
+                const gradient = ctx.createLinearGradient(prevX, prevY, currX, currY);
+                gradient.addColorStop(0, '#ff6347');
+                gradient.addColorStop(1, '#006400');
+                ctx.strokeStyle = gradient;
+
+                ctx.lineWidth = 5;
                 ctx.moveTo(prevX, prevY);
                 ctx.lineTo(currX, currY);
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 5;
                 ctx.stroke(); // Render the path
                 console.log(`Tried to draw line from (${prevX}, ${prevY}) to (${currX}, ${currY})`)
             }
