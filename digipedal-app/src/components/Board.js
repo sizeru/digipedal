@@ -27,6 +27,7 @@ function Board( {boards, pedalData} ) {
 
     const handleClose = () => setHelpShow(false);
     const handleShow = () => setHelpShow(true);
+    const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
 
@@ -218,8 +219,9 @@ function Board( {boards, pedalData} ) {
         <>
             <div className="navbar board-nav">
                 <div className="left-side icon-container">
-                    <a className="navbar-brand" href="/">
-                        <img src="../logo.png" className="logo-container" alt="Digipedal Logo"/>
+                    <a className="navbar-brand" href={basePath}>
+                        {/* { console.log(basePath) } */}
+                        <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
                     </a>
                     <button className="nav-btn" onClick={undo}> <img src="../navbar_icons/undo.png" className="undo" alt="Undo" /> </button>
                     <button className="nav-btn" onClick={redo}> <img src="../navbar_icons/undo.png" className="redo" alt="Redo"/> </button>
@@ -245,7 +247,7 @@ function Board( {boards, pedalData} ) {
                     {[...pedalsMap.values()].map((pedal) => {
                         return (
                         <Draggable id={pedal.id} x={pedal.x} y={pedal.y}>
-                            <img className="pedal" src={pedal.image} key={pedal.id}/>
+                            <img className="pedal" src={basePath + pedal.image} key={pedal.id}/>
                         </Draggable>);
                     })}
                 </Droppable>

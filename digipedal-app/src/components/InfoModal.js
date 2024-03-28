@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 
 function InfoModal( {showing, handleClose, pedals, pedalId} ) {
     const [pedalInfo, setPedalInfo] = useState(null);
+    const basePath = process.env.PUBLIC_URL;
 
     useEffect(() => {
         setPedalInfo(pedals.find((pedal) => pedal.id == pedalId));
@@ -29,7 +30,7 @@ function InfoModal( {showing, handleClose, pedals, pedalId} ) {
                         <Row>
                             <Col md={6}>
                                 <div className="item-container">
-                                    <img src={pedalInfo ? "/pedals" + pedalInfo.image : ""} alt={pedalInfo ? pedalInfo.name : ""} className="pedal-image"/>
+                                    <img src={pedalInfo ? basePath + "/pedals" + pedalInfo.image : ""} alt={pedalInfo ? pedalInfo.name : ""} className="pedal-image"/>
                                 </div>
                             </Col>
                             <Col md={6}>

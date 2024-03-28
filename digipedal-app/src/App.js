@@ -52,9 +52,11 @@ function App() {
 
   */
 
+  const basePath = process.env.PUBLIC_URL;
 
   return (
-      <Router basename='/digipedal'>
+      <Router basename={`/${basePath}`}>
+        {console.log(basePath)}
         <Routes>
             <Route exact path="/" 
                    element={<Home boards={boards} /*newBoard={newBoard}*//>} />

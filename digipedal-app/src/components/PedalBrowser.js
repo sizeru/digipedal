@@ -7,6 +7,7 @@ function PedalBrowser(props) {
   let handleShow = props.handleShow;
   let handleClose = props.handleClose;
   let show = props.show;
+  const basePath = process.env.PUBLIC_URL;
 
   return (
     <>
@@ -23,7 +24,7 @@ function PedalBrowser(props) {
                 return (
                 <button onClick={(event) => addPedal(event, pedal)}>
                     {pedal.name}
-                    <img  className="pedal" src={pedal.image} key={pedal.id}/>
+                    <img  className="pedal" src={basePath + pedal.image} key={pedal.id}/>
                 </button>);
             })}
         </Modal.Body>
