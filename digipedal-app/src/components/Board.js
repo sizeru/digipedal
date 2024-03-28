@@ -7,6 +7,7 @@ import './Navbar.css';
 import "./Board.css";
 import Loading from './Loading';
 import Button from 'react-bootstrap/Button';
+import InfoModal from './InfoModal';
 
 // drag and drop stuff
 import {DndContext} from '@dnd-kit/core';
@@ -17,10 +18,15 @@ import {restrictToParentElement} from '@dnd-kit/modifiers';
 // pedal browser stuff
 import PedalBrowser from './PedalBrowser'
 
-function Board( {boards} ) {
+function Board( {boards, pedalData} ) {
     const { id }  = useParams();
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
+    const [isPlaying, setPlaying] = useState(false);
+    const [helpShow, setHelpShow] = useState(false);
+
+    const handleClose = () => setHelpShow(false);
+    const handleShow = () => setHelpShow(true);
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
 
@@ -33,7 +39,7 @@ function Board( {boards} ) {
     // setting up loading effect
     useEffect( () => {
         function simulateNetworkRequest() {
-            return new Promise((resolve) => setTimeout(resolve, 2));
+            return new Promise((resolve) => setTimeout(resolve, 2000));
         }
     
         if (isLoading) {
@@ -41,8 +47,37 @@ function Board( {boards} ) {
             setLoading(false);
             });
         }
-        setCurrBoard(boards.find((board) => board.id == id))
+        // if (boards == null) {
+        //     const data = await fetch('http://localhost:3001/read-json');
+        //     const boards = await data.json(); 
+        //     setCurrBoard(boards.find((board) => board.id == id));
+        // }
+        // else {
+        setCurrBoard(boards.find((board) => board.id == id));
     }, [id, boards, isLoading]);
+    
+    const undo = () => {
+        console.log("Undo");
+    }
+
+    const redo = () => {
+        console.log("Redo");
+    }
+
+    const playPauseToggle = () => {
+        console.log("Play/Pause");
+        setPlaying(!isPlaying);
+
+    }
+
+    const share = () => {
+        console.log("Share");
+    }
+
+    const more = () => {   
+        console.log("More");
+    };
+
 
 
     // whenever the currboard is changed, we need to remake the pedal map 
@@ -81,18 +116,26 @@ function Board( {boards} ) {
         isLoading ? 
         <Loading /> :
         <>
-            <div className="navbar sticky-top d-flex justify-content-between align-items-center">
-                <a className="navbar-brand logo-container" href="/">
-                    <img src="/logo.png" className="d-inline-block align-top logo-container" alt="Digipedal Logo"/>
-                </a>
+            <div className="navbar board-nav">
+                <div className="left-side icon-container">
+                    <a className="navbar-brand" href="/">
+                        <img src="../logo.png" className="logo-container" alt="Digipedal Logo"/>
+                    </a>
+                    <button className="nav-btn" onClick={undo}> <img src="../navbar_icons/undo.png" className="undo" alt="Undo" /> </button>
+                    <button className="nav-btn" onClick={redo}> <img src="../navbar_icons/undo.png" className="redo" alt="Redo"/> </button>
+                </div>
                 <a className="bungee-regular"> {
                 currBoard.name.length > 12 ? currBoard.name.substring(0,10) + '...' : currBoard.name 
                 } </a>
                 <div className="right-side icon-container-right"> 
-                    <img src="../navbar_icons/play.png" className="play" alt="Play"/>
-                    <img src="../navbar_icons/share.png" className="share" alt="Share"/>
-                    <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/>
+                    <button className="nav-btn" onClick={playPauseToggle}> 
+                    {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
+                    <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
+                    <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button>
                 </div>
+            </div>
+            <div>                 
+                <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
             </div>
             <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>

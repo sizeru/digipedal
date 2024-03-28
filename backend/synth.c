@@ -1,0 +1,123 @@
+#include "shorttypes.h"
+#include <asm/unistd_64.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include "effects.h"
+
+#define EXEC_NAME "synth"
+
+// Syscall to create a file (in RAM) which can be used for MMIO. Used to create
+// a circular buffer. Created with help from
+// https://lo.calho.st/posts/black-magic-buffer/ and
+// https://benjamintoll.com/2022/08/21/on-memfd_create/#memfd_create
+int memfd_create(const char* name, u32 flags) {
+	return syscall(__NR_memfd_create, name, flags);
+}
+
+typedef enum : u8 {
+	CONFIG_OK,
+	CONFIG_INVALID_EXEC_NAME
+} UsageStatus;
+
+typedef struct {
+	size_t bufferSize;
+} SynthConfig;
+
+void initDefaultConfig(SynthConfig* config);
+UsageStatus parseOptions(int argc, char* argv[], SynthConfig* config);
+void printUsage();
+s16 getInputAmplitude();
+
+s16 getInputAmplitude() {
+	// TODO: Read this input from I/O. For now, should probably read this input
+	// from a file
+	return 0;
+}
+
+// Start up the synthesizer and synth server
+int main(int argc, char* argv[]) {
+	SynthConfig config;
+	initDefaultConfig(&config);
+	if (CONFIG_OK != parseOptions(argc, argv, &config)) {
+		printUsage();
+		return -1;
+	}
+
+	// Allocate enough space for not only the buffer, but also do circular mapping
+	// on the buffer.
+	int pagesize = getpagesize();
+	// round up size of buffer to nearest pagesize
+	int bufferSize = ((config.bufferSize + (pagesize-1)) & ~(pagesize-1));
+	int bufferFD = memfd_create("circular_buffer", 0);
+	ftruncate(bufferFD, bufferSize);
+
+	/* Create circular memory mapped buffer*/
+	// Get an address with space for all 3 virtual copies
+	s16* buffer = mmap(NULL, 3 * bufferSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	size_t bufferLength = bufferSize/2;
+	// Map the buffer at the actual address
+	(void) mmap(buffer + bufferLength, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
+	// Map the virtual page at the buffer before and after
+	(void) mmap(buffer, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
+	(void) mmap(buffer + 2*bufferLength, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
+	buffer = buffer + bufferLength;
+	memset(buffer, 0, bufferSize);
+
+	// Create an array of effects
+	void(*effect[64])();
+	u8 effectCount = 0;
+	size_t maxEffects = sizeof(effect);
+	
+	// TODO: Replace this next part
+	// NOTE(Nate): These are hardcoded values. This is bad for right now
+	effect[0] = (void*) reverb_digi;
+	effectCount = 1;
+	
+	size_t idx = 0;
+	while (1) {
+		buffer[idx] = getInputAmplitude();
+		for (int i = 0; i < effectCount; i++) {
+			// NOTE(Nate): Hard coded again
+			void(*func)() = effect[0];
+			func(buffer, sizeof(buffer), idx, 128);
+			// NOTE(Nate): End hard coded again
+		}
+		// TODO: This isn't correct cus it hardcodes the arguments
+	}
+
+	return 0;
+}
+
+void initDefaultConfig(SynthConfig* config) {
+	config->bufferSize = MiB(500);
+	return;
+}
+
+UsageStatus parseOptions(int argc, char* argv[], SynthConfig* config) {
+	if (argc < 1) {
+		puts("Recieved no arguments");
+		return CONFIG_INVALID_EXEC_NAME;	
+	}
+
+	int opt;
+	while ((opt = getopt(argc, argv, "m:")) != -1) {
+		switch (opt) {
+		case 'b': {
+			config->bufferSize = atoi(optarg); // Convert to 
+			break;
+		}
+		}
+	}
+
+	return CONFIG_OK;
+}
+
+void printUsage() {
+	printf(
+		"Usage:\n\t%s [-b buffer_size]\n",
+		EXEC_NAME
+	);
+}

@@ -35,17 +35,21 @@
     text-decoration: none;
 }
 
+.nav-btn {
+    background-color: #F6AEB9;
+    border: none;
+}
 .undo {
     padding: 0% 3%;
-    width:6vw;
+    width:5vw;
     height:auto;
     filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
     /* border-left: 3px solid #F05A24; */
-
 }
+
 .redo {
     padding: 0% 3%;
-    width:6vw;
+    width:5vw;
     height:auto;
     transform: scale(-1, 1);
     filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
@@ -63,10 +67,16 @@
     height:auto;
     filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
     padding-right: 8%;
-
 }
-.three-dots {
+.pause {
     width:4vw;
+    height:auto;
+    filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
+    padding-right: 8%;
+}
+
+.three-dots {
+    width:2.5vw;
     height:auto;
 
     filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
@@ -79,4 +89,8 @@
 
     filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
     padding-right: 10%;
+}
+
+.modal-DELETE {
+    margin-top:20%;
 }

@@ -1,0 +1,60 @@
+.btn {
+    font-family: "Fira Sans Condensed", sans-serif !important;
+    background-color: #F6AEB9 !important;
+    color: black !important;
+}
+
+.pedal-image {
+    width: 90%;
+    height: auto;
+}
+.modal-container {
+    backdrop-filter: blur(10px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    font-family: "Bungee", sans-serif;
+    background-color: #F6AEB9;
+}
+
+.modal-title-centered {
+    flex: 1; /* Make the title take up all available space */
+    text-align: center;
+    font-size: 45px;
+}
+
+.grid {
+    background-color: #FBDADF;
+}
+
+.modal-footer {
+    background-color: #FBDADF;
+}
+
+.headers {
+    text-align:right;
+}
+
+.item-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+h4 {
+    font-family: "Fira Sans", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+p {
+    font-family: 'Fira Sans Condensed', sans-serif;
+    font-size: 20px;
+}

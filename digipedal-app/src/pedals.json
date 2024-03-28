@@ -1,0 +1,126 @@
+[
+    {
+        "id": 1,
+        "name": "DM",
+        "type": "Delay Pedal", 
+        "image" : "/pedal1.png", 
+        "description": "The DM Delay pedal is a digital delay pedal that allows you to adjust the delay time, feedback, and level of the delay sound.",
+        "effects" : [
+            {
+                "effect_id": 1,
+                "effect_name": "Repeat Rate",
+                "effect_description": "Turning this knob to the right shortens the delay time"
+            },
+            {
+                "effect_id": 2,
+                "effect_name": "Echo",
+                "effect_description": "Adjust the volume of the delay sound. Turning it to the right makes delay sound louder"
+            },
+            {
+                "effect_id": 3,
+                "effect_name": "Intensity",
+                "effect_description": "Turn this knob to the right to increase the number of delay repeats"
+            }
+        ]
+    },
+
+    {
+        "id": 2,
+        "name": "RV",
+        "type": "Reverb Pedal", 
+        "image" : "/pedal2.png",
+        "description": "The RV Reverb pedal is a digital reverb pedal that allows you to adjust the reverb level, tone, time, and mode of the reverb sound.", 
+        "effects" : [
+            {
+                "effect_id": 1,
+                "effect_name": "E. Level",
+                "effect_description": "Adjusts volume of reverb sound"
+            },
+            {
+                "effect_id": 2,
+                "effect_name": "Tone",
+                "effect_description": "Adjusts the tone color of the reverb sound"
+            },
+            {
+                "effect_id": 3,
+                "effect_name": "Time",
+                "effect_description": "Adjusts the length of the reverb sound"
+            },
+            {
+                "effect_id": 4,
+                "effect_name": "Mode",
+                "effect_description": "Selects reverb effect mode",
+                "mode" : [
+                    {
+                        "mode_id": 1,
+                        "mode_name": "Delay+",
+                        "mode_description": ""
+                    },
+                    {
+                        "mode_id": 2,
+                        "mode_name": "Shimmer",
+                        "mode_description": ""
+                    },
+                    {
+                        "mode_id": 3,
+                        "mode_name": "Dynamic",
+                        "mode_description": ""
+                    },
+                    {
+                        "mode_id": 4,
+                        "mode_name": "Room",
+                        "mode_description": ""
+                    },
+                    {
+                        "mode_id": 5,
+                        "mode_name": "Hall",
+                        "mode_description": ""
+                    },
+                    {
+                        "mode_id": 6,
+                        "mode_name": "Plate",
+                        "mode_description": ""
+                    },
+                    {
+                        "mode_id": 7,
+                        "mode_name": "Spring",
+                        "mode_description": ""
+                    },
+                    {
+                        "mode_id": 8,
+                        "mode_name": "Modulate",
+                        "mode_description": ""
+                    }
+                ]
+                
+            }
+        ]
+    },
+
+    {
+        "id": 3,
+        "name": "TM",
+        "type": "Tremolo Pedal", 
+        "image" : "/pedal3.png", 
+        "description": "The TM Tremolo pedal is a digital tremolo pedal that allows you to adjust the rate, wave, and depth of the tremolo sound.",
+        "effects" : [
+            {
+                "effect_id": 1,
+                "effect_name": "Rate",
+                "effect_description": "Adjusts the rate of tremolo. Turning right will increase tremolo rate"
+            },
+            {
+                "effect_id": 2,
+                "effect_name": "Wave",
+                "effect_description": "Controls waveform of tremolo. Goes from smooth volume changes to more dramatic ones"
+            },
+            {
+                "effect_id": 3,
+                "effect_name": "Depth",
+                "effect_description": "Adjusts depth of tremolo. Turning all the way left has no tremolo effect"
+            }
+        ]
+    }
+
+
+]
