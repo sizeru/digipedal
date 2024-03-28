@@ -102,11 +102,65 @@ function Board( {boards, pedalData} ) {
 
     }, []);
 
+    function getPedalXY(pedal){
+        console.log(pedal)
+        if(pedal.x != null && pedal.y != null){
+            console.log('already have x and y')
+        } else {
+            console.log('need x or y')
+            const currElem = document.getElementById(`${pedal.id}d`);
+            if(currElem){
+                const currElemRect = currElem.getBoundingClientRect();
+                pedal.x = currElemRect.x;
+                pedal.y = currElemRect.y;
+                pedal.width = currElemRect.width;
+                pedal.height = currElemRect.height;
+                console.log(pedal)
+            }
+        }
+        return [pedal.x, pedal.y];
+    }
 
-    // whenever the currboard is changed, we need to remake the pedal map 
+    function drawLines(){
+        console.log('drawLines');
+        const canvas = document.getElementById('overlayCanvas');
+        if(canvas == null){
+            console.log('canvas is null');
+            return ;
+        }
+        // making it fill the screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let ctx = canvas.getContext('2d');
+        let prevX = null
+        let prevY = null;
+        console.log(pedalsMap)
+        pedalsMap.forEach((pedal) => {  
+            let [currX, currY] = getPedalXY(pedal);
+            currX += Math.round(pedal.width / 2) || 0;
+            currY += Math.round(pedal.height / 2) || 0;
+            console.log([currX, currY])
+            if(prevX != null){
+                ctx.beginPath();
+                ctx.moveTo(prevX, prevY);
+                ctx.lineTo(currX, currY);
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 5;
+                ctx.stroke(); // Render the path
+                console.log(`Tried to draw line from (${prevX}, ${prevY}) to (${currX}, ${currY})`)
+            }
+            prevX = currX;
+            prevY = currY;
+        });
+
+    }
+
+    // whenever the currboard is changed, we need to remake the pedal map
     useEffect(() => {
         let tempPedalMaxId = pedalMaxId;
         let tempPedals = new Map();
+        
         if(currBoard && currBoard.pedals){
             currBoard.pedals.forEach((pedal) => {
                 pedal.id = tempPedalMaxId++;
@@ -116,6 +170,10 @@ function Board( {boards, pedalData} ) {
         setPedalMaxId(tempPedalMaxId);
         setPedalsMap(tempPedals);
     }, [currBoard]);
+
+    useEffect(() => {
+        drawLines();
+    },[pedalsMap])
 
     function addPedal(event, pedal){
         console.log(pedal)
@@ -169,15 +227,12 @@ function Board( {boards, pedalData} ) {
                     <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button>
                 </div>
             </div>  
-            <Row>       
-                <Col>   
-                    <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
-                </Col>
-                <Col>
-                    <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
-                </Col>
+            <Row>        
+                <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
+                <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
             <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} />
+            <canvas id="overlayCanvas"></canvas>
             <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
                     {[...pedalsMap.values()].map((pedal) => {
@@ -190,6 +245,7 @@ function Board( {boards, pedalData} ) {
             </DndContext>
         </>
     );
+    
     
     
     // dealing with the ending of drag events
