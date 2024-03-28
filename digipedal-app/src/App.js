@@ -54,7 +54,7 @@ function App() {
 
 
   return (
-      <Router>
+      <Router basename='/digipedal'>
         <Routes>
             <Route exact path="/" 
                    element={<Home boards={boards} /*newBoard={newBoard}*//>} />
