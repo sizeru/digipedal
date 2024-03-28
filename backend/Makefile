@@ -1,6 +1,8 @@
 CC = gcc
 EXEC = synth
-SRCS = synth.c effects.c wav.c
+SRCS = synth.c effects.c wav.c libportaudio.a
+LIBS = -lrt -lm -lasound -ljack -pthread
+
 
 synth: ${SRCS}
 	${CC} -o ${EXEC} ${SRCS} -Ofast

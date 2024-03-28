@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
 	effect[0] = (void(*)()) reverb_digi;
 	effectCount = 1;
 	
+	int err = Pa_StartStream(stream);
 	size_t idx = 0;
 	while (1) {
 		buffer[idx] = wavNext(&wav);
