@@ -13,7 +13,12 @@ typedef struct {
 	void(*effect)();
 } Pedal;
 
-#define BUFFER_ARGS s16* const buffer, const size_t bufferSize, const size_t idx
+typedef struct BufferInfo {
+	size_t length;
+	int fd;
+} BufferInfo;
+
+#define BUFFER_ARGS s16* const buffer, const BufferInfo* bufferInfo, const size_t idx
 
 void reverb_digi(BUFFER_ARGS, u8 width);
 void delay_digi(BUFFER_ARGS, u16 time, u8 strength);

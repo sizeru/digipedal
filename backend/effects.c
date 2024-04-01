@@ -1,5 +1,6 @@
 #include "effects.h"
 #include <stdint.h>
+#include <fftw3.h>
 
 // #define BUFFER_ARGS const u16* buffer, const size_t bufferSize, const size_t idx
 
@@ -7,6 +8,8 @@
 
 // The default reverb provided by digipedal
 void reverb_digi(BUFFER_ARGS, u8 width) {
+	// static fftwf_plan plan = fftwf_plan_dft_r2c_1d(bufferInfo->length, 
+
 	// Reverb takes the current sample, and adds a scaled version of the previous
 	// sample to it at a lower amplitude. The scaling factor is `width`.
 	const s16 MAX_WIDTH = INT16_MAX;

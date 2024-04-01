@@ -1,4 +1,4 @@
-#include "portaudio.h"
+#include <portaudio.h>
 #include "shorttypes.h"
 #include <asm/unistd_64.h>
 #include <stdlib.h>
@@ -32,6 +32,8 @@ void initDefaultConfig(SynthConfig* config);
 UsageStatus parseOptions(int argc, char* argv[], SynthConfig* config);
 void printUsage();
 s16 getInputAmplitude();
+s16* initBuffer(size_t minSize, BufferInfo* bufferInfo);
+PaStream* initPortAudio(int outputDeviceID, size_t sampleRate, PaStreamCallback* streamCallback);
 
 // Start up the synthesizer and synth server
 int main(int argc, char* argv[]) {
@@ -42,74 +44,38 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	// Allocate enough space for not only the buffer, but also do circular mapping
-	// on the buffer.
-	int pagesize = getpagesize();
-	// round up size of buffer to nearest pagesize
-	int bufferSize = ((config.bufferSize + (pagesize-1)) & ~(pagesize-1));
-	int bufferFD = memfd_create("circular_buffer", 0);
-	ftruncate(bufferFD, bufferSize);
+	BufferInfo bufferInfo;
+	s16* buffer = initBuffer(config.bufferSize, &bufferInfo);
 
-	/* Create circular memory mapped buffer*/
-	// Get an address with space for all 3 virtual copies
-	s16* buffer = mmap(NULL, 3 * bufferSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	size_t bufferLength = bufferSize/2;
-	// Map the buffer at the actual address
-	(void) mmap(buffer + bufferLength, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
-	// Map the virtual page at the buffer before and after
-	(void) mmap(buffer, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
-	(void) mmap(buffer + 2*bufferLength, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
-	buffer = buffer + bufferLength;
-	memset(buffer, 0, bufferSize);
+
+	Wav wav = wavOpen("./tests/getlucky.wav"); 
+
+	PaStream* stream;
+	stream = initPortAudio(-1, wav.sampleRate, NULL);
 
 	// Create an array of effects
 	void(*effect[64])();
 	u8 effectCount = 0;
 	size_t maxEffects = sizeof(effect);
-
-
-	// infinite while loop to start server
-	// while (1) {
-
-	// }kkk
-
-	/* GOOD CODE ENDS HERE */
-
-	// TODO: Remove this. This is setup for the audio WAV file.
-	Wav wav = wavOpen("./tests/getlucky.wav"); 
-	
-	// TODO: Replace this next part
-	// NOTE(Nate): These are hardcoded values. This is bad, but okay for Week 1.
+	// TODO(Nate): Everything after this is hardcoded right now. 
 	effect[0] = (void(*)()) reverb_digi;
 	effectCount = 1;
 	
-	// Port audio API work
-	if (Pa_Initialize() != paNoError) {
-		return -2;
-	}
-	int outId = Pa_GetDefaultOutputDevice();
-	PaStream* stream;
-	if (paNoError != Pa_OpenDefaultStream(&stream, 0, 1, paInt16, wav.sampleRate, paFramesPerBufferUnspecified, NULL /* SLOW. USE CALLBACK */, NULL /* USED FOR PREV STUFF */)) {
-		return -3;
-	}
-	if (paNoError != Pa_StartStream(stream)) {
-		return -4;
-	}
-
-	// int error = Pa_StartStream( PaStream *stream );
 	size_t idx = 0;
+	if (paNoError != Pa_StartStream(stream)) {
+		return -1;
+	}
 	while (1) {
 		buffer[idx] = wavNext(&wav);
 		// buffer[idx] = getInputAmplitude();
 		for (int i = 0; i < effectCount; i++) {
-			// TODO: This isn't correct cus it hardcodes the arguments
-			effect[i](buffer, sizeof(buffer), idx, 128);
+			effect[i](buffer, &bufferInfo, idx, 128);
 		}
 		// Write a single frame
 		Pa_WriteStream(stream, &buffer[idx], 1);
 
 		idx++;
-		if (idx >= bufferLength) { idx=0; }
+		if (idx >= bufferInfo.length) { idx=0; }
 	}
 
 	// Will probably never reach here. Should probably have signals which control
@@ -155,4 +121,48 @@ s16 getInputAmplitude() {
 	// TODO: Read this input from I/O. For now, should probably read this input
 	// from a file
 	return 0;
+}
+
+s16* initBuffer(size_t minSize, BufferInfo* bufferInfo) {
+	// We will use circular buffers using virtual memory. So we need to round up
+	// the size of the buffer to the nearest pagesize
+	int pagesize = getpagesize();
+	int bufferSize = ((minSize + (pagesize-1)) & ~(pagesize-1)); // round up
+	int bufferFD = memfd_create("circular_buffer", 0); // Files can be mapped to
+	ftruncate(bufferFD, bufferSize); // expand filesize to buffer size 
+
+	// Reserve chunks of virutal memory, and have them all point to the same file.
+	// So we need to reserve 3*bufferSize contiguous addresses in virtual memory
+	s16* buffer = mmap(NULL, 3 * bufferSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	size_t bufferLength = bufferSize/sizeof(s16);
+	// Map all 3 virtual memory spans to the same file descriptor
+	(void) mmap(buffer,                  bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
+	(void) mmap(buffer + bufferLength,   bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
+	(void) mmap(buffer + 2*bufferLength, bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
+
+	if (bufferInfo != NULL) {
+		bufferInfo->fd = bufferFD;
+		bufferInfo->length = bufferLength;
+	}
+
+	// return the middle buffer
+	buffer = buffer + bufferLength;
+	memset(buffer, 0, bufferSize);
+	return buffer;
+}
+
+// Initialize the PortAudio API
+PaStream* initPortAudio(int outputDeviceID, size_t sampleRate, PaStreamCallback* streamCallback) {
+	if (outputDeviceID != -1) {
+		printf("Selecting output device not implemented yet");
+		return 0;
+	}
+	if (Pa_Initialize() != paNoError) {
+		return 0;
+	}
+	PaStream* stream;
+	if (paNoError != Pa_OpenDefaultStream(&stream, 0, 1, paInt16, sampleRate, paFramesPerBufferUnspecified, streamCallback, NULL)) {
+		return 0;
+	}
+	return stream;
 }
