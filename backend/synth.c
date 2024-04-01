@@ -66,6 +66,13 @@ int main(int argc, char* argv[]) {
 	void(*effect[64])();
 	u8 effectCount = 0;
 	size_t maxEffects = sizeof(effect);
+
+
+	// infinite while loop to start server
+	// while (1) {
+
+	// }kkk
+
 	/* GOOD CODE ENDS HERE */
 
 	// TODO: Remove this. This is setup for the audio WAV file.
