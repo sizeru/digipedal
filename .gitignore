@@ -5,3 +5,13 @@ synth
 # Files generated from submodules
 libportaudio.a
 portaudio.h
+
+# fft
+backend/libs
+backend/includes
+backend/fftw-3.3.10
+tempfiles/
+
+settings.json
+fftw-3.3.10/
+*.o

@@ -19,7 +19,7 @@ int memfd_create(const char* name, u32 flags) {
 	return syscall(__NR_memfd_create, name, flags);
 }
 
-typedef enum : u8 {
+typedef enum u8 {
 	CONFIG_OK,
 	CONFIG_INVALID_EXEC_NAME
 } UsageStatus;
