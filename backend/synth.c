@@ -15,7 +15,7 @@
 // a circular buffer. Created with help from
 // https://lo.calho.st/posts/black-magic-buffer/ and
 // https://benjamintoll.com/2022/08/21/on-memfd_create/#memfd_create
-int memfd_create(const char* name, u32 flags) {
+inline int memfd_create(const char* name, u32 flags) {
 	return syscall(__NR_memfd_create, name, flags);
 }
 
@@ -44,11 +44,12 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	// Create two buffers. One for the s16 input. One using floating point for FFTS.
 	BufferInfo bufferInfo;
 	s16* buffer = initBuffer(config.bufferSize, &bufferInfo);
+	// s16 inputBuffer[bufferInfo.length];
 
-
-	Wav wav = wavOpen("./tests/getlucky.wav"); 
+	Wav wav = wavOpen("./tests/clean.wav"); 
 
 	PaStream* stream;
 	stream = initPortAudio(-1, wav.sampleRate, NULL);
@@ -58,7 +59,7 @@ int main(int argc, char* argv[]) {
 	u8 effectCount = 0;
 	size_t maxEffects = sizeof(effect);
 	// TODO(Nate): Everything after this is hardcoded right now. 
-	effect[0] = (void(*)()) reverb_digi;
+	effect[0] = (void(*)()) delay_digi;
 	effectCount = 1;
 	
 	size_t idx = 0;
@@ -66,10 +67,10 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 	while (1) {
-		buffer[idx] = wavNext(&wav);
-		// buffer[idx] = getInputAmplitude();
+		// inputBuffer[idx] = wavNext(&wav);
+		buffer[idx] = wavNext(&wav); // convert to float
 		for (int i = 0; i < effectCount; i++) {
-			effect[i](buffer, &bufferInfo, idx, 128);
+			effect[i](buffer, &bufferInfo, idx, atoi(argv[2]), atoi(argv[3]));
 		}
 		// Write a single frame
 		Pa_WriteStream(stream, &buffer[idx], 1);
@@ -78,8 +79,7 @@ int main(int argc, char* argv[]) {
 		if (idx >= bufferInfo.length) { idx=0; }
 	}
 
-	// Will probably never reach here. Should probably have signals which control
-	// this
+	// Currently unreachable
 	Pa_StopStream(stream);
 	Pa_CloseStream(stream);
 	return 0;
@@ -123,18 +123,18 @@ s16 getInputAmplitude() {
 	return 0;
 }
 
-s16* initBuffer(size_t minSize, BufferInfo* bufferInfo) {
+s16* initBuffer(size_t minSizeInBytes, BufferInfo* bufferInfo) {
 	// We will use circular buffers using virtual memory. So we need to round up
 	// the size of the buffer to the nearest pagesize
 	int pagesize = getpagesize();
-	int bufferSize = ((minSize + (pagesize-1)) & ~(pagesize-1)); // round up
+	int bufferSize = ((minSizeInBytes + (pagesize-1)) & ~(pagesize-1)); // round up
 	int bufferFD = memfd_create("circular_buffer", 0); // Files can be mapped to
 	ftruncate(bufferFD, bufferSize); // expand filesize to buffer size 
 
 	// Reserve chunks of virutal memory, and have them all point to the same file.
 	// So we need to reserve 3*bufferSize contiguous addresses in virtual memory
 	s16* buffer = mmap(NULL, 3 * bufferSize, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	size_t bufferLength = bufferSize/sizeof(s16);
+	size_t bufferLength = bufferSize/sizeof(*buffer);
 	// Map all 3 virtual memory spans to the same file descriptor
 	(void) mmap(buffer,                  bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);
 	(void) mmap(buffer + bufferLength,   bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, bufferFD, 0);

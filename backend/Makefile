@@ -14,7 +14,7 @@ DIR := ${CURDIR}
 .PHONY: debug clean
 
 synth: ${SRCS} ${DEPS} ${INCLUDES}
-	${CC} -o ${EXEC} -I ${INCLUDE_DIR} ${DEPS} ${SRCS} -Ofast ${LIBS}
+	${CC} -o ${EXEC} -I ${INCLUDE_DIR} ${SRCS} ${DEPS} -Ofast ${LIBS}
 
 debug: ${SRCS} ${DEPS} ${INCLUDES}
 	${CC} -o ${EXEC} -I ${INCLUDE_DIR} ${SRCS} ${DEPS} -Og -g3 ${LIBS}

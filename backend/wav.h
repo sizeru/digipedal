@@ -11,5 +11,5 @@ typedef struct {
 } Wav;
 
 Wav wavOpen(const char* filename);
-u16 wavNext(Wav* wav);
+s16 wavNext(Wav* wav);
 void wavClose(Wav* wav);

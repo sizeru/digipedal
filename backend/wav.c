@@ -17,10 +17,10 @@ Wav wavOpen(const char* filename) {
 	return wavMetadata;
 }
 
-u16 wavNext(Wav* wav) {
+s16 wavNext(Wav* wav) {
 	static char wavNextBuffer[2];
 	fread(&wavNextBuffer, 2, 1, wav->fd);
-	return *(u16*)(wavNextBuffer);
+	return *(s16*)(wavNextBuffer);
 }
 
 void wavClose(Wav* wav) {
