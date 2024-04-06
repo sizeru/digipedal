@@ -40,7 +40,7 @@ export const getBoards = async () => {
     const boardsDocs = await getDocs(boards);
     const boardsList = boardsDocs.docs.map( (doc, idx) => {
       // console.log(doc.data());
-      return {id:idx, name:doc.data().name, image:doc.data().name + '.svg'}
+      return {id:idx, name:doc.data().name, image:doc.data().name + '.png'}
     });
     return boardsList;
 }
@@ -91,6 +91,17 @@ export const getBoardById = async (boardId) => {
     }
 }
 
+// Input: boardId (string)
+// Output: new board object with default name
+export const createBoard = async (boardId) => {
+    const boardRef = doc(db, 'boards', boardId);
+    try {
+        await setDoc(boardRef, {name: `Board ${boardId}`});
+        console.log("Board created successfully!");
+    } catch (error) {
+        console.error("Error creating board:", error);
+    }
+}
 
 // Input: boardId (string), pedalNumber (string), updatedPedalData (object)
 // PedalNumber - the order of the pedal on the board (1, 2, ...)
@@ -109,7 +120,7 @@ export const getBoardById = async (boardId) => {
 // Tested, works
 // Can be used to edit existing or add new pedals
 // To add new pedal, set pedalNumber to the next available number
-export const postPedal = async (boardId, pedalNumber, pedalData) => {
+export const postPedalToBoard = async (boardId, pedalNumber, pedalData) => {
     try {
         const pedalRef = doc(db, 'boards', boardId, 'pedals', pedalNumber);
 
@@ -125,3 +136,4 @@ export const postPedal = async (boardId, pedalNumber, pedalData) => {
         console.error("Error getting pedal document:", error);
     }
 }
+

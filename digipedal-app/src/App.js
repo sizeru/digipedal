@@ -59,7 +59,7 @@ function App() {
         {console.log(basePath)}
         <Routes>
             <Route exact path="/" 
-                   element={<Home boards={boards} /*newBoard={newBoard}*//>} />
+                   element={<Home />} />
             <Route exact path="/board" 
                    element={<Board boards={boards} pedalData={pedalData}/>} />
               <Route path="/board/:id"

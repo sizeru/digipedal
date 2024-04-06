@@ -1,6 +1,6 @@
 
 import {Button, Modal} from 'react-bootstrap';
-import { getPedals, editPedal } from '../firebaseOperations';
+import { getPedals, postPedalToBoard, getBoardById, getPedalById, getBoards } from '../firebaseOperations';
 import { useEffect, useState } from 'react';
 function PedalBrowser(props) {
 
@@ -14,19 +14,28 @@ function PedalBrowser(props) {
   const [pedals, setPedals] = useState([]);
   useEffect(() => {
     const getAll = async () => {
-      const pedalsList = await getPedals();
-      setPedals(pedalsList);
+      // const pedalsList = await getPedals();
+      // setPedals(pedalsList);
 
-      const newPedal = {
-        id: 3,
-        x: 0,
-        y: 0,
-        toggled: false,
-        param_vals: {
-          "Amplification": 2
-        }
-      }
-      editPedal("1", "3", newPedal);
+      // const newPedal = {
+      //   id: 3,
+      //   x: 20,
+      //   y: 20,
+      //   toggled: true,
+      //   param_vals: {
+      //     "Amplification": 1.5
+      //   }
+      // }
+      // editPedal("1", "2", newPedal);
+
+      // const boardData = await getBoardById("1");
+      // console.log(boardData);
+
+      // const pedal1 = await getPedalById("3");
+      // console.log(pedal1);
+
+      const allBoards = await getPedals();
+      console.log(allBoards);
     };
     getAll();
   }, []);
