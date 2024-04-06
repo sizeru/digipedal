@@ -4,3 +4,6 @@ settings.json
 # Plugins
 *.so
 *.zip
+
+# Player
+player/target
