@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -16,11 +16,13 @@ const firebaseConfig = {
     measurementId: "G-HDXBSEYM9W"
   };
 
-  // Initialize Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 // const analytics = getAnalytics(app);
 
+// Output: List of pedals with name and image
+// Tested, works
 export const getPedals = async () => {
   const pedals = collection(db, 'pedals');
   const pedalsDocs = await getDocs(pedals);
@@ -31,6 +33,8 @@ export const getPedals = async () => {
   return pedalsList;
 }
 
+// Output: List of boards with name and image
+// Tested, works
 export const getBoards = async () => {
     const boards = collection(db, 'boards');
     const boardsDocs = await getDocs(boards);
@@ -41,22 +45,56 @@ export const getBoards = async () => {
     return boardsList;
 }
 
+// Input: pedalId (string)
+// Output: pedal object with mfr, name, type, parameters list(name, description, default val, max, min)
+// Tested, works
 export const getPedalById = async (pedalId) => {
-    const pedals = collection(db, 'pedals', pedalId);
-    const pedalDocs = await getDocs(pedals);
+    const pedals = doc(db, 'pedals', pedalId);
+    const pedalDocs = await getDoc(pedals);
     return pedalDocs.data();
 }
 
+// Input: boardId (string)
+// Output: Object with board name and list of pedals
+/* Usage Example:
+      const boardData = await getBoardById("1");
+      console.log(boardData);
+      @returns {name: {'My Super Board'}, pedals: Array(1)}
+*/
+// Tested, works
 export const getBoardById = async (boardId) => {
-    const boards = collection(db, 'boards', boardId);
-    const boardDocs = await getDocs(boards);
-    return boardDocs.data();
+    const boards = doc(db, 'boards', boardId);
+    const boardDoc = await getDoc(boards);
+    if (boardDoc.exists()) {
+        const pedals = collection(db, 'boards', boardId, 'pedals');
+        const pedalsDocs = await getDocs(pedals);
+        const pedalsList = pedalsDocs.docs.map( doc => {
+            const data = doc.data();
+            console.log(data);
+            return {
+                pedal_id: data.pedal_id, 
+                x: data.x, 
+                y: data.y,
+                name: data.name,
+                toggled: data.toggled,
+                param_vals: data.param_vals,
+                image: data.name + '.svg'}
+        });
+        const retObj = {
+            "name": boardDoc.data(),
+            "pedals": pedalsList
+        }
+        console.log(retObj);
+        return retObj;
+    } else {
+        console.log("No board found!");
+    }
 }
 
 
-// Input: boardId (string), pedalId (string), updatedPedalData (object)
-// Usage Example: 
-/*
+// Input: boardId (string), pedalNumber (string), updatedPedalData (object)
+// PedalNumber - the order of the pedal on the board (1, 2, ...)
+/* Usage Example: 
       const newPedal = {
         id: 3,
         x: 0,
@@ -68,9 +106,10 @@ export const getBoardById = async (boardId) => {
       }
       await editPedal("1", "3", newPedal);
 */
-export const editPedal = async (boardId, pedalId, updatedPedalData) => {
+// Tested, works
+export const editPedal = async (boardId, pedalNumber, updatedPedalData) => {
     try {
-        const pedalRef = doc(db, 'boards', boardId, 'pedals', pedalId);
+        const pedalRef = doc(db, 'boards', boardId, 'pedals', pedalNumber);
 
         try {
             // Update the pedal document
