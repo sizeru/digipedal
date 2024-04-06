@@ -6,4 +6,4 @@ settings.json
 *.zip
 
 # Player
-player/target
+daemon/target
