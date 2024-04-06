@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -107,13 +107,15 @@ export const getBoardById = async (boardId) => {
       await editPedal("1", "3", newPedal);
 */
 // Tested, works
-export const editPedal = async (boardId, pedalNumber, updatedPedalData) => {
+// Can be used to edit existing or add new pedals
+// To add new pedal, set pedalNumber to the next available number
+export const postPedal = async (boardId, pedalNumber, pedalData) => {
     try {
         const pedalRef = doc(db, 'boards', boardId, 'pedals', pedalNumber);
 
         try {
             // Update the pedal document
-            await updateDoc(pedalRef, updatedPedalData);
+            await setDoc(pedalRef, pedalData);
             console.log("Pedal updated successfully!");
         } catch (error) {
             console.error("Error updating pedal:", error);
