@@ -1,6 +1,8 @@
+# On Pedals
+## Building
 This command can be used to build a pedal:
 ```
-gcc -fvisibility=hidden -fPIC -Wl,-Bstatic -Wl,-Bdynamic -Wl,--as-needed -shared -pthread `pkg-config --cflags lv2` -lm `pkg-config --libs lv2` myAmp.c -o myAmp.so
+gcc -fvisibility=hidden -fPIC -Wl,-Bstatic -Wl,-Bdynamic -Wl,--as-needed -shared -pthread `pkg-config --cflags lv2` -lm `pkg-config --libs lv2` foo.c -o foo.so
 ```
 I installed jack-example-tools. This is a major help. After starting the server.
 
