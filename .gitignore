@@ -1,6 +1,12 @@
 .gdb_history
 settings.json
 
+fftw-3.3.10/
+*.o
+
+pybackend/
+pedals/
+
 # Plugins
 *.so
 *.zip

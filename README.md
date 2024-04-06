@@ -18,6 +18,7 @@ A product that allows users to experiment with several different guitar pedals d
 - **I/O**: The RPi 1B+ has 2 USB ports. This is the easiest way I can see to get sound in and out of the RPi. We would need to use an ADC & DAC (analog-to-digital converter & digital-to-analog converter).
 - **CPU Clock Speed**: There is conflicting information in terms of clock rate. Raspberry Pi says that the B+ has a 700MHz clock. The BCM2835 documentation states that the CPU is clocked at 250MHz, and also that it has a nominal clock of 150MHz. I'm not sure what a nominal clock is, but we should use the lowest number provided to be safe. This means, for all intents and purposes, our CPU has a 150MHz clock.
 - **RAM**: The RPi has 500MB of RAM, 128KB L2 cache, 16KB L1 data cache, 16KB L1 instruction cache.
+- **Libraries**: -ljack requires the following install: `sudo apt-get install libjack-jackd2-dev`, -lasound requires: `sudo apt-get install libasound-dev`
 
 ## Performance Budget / Hardware Limitations
 - **~1100 CPU cycles per audio sample**: Arbitrarily assumes we can only use about 1/3rd of the CPU clock (due to OS overhead, SSH overhead, WiFi overhead, etc.). 50MHz / 44.1kHz = 1133 cycles. This is our throughput. Latency is okay and expected, but our throughput must remain constant.
