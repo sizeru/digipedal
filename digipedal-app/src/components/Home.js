@@ -6,6 +6,7 @@ import { getBoards, createBoard } from '../firebaseOperations';
 import Button from 'react-bootstrap/Button';
 import './Navbar.css';
 import Loading from './Loading';
+import ShareDropDown from './ShareDropDown.js';
 
 function Home() {
   const [isLoading, setLoading] = useState(true);
@@ -58,8 +59,16 @@ function Home() {
                           key={board.name} /> 
                     <div className="card-body">
                       {board.id != 0 ? 
-                      <Button className="board-title btn-full" as={Link} to={"/board/"+ board.id}> {board.name} </Button> : 
-                      <Button className="board-title btn-full" onClick={newBoard}> {board.name} </Button>}
+                      <div>
+                        <ShareDropDown/>
+                        <Button className="board-title btn-full" as={Link} to={"/board/"+ board.id}> {board.name} </Button>
+                      </div>
+                       : 
+                      <div>
+                        
+                        <Button className="board-title btn-full" onClick={newBoard}> {board.name} </Button>
+                      </div>
+                      }
                     </div>
                   </div>
                 </div>
