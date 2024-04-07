@@ -1,3 +1,0 @@
-[submodule "backend/portaudio"]
-	path = backend/portaudio
-	url = https://github.com/PortAudio/portaudio.git
