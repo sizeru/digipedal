@@ -2,6 +2,7 @@
 import {Button, Modal} from 'react-bootstrap';
 import { getPedals, postPedalToBoard, getBoardById, getPedalById, getBoards } from '../firebaseOperations';
 import { useEffect, useState } from 'react';
+import AmpPedal from './pedal_components/AmpPedal'
 function PedalBrowser(props) {
 
   let pedalsMap =  props.pedalsMap;
@@ -63,7 +64,7 @@ function PedalBrowser(props) {
                 return (
                 <button onClick={(event) => addPedal(event, pedal)}>
                     {pedal.name}
-                    <img  className="pedal" src={basePath + pedal.image} key={pedal.id}/>
+                    <AmpPedal width={140} height={200} isStatic={true}/>
                 </button>);
             })}
         </Modal.Body>
