@@ -1,5 +1,6 @@
 import React from 'react';
 import Knob from './Knob';
+import PedalBottom from './PedalBottom';
 const minAmplifcation = 0;
 const maxAmplifcation = 2;
 
@@ -33,9 +34,10 @@ function AmpPedal(props) {
 
 
   let svg_output = (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <svg width={width} height={height + height/5} viewBox={`0 0 ${width} ${height + height / 5}`} fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
         <Knob x={width * .5} y={height * .40} width={width * .40} rotation={amplifcationRotation} text="Type" isStatic={isStatic}/>
+        <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled}/>
     </svg>
   );
 
