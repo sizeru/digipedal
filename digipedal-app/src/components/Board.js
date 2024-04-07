@@ -21,7 +21,11 @@ import PedalBrowser from './PedalBrowser';
 // pedals
 import AmpPedal from './pedal_components/AmpPedal';
 
-function Board( {boards, pedalData} ) {
+// attaching to front end
+import {getBoardById, getPedals} from '../firebaseOperations';
+import {findPedal} from './pedal_components/PedalFinder'
+
+function Board( {boards, pedalTypeMap} ) {
     const { id }  = useParams();
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
@@ -58,16 +62,24 @@ function Board( {boards, pedalData} ) {
     const handleShowPedalBrowser = () => setShowPedalBrowser(true);
 
     // setting up loading effect
+    useEffect(() => {
+        setLoading(currBoard == null);
+    }, [currBoard])
+
+    // trying to get the board when
     useEffect( () => {
-        setLoading(false);
-        // if (boards == null) {
-        //     const data = await fetch('http://localhost:3001/read-json');
-        //     const boards = await data.json(); 
-        //     setCurrBoard(boards.find((board) => board.id == id));
-        // }
-        // else {
-        setCurrBoard(boards.find((board) => board.id == id));
-    }, [id, boards, isLoading]);
+        const tryGetBoard = async () => {
+            console.log("trying to getBoardById: ");
+            let boardRes = await getBoardById(id);
+            console.log("getBoardById results: ");
+            console.log(boardRes)
+            setCurrBoard(boardRes)
+            // console.log("getPedals results: ");
+            // res = await getPedals(id);
+            // console.log(res)
+        }
+        tryGetBoard()
+    }, [id]);
     
     const undo = () => {
         console.log("Undo");
@@ -117,16 +129,17 @@ function Board( {boards, pedalData} ) {
     function getPedalXY(pedal){
         console.log(pedal)
         if(pedal.x && pedal.y && pedal.height && pedal.width){
-            console.log('already have x and y')
+            console.log('getPedalXY: already have x and y and height and width')
         } else {
-            console.log('need x or y')
-            const currElem = document.getElementById(`${pedal.id}d`);
+            console.log('getPedalXY: need x or y or height or width')
+            const currElem = document.getElementById(`${pedal.boardId}d`);
             if(currElem){
                 const currElemRect = currElem.getBoundingClientRect();
                 pedal.x = currElemRect.x;
                 pedal.y = currElemRect.y;
                 pedal.width = currElemRect.width;
                 pedal.height = currElemRect.height;
+                console.log("getPedalXY pedal:")
                 console.log(pedal)
             }
         }
@@ -169,7 +182,6 @@ function Board( {boards, pedalData} ) {
             let [currX, currY] = getPedalXY(pedal);
             currX += Math.round(pedal.width / 2) || 0;
             currY += Math.round(pedal.height / 2) || 0;
-            console.log([currX, currY])
             drawLine(ctx, prevX, prevY, currX, currY)
             prevX = currX;
             prevY = currY;
@@ -180,15 +192,36 @@ function Board( {boards, pedalData} ) {
 
     // whenever the currboard is changed, we need to remake the pedal map
     useEffect(() => {
+        if(currBoard == null){
+            console.log("currBoard not loaded need to try again");
+            return;
+        }
         let tempPedalMaxId = pedalMaxId;
         let tempPedals = new Map();
-        
+        console.log("trying to load pedals with these pedals:")
+        console.log(currBoard.pedals)
         if(currBoard && currBoard.pedals){
             currBoard.pedals.forEach((pedal) => {
-                pedal.id = tempPedalMaxId++;
-                tempPedals.set(pedal.id, pedal);
+                // setting the id  for this board
+                pedal.boardId = tempPedalMaxId++;
+                // updating the xPercent and yPercent to a real x and y
+                if(pedal.xPercent){
+                    pedal.x = pedal.xPercent / 100 * window.innerWidth;
+                }else{
+                    pedal.x = null;
+                }
+                if(pedal.yPercent){
+                    pedal.y = pedal.yPercent / 100 * window.innerHeight;
+                }else{
+                    pedal.y = null;
+                }
+                // finding the function to generate the pedal
+                pedal.pedal = findPedal(pedalTypeMap.get(pedal.pedal_id))
+                tempPedals.set(pedal.boardId, pedal);
             });
         }
+        console.log("pedalsMap: ")
+        console.log(tempPedals)
         setPedalMaxId(tempPedalMaxId);
         setPedalsMap(tempPedals);
     }, [currBoard]);
@@ -207,10 +240,10 @@ function Board( {boards, pedalData} ) {
         };
         newPedal.x = null;
         newPedal.y = null;
-        newPedal.id = pedalMaxId + 1;
+        newPedal.boardId = pedalMaxId + 1;
         // making the new map
         setPedalMaxId(pedalMaxId + 1);
-        setPedalsMap(prev => new Map(prev).set(newPedal.id, newPedal));
+        setPedalsMap(prev => new Map(prev).set(newPedal.boardId, newPedal));
         console.log(pedalsMap)
     };
 
@@ -221,7 +254,7 @@ function Board( {boards, pedalData} ) {
         const activePedal = pedalsMap.get(event.active.id);
         
         let newMap = new Map(pedalsMap);
-        newMap.delete(activePedal.id)
+        newMap.delete(activePedal.boardId)
         setPedalMaxId(pedalMaxId - 1);
         setPedalsMap(newMap);
         console.log(pedalsMap)
@@ -241,7 +274,7 @@ function Board( {boards, pedalData} ) {
                     <button className="nav-btn" onClick={redo}> <img src="../navbar_icons/undo.png" className="redo" alt="Redo"/> </button>
                 </div>
                 <a className="bungee-regular"> {
-                currBoard.name.length > 12 ? currBoard.name.substring(0,10) + '...' : currBoard.name 
+                currBoard.name.name.length > 12 ? currBoard.name.name.substring(0,10) + '...' : currBoard.name.name 
                 } </a>
                 <div className="right-side icon-container-right"> 
                     <button className="nav-btn" onClick={playPauseToggle}> 
@@ -254,15 +287,18 @@ function Board( {boards, pedalData} ) {
                 <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
                 <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
-            <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} />
-            <canvas id="overlayCanvas"></canvas>
+            {/* <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} /> */}
+
+            <canvas id="overlayCanvas" />
+            
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
                     <div ref={pedalBoardRef}/>
                     {[...pedalsMap.values()].map((pedal) => {
+                        let PedalElement = pedal.pedal;
                         return (
-                        <Draggable id={pedal.id} x={pedal.x} y={pedal.y}>
-                            <AmpPedal width={140} height={200}/>
+                        <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
+                            <PedalElement width={140} height={200} toggled={pedal.toggled} param_vals={pedal.param_vals}/>
                         </Draggable>);
                     })}
                 </Droppable>
@@ -322,7 +358,7 @@ function Board( {boards, pedalData} ) {
                 y: Math.round(draggedElementRect.y),
             };
             // making the new map
-            setPedalsMap(prev => new Map(prev).set(activePedal.id, updatedPedal));
+            setPedalsMap(prev => new Map(prev).set(activePedal.boardId, updatedPedal));
         }
     }
 };
