@@ -15,7 +15,7 @@ function PedalBrowser(props) {
   return (
     <>
       <Button id="PedalBrowserButton" variant="primary" onClick={handleShow}>
-        Add Pedal!
+        +
       </Button>
 
       {/* <ul>
