@@ -39,15 +39,7 @@ function Board( {boards, pedalData} ) {
 
     // setting up loading effect
     useEffect( () => {
-        function simulateNetworkRequest() {
-            return new Promise((resolve) => setTimeout(resolve, 2000));
-        }
-    
-        if (isLoading) {
-            simulateNetworkRequest().then(() => {
-            setLoading(false);
-            });
-        }
+        setLoading(false);
         // if (boards == null) {
         //     const data = await fetch('http://localhost:3001/read-json');
         //     const boards = await data.json(); 
