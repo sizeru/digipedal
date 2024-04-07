@@ -114,6 +114,19 @@ export const getBoardById = async (boardId) => {
     }
 }
 
+// Input: boardId (string), newName (string)
+// Output: none
+// Updates the name of the board
+export const updateBoardName = async (boardId, newName) => {
+    const boardRef = doc(db, 'boards', boardId);
+    try {
+        await setDoc(boardRef, {name: newName});
+        console.log("Board name updated successfully!");
+    } catch (error) {
+        console.error("Error updating board name:", error);
+    }
+}
+
 // Input: boardId (string), pedalNumber (string), updatedPedalData (object)
 // PedalNumber - the order of the pedal on the board (1, 2, ...)
 /* Usage Example: 
