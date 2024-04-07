@@ -10,7 +10,6 @@ function AmpPedal(props) {
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
         <Knob x={width * .5} y={height * .40} width={width * .40} rotation={0} text="Type" isStatic={isStatic}/>
-        
     </svg>
   );
 

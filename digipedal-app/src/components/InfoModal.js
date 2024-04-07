@@ -5,14 +5,22 @@ import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
 import './InfoModal.css';
 import { useState, useEffect } from 'react';
+import { getPedalById } from '../firebaseOperations';
 
-function InfoModal( {showing, handleClose, pedals, pedalId} ) {
+function InfoModal( {showing, handleClose, pedalId} ) {
     const [pedalInfo, setPedalInfo] = useState(null);
+    // const [isLoading, setIsLoading] = useState(true);
     const basePath = process.env.PUBLIC_URL;
 
     useEffect(() => {
-        setPedalInfo(pedals.find((pedal) => pedal.id == pedalId));
-    }, [pedals, pedalId]);
+        async function getPedalInfo() {
+            setPedalInfo(await getPedalById(pedalId.toString()));
+        }
+        getPedalInfo().then(() => {
+            // setIsLoading(false);
+        });
+        // setPedalInfo(pedals.find((pedal) => pedal.id == pedalId));
+    }, [pedalId]);
     
     return ( 
         <div>  
@@ -36,19 +44,19 @@ function InfoModal( {showing, handleClose, pedals, pedalId} ) {
                             <Col md={6}>
                                 <Row key="Description">
                                     <Col className="headers" md={3}>
-                                        <h4> Info </h4> 
+                                        <h3> Info </h3> 
                                     </Col>
                                     <Col md={9}>
                                         <p> {pedalInfo ? pedalInfo.description : ""} </p>
                                     </Col>
                                     {pedalInfo ? 
-                                    pedalInfo.effects.map( (effect, index) => (
-                                    <Row key={"Effect " + index}>
-                                        <Col className="headers" md={3}>
-                                            <h4> {effect.effect_name} </h4> 
+                                    pedalInfo.parameters.map( (param, index) => (
+                                    <Row key={"param " + index}>
+                                        <Col className="headers" md={4}>
+                                            <h4> {param.name} </h4> 
                                         </Col>
-                                        <Col md={9}>
-                                            <p> {effect.effect_description} </p>
+                                        <Col md={8}>
+                                            <p> {param.description} </p>
                                         </Col>
                                     </Row>
                                     )) : ""}

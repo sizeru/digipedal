@@ -254,7 +254,9 @@ function Board( {boards, pedalData} ) {
                 <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
                 <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
-            <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} />
+            <InfoModal  showing={helpShow} 
+                        handleClose={handleClose} 
+                        pedalId={3}/>
             <canvas id="overlayCanvas"></canvas>
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>

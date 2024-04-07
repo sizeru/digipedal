@@ -48,11 +48,18 @@
     align-items: center;
 }
 
+h3 {
+    font-family: "Fira Sans", sans-serif;
+    font-size: 25px;
+    font-weight: 800;
+}
+
 
 h4 {
     font-family: "Fira Sans", sans-serif;
     font-size: 20px;
     font-weight: 800;
+    word-wrap: break-word;
 }
 
 p {
