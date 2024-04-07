@@ -23,6 +23,9 @@ For pedals, there is not much CRUD to do. The pedals are fixed at our current st
 - *Create/Update Pedal*: **POST** (/boards/<board_id>/pedals/<pedal_num>)
 	- Input: `pedalData` (described above)
 	- This method will update the `pedal_num` pedal if it exists, else it will create a new 	pedal 
+- *Create (Rename Board)*: **POST** (/boards/<board_id>)
+    - Input: `newName`
+    - This method will rename a board
 - *Delete Board*: **DELETE** (/boards/<board_id>)
 	- Deletes board with id <board_id> from database
 - *Delete Pedal from Board*: **DELETE** (/boards/<board_id>/pedals/<pedal_id>)
