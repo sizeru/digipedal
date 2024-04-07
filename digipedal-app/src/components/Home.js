@@ -60,7 +60,7 @@ function Home() {
                     <div className="card-body">
                       {board.id != 0 ? 
                       <div>
-                        <ShareDropDown/>
+                        <ShareDropDown id={board.id} setLoading={setLoading} />
                         <Button className="board-title btn-full" as={Link} to={"/board/"+ board.id}> {board.name} </Button>
                       </div>
                        : 

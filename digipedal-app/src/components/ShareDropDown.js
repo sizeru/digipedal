@@ -1,15 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { deleteBoard } from '../firebaseOperations';
+import { useNavigate } from 'react-router';
 
-function ShareDropDown() {
+function ShareDropDown( {id, setLoading} ) {
   const [isActive, setIsActive] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   // Options for the dropdown
   const options = ['Rename', 'Delete'];
 
   // Function to handle selection
-  const handleSelect = (option) => {
+  const handleSelect = async (option) => {
     console.log(`You selected: ${option}`);
+    if (option == 'Delete') {
+      setLoading(true)
+      await deleteBoard(id.toString());
+      navigate(0)
+      setLoading(true);
+    }
     setIsActive(false); // Close the dropdown
   };
 
