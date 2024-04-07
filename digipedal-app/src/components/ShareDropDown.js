@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { SplitButton, Dropdown } from 'react-bootstrap';
 import { deleteBoard } from '../firebaseOperations';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router';
 
 function ShareDropDown( {id, setLoading} ) {
@@ -19,6 +21,12 @@ function ShareDropDown( {id, setLoading} ) {
       navigate(0)
       setLoading(true);
     }
+    if (option == 'Rename') {
+        setLoading(true)
+        await deleteBoard(id.toString());
+        navigate(0)
+        setLoading(true);
+      }
     setIsActive(false); // Close the dropdown
   };
 
@@ -56,6 +64,9 @@ function ShareDropDown( {id, setLoading} ) {
       )}
     </div>
   );
+
+  
+
 }
 
 export default ShareDropDown;

@@ -6,7 +6,7 @@ import { getBoards, createBoard } from '../firebaseOperations';
 import Button from 'react-bootstrap/Button';
 import './Navbar.css';
 import Loading from './Loading';
-import ShareDropDown from './ShareDropDown.js';
+import SplitDropDown from './SplitDropDown.js';
 
 function Home() {
   const [isLoading, setLoading] = useState(true);
@@ -53,6 +53,7 @@ function Home() {
               {boards.map((board) => (
                 <div className="col-12 col-md-6 col-lg-4 col-xl-3" key={"bootstrap card:" + board.id}>
                   <div className="card">
+                  {board.id != 0 ? <SplitDropDown id={board.id} setLoading={setLoading} />: <div></div>}
                     <img  src={`${basePath}/board_previews/${board.image}`}    
                           className="card-img-top" 
                           alt={board.name} 
@@ -60,12 +61,10 @@ function Home() {
                     <div className="card-body">
                       {board.id != 0 ? 
                       <div>
-                        <ShareDropDown id={board.id} setLoading={setLoading} />
                         <Button className="board-title btn-full" as={Link} to={"/board/"+ board.id}> {board.name} </Button>
                       </div>
                        : 
                       <div>
-                        
                         <Button className="board-title btn-full" onClick={newBoard}> {board.name} </Button>
                       </div>
                       }
