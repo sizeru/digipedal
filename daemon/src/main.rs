@@ -1,4 +1,12 @@
-use std::{env, fs, io, net::SocketAddr, path::PathBuf, process::exit};
+use std::{
+    convert::Infallible, env, fs, io, net::SocketAddr, path::PathBuf
+};
+use http_body_util::Full;
+use hyper::{body::Bytes, server::conn::http1, service::service_fn, Request, Response};
+use hyper_util::rt::TokioIo;
+use log::{info, error};
+use daemonize::Daemonize;
+use tokio::net::TcpListener;
 
 #[derive(Debug)]
 enum Error {
@@ -7,12 +15,15 @@ enum Error {
     ArgParse(String),
     ConfigRead(io::Error),
     ConfigParse(usize),
+    DaemonLaunch(daemonize::Error),
+    TcpBind(io::Error),
+    Tcp(io::Error),
 }
 
 #[derive(Debug)]
 struct Flags {
     config_file: String,
-    debug: bool,
+    daemonize: bool,
     dry_run: bool,
     verbose: bool,
 }
@@ -29,7 +40,7 @@ impl Flags {
                 let input_flags = &arg[1..];
                 for char in input_flags.chars() {
                     match char {
-                        'd' => flags.debug = true,
+                        'd' => flags.daemonize = true,
                         'f' => set_config = true,
                         'n' => flags.dry_run = true,
                         'v' => flags.verbose = true,
@@ -44,9 +55,10 @@ impl Flags {
     }
 }
 
+#[derive(Clone)]
 struct Config {
-    access_log: PathBuf,
-    error_log: PathBuf,
+    log_file: PathBuf,
+    pid_file: PathBuf, 
     plugin_dir: PathBuf,
     addr: SocketAddr,
 }
@@ -54,8 +66,8 @@ struct Config {
 impl std::default::Default for Config {
     fn default() -> Self {
         Self {
-            access_log: PathBuf::from("/var/log/pdb/access.log"),
-            error_log: PathBuf::from("/var/log/pdb/error.log"),
+            log_file: PathBuf::from("/var/log/pdb.log"),
+            pid_file: PathBuf::from("/var/run/pdb.pid"),
             plugin_dir: PathBuf::from("/usr/lib/lv2"),
             addr: "127.0.0.1:3444".parse().unwrap(),
         }
@@ -72,8 +84,8 @@ impl Config {
                 continue
             } else if let Some((key, value)) = line.split_once(' ') {
                 match key {
-                    "access_log" => config.access_log = value.parse().unwrap(),
-                    "error_log" => config.error_log = value.parse().unwrap(),
+                    "log_file" => config.log_file = value.parse().unwrap(),
+                    "pid_file" => config.pid_file = value.parse().unwrap(),
                     "plugin_dir" => config.plugin_dir = value.parse().unwrap(),
                     "addr" => config.addr = value.parse().unwrap(),
                     _ => return Err(Error::ConfigParse(line_num)),
@@ -88,18 +100,92 @@ impl std::default::Default for Flags {
     fn default() -> Self {
         Self {
             config_file: String::from("/etc/pbd.conf"),
-            debug: false,
+            daemonize: false,
             dry_run: false,
             verbose: false,
         }
     }
 }
 
+fn configure(flags: &Flags, log_file: PathBuf, pid_file: PathBuf) -> Result<(), Error> {
+    if flags.dry_run {
+        println!("Config Ok!");
+        return Ok(());
+    }
+    if flags.daemonize {
+        let daemonize = Daemonize::new()
+            .pid_file(pid_file)
+            .chown_pid_file(true)
+            .umask(0o002)
+            .privileged_action(|| {
+                let log = fs::OpenOptions::new()
+                    .append(true)
+                    .create(true)
+                    .open(log_file)
+                    .expect("Could not access log file");
+                simplelog::WriteLogger::init(
+                    simplelog::LevelFilter::Info,
+                    simplelog::Config::default(),
+                    log,
+                ).expect("Could not initialize logger");
+            });
+
+        match daemonize.start() {
+            Ok(_) => info!("Launched daemon!"),
+            Err(e) => {
+                return Err(Error::DaemonLaunch(e));
+            },
+        }
+    } else if flags.verbose {
+        simplelog::TermLogger::init(
+            simplelog::LevelFilter::Info,
+            simplelog::Config::default(),
+            simplelog::TerminalMode::Mixed,
+            simplelog::ColorChoice::Auto
+        ).expect("Unable to initialize terminal logger");
+    }
+    Ok(())
+}
+
 fn main() -> Result<(), Error> {
     let flags = Flags::parse_from_args()?;
     let config = Config::parse_from(&flags.config_file)?;
-    return Ok(());
+    configure(&flags, config.log_file.clone(), config.pid_file.clone())?;
+    run_server(config)?;
+    Ok(())
 }
+
+// Run the jack server. This function will often never return
+#[tokio::main]
+async fn run_server(config: Config) -> Result<(), Error> {
+    info!("Starting server!");
+    let listener = TcpListener::bind(config.addr).await.map_err(|e| Error::TcpBind(e))?;
+    info!("Bound to address: {}", config.addr);
+    loop {
+        let (stream, _) = listener.accept().await.map_err(|e| Error::Tcp(e))?;
+        let io = TokioIo::new(stream);
+
+        tokio::task::spawn(async move {
+            if let Err(err) = http1::Builder::new()
+                .serve_connection(io, service_fn(process_req))
+                .await
+            {
+                error!("Could not serve connction: {}", err);
+            }
+        });
+    }
+}
+
+async fn process_req(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Infallible> {
+    let response = format!("You requested: {}\n", req.uri());
+    return Ok(Response::new(Full::new(Bytes::from(response))));
+}
+
+/*
+ * ADD:
+ *  - Server creation / daemonization
+ *  - Jack routing based on server arguments
+ */
 
 // use std::convert::Infallible;
 // use std::net::SocketAddr;

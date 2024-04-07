@@ -13,7 +13,7 @@ The **pdb** daemon is an http server which manages JACK connections. Pd
 
 The options are as follows:
 * **-d**
-	- Debug mode. Run the server without detaching or becoming a daemon. This allows for easy monitoring.
+	- Daemonize. Detach the server and become a daemon.
 * **-f** *file*
 	- Specifies the configuration file. The default is */etc/pbd.conf*
 * **-n**
