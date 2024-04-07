@@ -1,19 +1,23 @@
 import React from 'react';
-import Knob from './Knob'
-
+import Knob from './Knob';
 const minAmplifcation = 0;
 const maxAmplifcation = 2;
 
 
 function AmpPedal(props) {
-  console.log("loading an AmpPedal with these settings:")
-  console.log(props)
+  // console.log("loading an AmpPedal with these settings:")
+  // console.log(props)
   let width = props.width;
   let height = props.height;
   let isStatic = props.isStatic | false;
 
   let toggled = props.toggled;
   let param_vals = props.param_vals;
+  
+  if(isStatic){
+    toggled = true;
+    param_vals ={};
+  }
 
   // setting default amplifcation to 1
   let amplification = 1
@@ -22,8 +26,6 @@ function AmpPedal(props) {
   }
 
   let amplifcationRotation = amplification / (maxAmplifcation - minAmplifcation) * 360
-
-  console.log(amplifcationRotation)
 
   let style = {
     "opacity": toggled ? 1 : .5,

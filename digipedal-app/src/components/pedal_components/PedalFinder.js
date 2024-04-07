@@ -1,11 +1,11 @@
 import AmpPedal from './AmpPedal'
 
 function findPedal(name){
-    let pedal = null;
     // setting up to return the correct class 
     switch(name){
         case "myAmp":
             return AmpPedal;
+        default:
     }
     // oh no we didnt find it1
     console.error("findPedal error: what is a " + name);

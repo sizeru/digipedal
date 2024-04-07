@@ -38,6 +38,9 @@ function Board( {boards, pedalTypeMap} ) {
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
 
+    const defaultPedalWidth = 140;
+    const defaultPedalHeight = 200;
+
     // all the cloning shadow stuff
     const [cloneElement, setCloneElement] = useState(null);
     const pedalBoardRef = useRef(null); 
@@ -230,19 +233,28 @@ function Board( {boards, pedalTypeMap} ) {
         drawLines();
     },[pedalsMap])
 
-    function addPedal(event, pedal){
-        console.log(pedal)
-        console.log(event);
-        const activePedal = pedal;
+    function addPedal(event, pedalId){
         // remaking the pedal with the x, y corridnates 
+        const defaultPercent = 50
         let newPedal = {
-            ...activePedal,
+            'pedal_id': pedalId,
+            'xPercent': defaultPercent,
+            'yPercent': defaultPercent,
+            'x': defaultPercent / 100 * window.innerWidth,
+            'y': defaultPercent / 100 * window.innerHeight,
+            'width': defaultPedalWidth,
+            'height': defaultPedalHeight,
+            'boardId': pedalMaxId + 1,
+            'toggled': true,
+            'pedal': findPedal(pedalTypeMap.get(pedalId)),
+            'param_vals': {}
         };
-        newPedal.x = null;
-        newPedal.y = null;
-        newPedal.boardId = pedalMaxId + 1;
+        
+        console.log("addPedal newPedal:")
+        console.log(newPedal)
+
         // making the new map
-        setPedalMaxId(pedalMaxId + 1);
+        setPedalMaxId(newPedal.boardId);
         setPedalsMap(prev => new Map(prev).set(newPedal.boardId, newPedal));
         console.log(pedalsMap)
     };
@@ -285,7 +297,7 @@ function Board( {boards, pedalTypeMap} ) {
             </div>  
             <Row>        
                 <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
-                <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
+                <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
             {/* <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} /> */}
 
@@ -298,7 +310,7 @@ function Board( {boards, pedalTypeMap} ) {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
-                            <PedalElement width={140} height={200} toggled={pedal.toggled} param_vals={pedal.param_vals}/>
+                            <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals}/>
                         </Draggable>);
                     })}
                 </Droppable>
