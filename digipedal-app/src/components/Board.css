@@ -3,6 +3,7 @@
     touch-action:initial;
 }
 
+
 #PedalBrowserButton {
     /* z-index: 100000; */
     touch-action: auto;
