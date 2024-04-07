@@ -47,7 +47,6 @@ function PedalBrowser(props) {
         Add Pedal!
       </Button>
 
-      <h2>Pedals</h2>
       <ul>
         {pedals.map(pedal => (
           <li key={pedal.id}>
