@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle'; 
 
@@ -10,13 +10,16 @@ import {Row, Col, Button} from 'react-bootstrap';
 import InfoModal from './InfoModal';
 
 // drag and drop stuff
-import {DndContext} from '@dnd-kit/core';
+import {DndContext, DragOverlay} from '@dnd-kit/core';
 import Draggable from './dnd/Draggable';
 import Droppable from './dnd/Droppable';
 import {restrictToParentElement} from '@dnd-kit/modifiers';
 
 // pedal browser stuff
 import PedalBrowser from './PedalBrowser';
+
+// pedals
+import AmpPedal from './pedal_components/AmpPedal';
 
 function Board( {boards, pedalData} ) {
     const { id }  = useParams();
@@ -31,6 +34,23 @@ function Board( {boards, pedalData} ) {
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
 
+    // all the cloning shadow stuff
+    const [cloneElement, setCloneElement] = useState(null);
+    const pedalBoardRef = useRef(null); 
+    useEffect(() => {
+        let pedalBoardContainer = pedalBoardRef.current
+        // pretty much making it so that I can add it as a child 
+        if (cloneElement && pedalBoardContainer) {
+            pedalBoardContainer.appendChild(cloneElement);
+        } else if (pedalBoardContainer) {
+            //removing it if cloneElement is now null and the last elemtent is the clone
+            let lastChild = pedalBoardContainer.lastElementChild;
+            if(lastChild && lastChild.id === 'clone'){
+                pedalBoardContainer.removeChild(lastChild);
+            }
+        }
+    }, [cloneElement]);
+  
     // pedal browser stuff
     const [showPedalBrowser, setShowPedalBrowser] = useState(false);
   
@@ -86,7 +106,7 @@ function Board( {boards, pedalData} ) {
     // detecting if the delete key is held down
     const handleKeyDown = (event) => {
         if (event.key === 'Delete') {
-        setIsDeleteHeld(true);
+            setIsDeleteHeld(true);
         }
     };
 
@@ -100,7 +120,6 @@ function Board( {boards, pedalData} ) {
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
-
     }, []);
 
     function getPedalXY(pedal){
@@ -121,6 +140,21 @@ function Board( {boards, pedalData} ) {
         }
         return [pedal.x, pedal.y];
     }
+    function drawLine(ctx, prevX, prevY, currX, currY){
+        
+        ctx.beginPath();
+        // https://stackoverflow.com/questions/61122649/how-to-add-gradient-to-strokestyle-canvas-in-javascript#:~:text=You%20can%20create%20a%20CanvasGradient%20by%20calling%20the,it%20by%20calling%20the%20method%20addColorStop%20%28offset%2C%20color%29.
+        const gradient = ctx.createLinearGradient(prevX, prevY, currX, currY);
+        gradient.addColorStop(0, '#ff6347');
+        gradient.addColorStop(1, '#006400');
+        ctx.strokeStyle = gradient;
+
+        ctx.lineWidth = 5;
+        ctx.moveTo(prevX, prevY);
+        ctx.lineTo(currX, currY);
+        ctx.stroke(); // Render the path
+        console.log(`Tried to draw line from (${prevX}, ${prevY}) to (${currX}, ${currY})`)
+    }
 
     function drawLines(){
         console.log('drawLines');
@@ -136,32 +170,20 @@ function Board( {boards, pedalData} ) {
         let ctx = canvas.getContext('2d');
         
 
-        let prevX = null
-        let prevY = null;
-        console.log(pedalsMap)
+        // make it so it draws a from start to first pedal
+        let prevX = 0
+        let prevY = window.innerHeight *.5;
         pedalsMap.forEach((pedal) => {  
             let [currX, currY] = getPedalXY(pedal);
             currX += Math.round(pedal.width / 2) || 0;
             currY += Math.round(pedal.height / 2) || 0;
             console.log([currX, currY])
-            if(prevX != null){
-                ctx.beginPath();
-                // https://stackoverflow.com/questions/61122649/how-to-add-gradient-to-strokestyle-canvas-in-javascript#:~:text=You%20can%20create%20a%20CanvasGradient%20by%20calling%20the,it%20by%20calling%20the%20method%20addColorStop%20%28offset%2C%20color%29.
-                const gradient = ctx.createLinearGradient(prevX, prevY, currX, currY);
-                gradient.addColorStop(0, '#ff6347');
-                gradient.addColorStop(1, '#006400');
-                ctx.strokeStyle = gradient;
-
-                ctx.lineWidth = 5;
-                ctx.moveTo(prevX, prevY);
-                ctx.lineTo(currX, currY);
-                ctx.stroke(); // Render the path
-                console.log(`Tried to draw line from (${prevX}, ${prevY}) to (${currX}, ${currY})`)
-            }
+            drawLine(ctx, prevX, prevY, currX, currY)
             prevX = currX;
             prevY = currY;
         });
-
+        // drawing a line from last pedal to the end
+        drawLine(ctx, prevX, prevY, window.innerWidth, window.innerHeight *.5)
     }
 
     // whenever the currboard is changed, we need to remake the pedal map
@@ -242,12 +264,13 @@ function Board( {boards, pedalData} ) {
             </Row>
             <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} />
             <canvas id="overlayCanvas"></canvas>
-            <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
+            <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
+                    <div ref={pedalBoardRef}/>
                     {[...pedalsMap.values()].map((pedal) => {
                         return (
                         <Draggable id={pedal.id} x={pedal.x} y={pedal.y}>
-                            <img className="pedal" src={basePath + pedal.image} key={pedal.id}/>
+                            <AmpPedal width={140} height={200}/>
                         </Draggable>);
                     })}
                 </Droppable>
@@ -256,11 +279,38 @@ function Board( {boards, pedalData} ) {
     );
     
     
+    function handleDragStart(event) {
+        console.log("Drag Start: ")
+        console.log(event)
+        const draggedElement = document.getElementById(`${event.active.id}d`);
+        console.log(draggedElement)
+        
+        // making a clone of it with lower opacity and diff id
+        const clone = draggedElement.cloneNode(true);
+        clone.style.opacity = '0.5';
+        clone.id = "clone";
+        
+        setCloneElement(clone);
+    }
     
     // dealing with the ending of drag events
     function handleDragEnd(event) {
+        setCloneElement(null);
+        console.log("handleDragEnd")
+        console.log(event)
         if(isDeleteHeld){
             return deletePedal(event)
+        }
+        
+        if(Math.abs(event.delta.x) < 1 && Math.abs(event.delta.y) < 1){
+            // checking if the thing they are trying to click on has an onclick function
+            let onClick = Object.values(event.activatorEvent.srcElement)[1].onClick
+            if(onClick){
+                console.log("Clicking on the underlying thing:")
+                console.log(event.activatorEvent.srcElement)
+                onClick()
+            }
+            return;
         }
         // getting info about the drag event
         const activePedal = pedalsMap.get(event.active.id);
