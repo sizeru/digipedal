@@ -7,3 +7,4 @@ settings.json
 
 # Player
 daemon/target
+daemon/Cargo.lock

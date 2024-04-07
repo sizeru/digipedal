@@ -1,5 +1,5 @@
 # The Pedalboard Daemon
-The pedalboard daemon is responsible for maintaining the correct order of JACK connections between audio outputs, inputs, and pedals. It's settings are set via a config file, and it is controlled via HTTP requests.
+The pedalboard daemon is responsible for maintaining the correct order of JACK connections between audio outputs, inputs, and pedals. It is configured via a config file, and it is controlld using HTTP requests at runtime.
 
 ## Usage
 ##### NAME

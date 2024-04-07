@@ -1,0 +1,4 @@
+access_log access.log
+error_log error.log
+plugin_dir /usr/lib/lv2
+addr 127.0.0.1:3444
