@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -33,6 +33,40 @@ export const getPedals = async () => {
   return pedalsList;
 }
 
+// Input: pedalId (string)
+// Output: pedal object with mfr, name, type, parameters list(name, description, default val, max, min)
+// Tested, works
+export const getPedalById = async (pedalId) => {
+    const pedals = doc(db, 'pedals', pedalId);
+    const pedalDocs = await getDoc(pedals);
+    return pedalDocs.data();
+}
+
+// Input: boardId (string)
+// Output: new board object with default name
+export const createBoard = async (boardId) => {
+    const boardRef = doc(db, 'boards', boardId);
+    try {
+        await setDoc(boardRef, {name: `Board ${boardId}`});
+        console.log("Board created successfully!");
+    } catch (error) {
+        console.error("Error creating board:", error);
+    }
+}
+
+// Input: boardId (string)
+// Output: none
+// Deletes board from list of boards
+export const deleteBoard = async (boardId) => {
+    const boardRef = doc(db, 'boards', boardId);
+    try {
+        await deleteDoc(boardRef);
+        console.log("Board deleted successfully!");
+    } catch (error) {
+        console.error("Error deleting board:", error);
+    }
+}
+
 // Output: List of boards with name and image
 // Tested, works
 export const getBoards = async () => {
@@ -43,15 +77,6 @@ export const getBoards = async () => {
       return {id:idx, name:doc.data().name, image:doc.data().name + '.png'}
     });
     return boardsList;
-}
-
-// Input: pedalId (string)
-// Output: pedal object with mfr, name, type, parameters list(name, description, default val, max, min)
-// Tested, works
-export const getPedalById = async (pedalId) => {
-    const pedals = doc(db, 'pedals', pedalId);
-    const pedalDocs = await getDoc(pedals);
-    return pedalDocs.data();
 }
 
 // Input: boardId (string)
@@ -91,18 +116,6 @@ export const getBoardById = async (boardId) => {
     }
 }
 
-// Input: boardId (string)
-// Output: new board object with default name
-export const createBoard = async (boardId) => {
-    const boardRef = doc(db, 'boards', boardId);
-    try {
-        await setDoc(boardRef, {name: `Board ${boardId}`});
-        console.log("Board created successfully!");
-    } catch (error) {
-        console.error("Error creating board:", error);
-    }
-}
-
 // Input: boardId (string), pedalNumber (string), updatedPedalData (object)
 // PedalNumber - the order of the pedal on the board (1, 2, ...)
 /* Usage Example: 
@@ -133,7 +146,24 @@ export const postPedalToBoard = async (boardId, pedalNumber, pedalData) => {
         }
     }
     catch (error) {
-        console.error("Error getting pedal document:", error);
+        console.error("Error getting pedal:", error);
     }
 }
 
+// Input: boardId (string), pedalNumber (string)
+// Output: none
+// Removes pedal from board
+export const deletePedalFromBoard = async (boardId, pedalNumber) => {
+    try {
+        const pedalRef = doc(db, 'boards', boardId, 'pedals', pedalNumber);
+        
+        try {
+            await deleteDoc(pedalRef);
+            console.log("Pedal removed successfully");
+        } catch (error) {
+            console.error("Error removing pedal:", error);
+        }
+    } catch (error) {
+        console.error("Error getting pedal:", error);
+    }
+}
