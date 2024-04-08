@@ -32,8 +32,8 @@ function Board( {boards, pedalTypeMap} ) {
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
 
-    const defaultPedalWidth = 140;
-    const defaultPedalHeight = 200;
+    const defaultPedalWidth = window.innerWidth / 10;
+    const defaultPedalHeight = defaultPedalWidth * 1.5;
 
     // all the cloning shadow stuff
     const [cloneElement, setCloneElement] = useState(null);
@@ -120,7 +120,6 @@ function Board( {boards, pedalTypeMap} ) {
         return [pedal.x, pedal.y];
     }
     function drawLine(ctx, prevX, prevY, currX, currY){
-        
         ctx.beginPath();
         // https://stackoverflow.com/questions/61122649/how-to-add-gradient-to-strokestyle-canvas-in-javascript#:~:text=You%20can%20create%20a%20CanvasGradient%20by%20calling%20the,it%20by%20calling%20the%20method%20addColorStop%20%28offset%2C%20color%29.
         const gradient = ctx.createLinearGradient(prevX, prevY, currX, currY);
@@ -135,13 +134,13 @@ function Board( {boards, pedalTypeMap} ) {
 
         // drawing an indicator for flow
         ctx.beginPath()
-        ctx.ellipse(currX - window.innerWidth / 66, currY + window.innerWidth / 66, window.innerWidth / 100, window.innerHeight / 25, 45, 0, 180)
+        ctx.ellipse(currX - window.innerWidth / 40, currY + window.innerWidth / 66, window.innerWidth / 150, window.innerHeight / 25, 45, 0, 180)
         ctx.fillStyle = "#006400"
         ctx.fill()
         ctx.stroke();
         
         ctx.beginPath()
-        ctx.ellipse(currX - window.innerWidth / 66, currY - window.innerWidth / 66, window.innerWidth / 100, window.innerHeight /25, -45, 0, 180)
+        ctx.ellipse(currX - window.innerWidth / 40, currY - window.innerWidth / 66, window.innerWidth / 150, window.innerHeight /25, -45, 0, 180)
         ctx.strokeStyle = null
         ctx.fillStyle = "#006400"
         ctx.fill()
@@ -310,8 +309,8 @@ function Board( {boards, pedalTypeMap} ) {
                     <a className="navbar-brand" href={basePath}>
                         <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
                     </a>
-                    <button className="nav-btn" onClick={undo}> <img src="../navbar_icons/undo.png" className="undo" alt="Undo" /> </button>
-                    <button className="nav-btn" onClick={redo}> <img src="../navbar_icons/undo.png" className="redo" alt="Redo"/> </button>
+                    {/* <button className="nav-btn" onClick={undo}> <img src="../navbar_icons/undo.png" className="undo" alt="Undo" /> </button>
+                    <button className="nav-btn" onClick={redo}> <img src="../navbar_icons/undo.png" className="redo" alt="Redo"/> </button> */}
                 </div>
                 <a className="bungee-regular"> {
                 currBoard.name.name.length > 12 ? currBoard.name.name.substring(0,10) + '...' : currBoard.name.name 
@@ -319,8 +318,9 @@ function Board( {boards, pedalTypeMap} ) {
                 <div className="right-side icon-container-right"> 
                     <button className="nav-btn" onClick={playPauseToggle}> 
                     {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
-                    <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
-                    <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button>
+                    {/* <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
+                    <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button> */}
+                    <div style={{"opacity": 0}}>||||||||||||</div>
                 </div>
             </div>  
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
