@@ -1,13 +1,13 @@
 
 import React from 'react';
 
-function Trashcan({x, y, width, height}) {
+function Trashcan({x, y, width, height, deletePedal}) {
   return (
     
-    <svg x={x} y={y} width={width} height={height} width={`0 0 ${width} ${height}`} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg x={x} y={y} width={width} height={height} width={`0 0 ${width} ${height}`} fill="none" xmlns="http://www.w3.org/2000/svg" onClick={deletePedal}>
         {/* bottom of trashcan */}
         <rect x={width/6} y={height /3} width={width * 2/3} height={height * 2/3} rx={width/6}fill="#F05A24"/>
-        
+
         {/* fixing the top part of trashcan */}
         <rect x={width/6} y={height /3} width={width * 2/3} height={height /6} fill="#F05A24"/>
 

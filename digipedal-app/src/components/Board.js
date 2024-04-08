@@ -259,11 +259,9 @@ function Board( {boards, pedalTypeMap} ) {
         console.log(pedalsMap)
     };
 
-    function deletePedal(event){
-        console.log(`deletePedal:` )
-        console.log(event)
-
-        const activePedal = pedalsMap.get(event.active.id);
+    function deletePedal(pedalId){
+        console.log("deletePedal: " + pedalId);
+        const activePedal = pedalsMap.get(id);
         
         let newMap = new Map(pedalsMap);
         newMap.delete(activePedal.boardId)
@@ -310,7 +308,7 @@ function Board( {boards, pedalTypeMap} ) {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
-                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals}/>
+                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals} deletePedal={() => deletePedal(pedal.boardId)}/>
                         </Draggable>);
                     })}
                 </Droppable>
