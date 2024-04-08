@@ -1,7 +1,16 @@
 use std::{
-    borrow::BorrowMut, collections::{HashMap, LinkedList}, convert::Infallible, env, fs, intrinsics::needs_drop, io, net::SocketAddr, path::PathBuf, str::Utf8Error, sync::{Arc, OnceLock}
+    borrow::BorrowMut,
+    collections::{HashMap, LinkedList},
+    convert::Infallible,
+    env,
+    fs,
+    io,
+    net::SocketAddr,
+    path::PathBuf,
+    str::Utf8Error,
+    sync::OnceLock
 };
-use http_body_util::{BodyExt, Collected, Full};
+use http_body_util::{BodyExt, Full};
 use hyper::{
     body::Bytes,
     server::conn::http1,
@@ -15,13 +24,12 @@ use json::JsonValue;
 use log::{info, error};
 use daemonize::Daemonize;
 use tokio::{
-    net::TcpListener, process::Command, sync::{Mutex, RwLock}
+    net::TcpListener, process::Command, sync::RwLock
 };
-use serde::ser;
 
-static BOARDS: OnceLock<RwLock<Vec<Board>>> = OnceLock::new();
-fn boards() -> &'static RwLock<Vec<Board>> {
-    BOARDS.get_or_init(|| RwLock::new(Vec::new()))
+static SET: OnceLock<RwLock<SetList>> = OnceLock::new();
+fn set() -> &'static RwLock<SetList> {
+    SET.get_or_init(|| RwLock::new(SetList::new()))
 }
 
 #[derive(Debug)]
@@ -39,6 +47,7 @@ enum Error {
     BodynotJSON,
     QueryNotPresent,
     BoardIndexOOB(i32),
+    JSONInvalidFormat,
 }
 
 #[derive(Debug)]
@@ -195,6 +204,21 @@ impl Board {
     }
 }
 
+// a SetList is a combination of several pedal boards
+struct SetList {
+    active: usize,
+    boards: Vec<Board>
+}
+
+impl SetList {
+    fn new() -> Self {
+        Self {
+            active: 0,
+            boards: Vec::new(),
+        }
+    }
+}
+
 // Run the jack server. This function will often never return
 #[tokio::main]
 async fn run_server(config: Config) -> Result<(), Error> {
@@ -222,8 +246,8 @@ async fn process_req(req: Request<hyper::body::Incoming>) -> Result<Response<Ful
     info!("Received a request for: {}", req.uri());
     let response = match (req.method(), req.uri().path()) {
         (&Method::DELETE, "/board") => delete_pedals(req).await,
-        (&Method::GET, "/board/active") => async_todo().await,
-        (&Method::PUT, "/board/active") => async_todo().await,
+        (&Method::GET, "/board/active") => get_active_board().await,
+        (&Method::PUT, "/board/active") => set_active_board(req).await,
         (&Method::POST, "/board/pedal") => async_todo().await,
         (&Method::PUT, "/board/pedal") => async_todo().await,
         (&Method::DELETE, "/board/pedal") => async_todo().await,
@@ -248,50 +272,78 @@ fn insert_at(l: &mut LinkedList<u8>, idx: usize, val: u8) {
     l.append(&mut tail);
 }
 
+async fn get_active_board() -> Result<Response<Full<Bytes>>, Error> {
+    let active_index = set().read().await.active;
+    Ok(Response::new(Full::new(Bytes::from(active_index.to_string()))))
+}
+
+async fn set_active_board(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
+    let queries = get_queries(&req);
+    let json = get_json_from_body(req.into_body()).await?;
+    let mut board_index = None;
+    for (key, value) in json.entries() {
+        if key == "board_index" {
+            board_index = value.as_usize();
+        }
+    }
+    return if let Some(index) = board_index {
+        set().write().await.active = index;
+        Ok(Response::new(Full::new(Bytes::new())))
+    } else {
+        Err(Error::JSONInvalidFormat)
+    }
+}
+
 // Delete all pedals from a specified board
 async fn delete_pedals(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
-    let queries = get_queries(req);
-    let board_index = queries
-        .get("board_index")
-        .map(|b_idx| b_idx.parse().unwrap_or(-1))
-        .unwrap_or(-1);
-    if board_index == -1 {
-        return Err(Error::BoardIndexOOB(board_index));
-    } else {
-        let mut boards = boards()
-            .write()
-            .await;
-        let board = boards.get_mut(board_index as usize).unwrap();
-        let pedals = board.pedals.borrow_mut();
-        let mut iter = pedals.iter_mut();
-        let mut cur_pedal = iter.next().unwrap();
-        let mut next = iter.next();
-        loop {
-            if next.is_none() { // Break if last
-                break;
-            }
-            let next_pedal = next.unwrap();
-            let command = format!("jack_disconnect {} {}", cur_pedal.output_port, next_pedal.input_port);
-            Command::new(command);
-
-            // Next iteration
-            cur_pedal = next_pedal;
-            next = iter.next();
+    let queries = get_queries(&req);
+    let board_index = get_query_usize(queries, "board_index")?;
+    // Remove all boards
+    let mut set = set()
+        .write()
+        .await;
+    let board = set.boards.get_mut(board_index as usize).unwrap();
+    let pedals = board.pedals.borrow_mut();
+    let mut iter = pedals.iter_mut();
+    let mut cur_pedal = iter.next().unwrap();
+    let mut next = iter.next();
+    loop {
+        if next.is_none() { // Break if last
+            break;
         }
+        let next_pedal = next.unwrap();
+        let command = format!("jack_disconnect {} {}", cur_pedal.output_port, next_pedal.input_port);
+        Command::new(command);
 
-        let input = pedals.pop_front().unwrap();
-        let output = pedals.pop_back().unwrap();
-        let mut ll = LinkedList::new();
-        ll.push_front(input);
-        ll.push_back(output);
-        // TODO: Finish modifying board
+        // Next iteration
+        cur_pedal = next_pedal;
+        next = iter.next();
     }
 
-    // info!("Succesfully parsed json: {json:#?}");
+    let input = pedals.pop_front().unwrap();
+    let output = pedals.pop_back().unwrap();
+    let mut ll = LinkedList::new();
+    ll.push_front(input);
+    ll.push_back(output);
+    pedals.clear();
+    pedals.append(&mut ll);
+
     return Ok(Response::new(Full::new(Bytes::from(""))));
 }
 
-fn get_queries(req: Request<hyper::body::Incoming>) -> HashMap<String, String> {
+fn get_query_usize(queries: HashMap<String, String>, key: &str) -> Result<usize, Error> {
+    let board_index = queries
+        .get(key)
+        .map(|b_idx| b_idx.parse().unwrap_or(-1))
+        .unwrap_or(-1);
+    return if board_index == -1 {
+        Err(Error::BoardIndexOOB(board_index))
+    } else {
+        Ok(board_index as usize)
+    };
+}
+
+fn get_queries(req: &Request<hyper::body::Incoming>) -> HashMap<String, String> {
     req.uri()
         .query()
         .map(|v| {
