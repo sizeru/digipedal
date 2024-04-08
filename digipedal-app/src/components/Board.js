@@ -22,7 +22,7 @@ import PedalBrowser from './PedalBrowser';
 import AmpPedal from './pedal_components/AmpPedal';
 
 // attaching to front end
-import {getBoardById, getPedals} from '../firebaseOperations';
+import {getBoardById, getPedals, getPedalById} from '../firebaseOperations';
 import {findPedal} from './pedal_components/PedalFinder'
 
 function Board( {boards, pedalTypeMap} ) {
@@ -105,29 +105,6 @@ function Board( {boards, pedalTypeMap} ) {
     const more = () => {   
         console.log("More");
     };
-
-    
-    // holding delete detection
-    const [isDeleteHeld, setIsDeleteHeld] = useState(false);
-
-    // detecting if the delete key is held down
-    const handleKeyDown = (event) => {
-        if (event.key === 'Delete') {
-            setIsDeleteHeld(true);
-        }
-    };
-
-    // dealing with if they release the key
-    const handleKeyUp = (event) => {
-        if (event.key === 'Delete') {
-            setIsDeleteHeld(false);
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('keyup', handleKeyUp);
-    }, []);
 
     function getPedalXY(pedal){
         console.log(pedal)
@@ -280,7 +257,34 @@ function Board( {boards, pedalTypeMap} ) {
         console.log(newMap)
     }
 
-    function toggleInfoModal(pedal_id){
+    let [pedalInfoMap, setPedalInfoMap] = useState(new Map())
+    let [shownPedalId, setShownPedalId] = useState(null)
+    function showInfoModal(pedal_id){
+        // checking that we actually have the info about the pedal
+        console.log("showInfoModal for pedal " + pedal_id);
+        // we are resetting it back so just set it to null
+        if(pedal_id == null){
+            setShownPedalId(pedal_id);
+            return;
+        }
+        let pedalInfo = pedalInfoMap.get(pedal_id);
+        console.log(pedalInfo)
+        if(pedalInfo){
+            // all we need to do is update which modal is showing 
+            setShownPedalId(pedal_id);
+        } else {
+            // we need to get the info about it and set it to showing
+            const setNewPedalInfo = async () => {
+                let newPedalInfo = await getPedalById(`${pedal_id}`);
+                console.log(newPedalInfo)
+                let newPedalInfoMap = new Map(pedalInfoMap);
+                newPedalInfoMap.set(pedal_id, newPedalInfo)
+                setPedalInfoMap(newPedalInfoMap)
+                setShownPedalId(pedal_id);
+                console.log(newPedalInfoMap)
+            }
+            setNewPedalInfo()
+        }
 
     }
 
@@ -311,7 +315,7 @@ function Board( {boards, pedalTypeMap} ) {
                 <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
                 <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
-            {/* <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} /> */}
+            {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)} /> : null}
 
             <canvas id="overlayCanvas" />
             
@@ -324,8 +328,8 @@ function Board( {boards, pedalTypeMap} ) {
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
                             <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
-                            togglePedal={() => togglePedal(pedal.boardId)}/>
-                            {/* <InfoModal showing={pedal.showing}handleClose= pedals= pedalId={pedal.pedal_id}/> */}
+                            togglePedal={() => togglePedal(pedal.boardId)}
+                            showInfoModal={() => showInfoModal(pedal.pedal_id)}/>
                         </Draggable>);
                     })}
                 </Droppable>
