@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -51,6 +51,19 @@ export const createBoard = async (boardId) => {
         console.log("Board created successfully!");
     } catch (error) {
         console.error("Error creating board:", error);
+    }
+}
+
+export const renameBoard = async (boardId, newName) => {
+    const boardRef = doc(db, 'boards', boardId);
+    // console.log(boardRef.data());
+    console.log("name:", newName);
+    try {
+
+        await updateDoc(boardRef, {name: newName});
+        console.log("Board renamed successfully!");
+    } catch (error) {
+        console.error("Error renaming board:", error);
     }
 }
 

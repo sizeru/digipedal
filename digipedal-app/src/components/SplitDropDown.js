@@ -1,75 +1,111 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SplitButton, Dropdown } from 'react-bootstrap';
-import { deleteBoard, getBoardById } from '../firebaseOperations';
+import { Dropdown, Button, Container, ButtonGroup, InputGroup, Form } from 'react-bootstrap';
+import { deleteBoard, renameBoard } from '../firebaseOperations';
+import { Link, useNavigate } from 'react-router-dom';
+import '../App.css';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-function SplitDropDown(id, setLoading) {
-  const [selectedItem, setSelectedItem] = useState('...');
+function SplitDropDown({id, name}) {
   const [isRenaming, setIsRenaming] = useState(false);
-  const [newName, setNewName] = useState('');
+  const [newName, setNewName] = useState("");
+  const navigate = useNavigate();
 
   // Options for the dropdown
-  const options = ['Rename', 'Delete'];
-
   // Function to handle selection
-  const handleSelect = async (option) => {
-    setSelectedItem(option);
-    console.log(`You selected: ${option}`);
-    if (option == 'Delete') {
-      setLoading(true)
-      await deleteBoard(id.toString());
-      setLoading(true);
-    }
-    if (option == 'Rename') {
-        setIsRenaming(true);
-    } else {
-        setSelectedItem(option);
-        setIsRenaming(false);
-    }
-      
-    
-       
-      
-
+  const handleDelete = async (e) => {
+    await deleteBoard(id.toString());
+    navigate(0);
   };
 
   const handleRename = (e) => {
-    if (e.key === 'Enter') {
-      setSelectedItem(newName);
-      //
-      setIsRenaming(false);
-      setNewName(''); // Reset the input field
-    }
+    setIsRenaming(true);
   };
 
-  return (
-    <div>
-    <SplitButton
-      id="dropdown-split-basic"
-      title={selectedItem}
-      variant="success"
-      onSelect={handleSelect}
-    >
-      {options.map((option, index) => (
-        <Dropdown.Item key={index} eventKey={option}>
-          {option}
-        </Dropdown.Item>
-      ))}
-    </SplitButton>
+  const cancelRename = () => {
+    setIsRenaming(false);
+  }
 
-    {isRenaming && (
-        <input
-          type="text"
-          placeholder="New name"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          onKeyDown={handleRename}
-          autoFocus
-        />
-      )}
-    </div>
-  );
+  const confirmRename = async () => {
+    await renameBoard(id.toString(), newName);
+    navigate(0);
+  }
+
+  const handleKeyDown = async (e) => {
+    if (e.key == 'Enter') {
+      await renameBoard(id.toString(), newName);
+      navigate(0);
+    } else if (e.key == 'Escape') {
+      setIsRenaming(false);
+    }
+  }
+
+  return (
+    <Container className="custom-button-container">
+  
+      {/* <Row>
+        <Col md={8}>
+          <Button variant="outline-light" className="board-title" as={Link} to={"/board/"+ id}> 
+            {name} 
+          </Button>
+        </Col>
+        <Col md={4}>
+          <div className="share-drop">
+          <SplitButton
+            id="dropdown-split-basic"
+            title={selectedItem}
+            variant="success"
+            onSelect={handleSelect}
+          >
+            {options.map((option, index) => (
+              <Dropdown.Item key={index} eventKey={option}>
+                {option}
+              </Dropdown.Item>
+            ))}
+          </SplitButton>
+
+          {isRenaming && (
+              <input
+                type="text"
+                placeholder="New name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={handleRename}
+                autoFocus
+              />
+              )}
+          </div>
+        </Col>
+      </Row> */}
+      <Dropdown className="w-100 custom-button-group" as={ButtonGroup}>
+        {isRenaming ?
+        <InputGroup> 
+          <Form.Control autoFocus placeholder={name} onChange={(e) => {
+            setNewName(e.target.value); 
+          }} onKeyDown={handleKeyDown}>
+          </Form.Control>
+        </InputGroup>
+        : 
+        <Button className="board-title" variant="success">{name}</Button>
+        }
+        <Dropdown.Toggle split variant="success" className="custom-toggle" id="dropdown-split-basic" />
+
+        <Dropdown.Menu>
+          {isRenaming ?
+          <div>
+            <Dropdown.Item onClick={confirmRename}> Confirm </Dropdown.Item>
+            <Dropdown.Item onClick={cancelRename}> Cancel </Dropdown.Item>
+          </div>
+          :
+          <div>
+            <Dropdown.Item onClick={handleRename}>Rename</Dropdown.Item>
+            <Dropdown.Item onClick={handleDelete}>Delete</Dropdown.Item>
+          </div>
+          }
+        </Dropdown.Menu>
+      </Dropdown>
+    </Container>);
 }
 
 export default SplitDropDown;
