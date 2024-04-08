@@ -61,13 +61,7 @@ function Home() {
                           key={board.name} /> 
                     <div className="card-body">
                       {board.id !== 0 ? 
-                        // <div className="row button-container">
-                        //   <Button className="board-title col-8" as={Link} to={"/board/"+ board.id}> {board.name} </Button>
-                        //   <div className="share-drop col-4">
-                        //     <SplitDropDown id={board.id} setLoading={setLoading} />
-                        //   </div>
-                        // </div>
-                        <SplitDropDown id={board.id} setLoading={setLoading} name={board.name} alt={"GOOOFY ASSS NAME"}/>
+                        <SplitDropDown id={board.id} setLoading={setLoading} name={board.name}/>
                        : 
                       <div>
                         <Button className="board-title btn-full" onClick={newBoard}> {board.name} </Button>

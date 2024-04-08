@@ -52,7 +52,7 @@ function SplitDropDown({id, name}) {
           </Form.Control>
         </InputGroup>
         : 
-        <Button className="board-title" variant="success">{name}</Button>
+        <Button className="board-title" variant="success" onClick={() => {navigate(`/board/${id}`)}}>{name}</Button>
         }
         <Dropdown.Toggle split variant="success" className="custom-toggle" id="dropdown-split-basic" />
 
