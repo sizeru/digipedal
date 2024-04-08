@@ -279,7 +279,6 @@ function Board( {boards, pedalTypeMap} ) {
             <div className="navbar board-nav">
                 <div className="left-side icon-container">
                     <a className="navbar-brand" href={basePath}>
-                        {/* { console.log(basePath) } */}
                         <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
                     </a>
                     <button className="nav-btn" onClick={undo}> <img src="../navbar_icons/undo.png" className="undo" alt="Undo" /> </button>
