@@ -132,6 +132,20 @@ function Board( {boards, pedalTypeMap} ) {
         ctx.moveTo(prevX, prevY);
         ctx.lineTo(currX, currY);
         ctx.stroke(); // Render the path
+
+        // drawing an indicator for flow
+        ctx.beginPath()
+        ctx.ellipse(currX - window.innerWidth / 66, currY + window.innerWidth / 66, window.innerWidth / 100, window.innerHeight / 25, 45, 0, 180)
+        ctx.fillStyle = "#006400"
+        ctx.fill()
+        ctx.stroke();
+        
+        ctx.beginPath()
+        ctx.ellipse(currX - window.innerWidth / 66, currY - window.innerWidth / 66, window.innerWidth / 100, window.innerHeight /25, -45, 0, 180)
+        ctx.strokeStyle = null
+        ctx.fillStyle = "#006400"
+        ctx.fill()
+        ctx.stroke();
     }
 
     function drawLines(){
@@ -148,17 +162,18 @@ function Board( {boards, pedalTypeMap} ) {
         let ctx = canvas.getContext('2d');
 
         let drawnLines = [];
-        
+        const sortedPedalsEntries = [...pedalsMap.entries()].sort((a, b) => a[1].x - b[1].x);
+        console.log(sortedPedalsEntries)
         // make it so it draws a from start to first pedal
         let prevX = 0
         let prevY = window.innerHeight *.5;
-        pedalsMap.forEach((pedal) => {  
+        sortedPedalsEntries.forEach((pedalEntry) => {  
+            let pedal = pedalEntry[1]
             let [currX, currY] = getPedalXY(pedal);
-            currX += Math.round(pedal.width / 2) || 0;
             currY += Math.round(pedal.height / 2) || 0;
             drawnLines.push({prevX: prevX, prevY: prevY, currX: currX, currY:currY})
             drawLine(ctx, prevX, prevY, currX, currY)
-            prevX = currX;
+            prevX = currX + pedal.width;
             prevY = currY;
         });
         // drawing a line from last pedal to the end
@@ -218,8 +233,6 @@ function Board( {boards, pedalTypeMap} ) {
             'yPercent': defaultPercent,
             'x': defaultPercent / 100 * window.innerWidth,
             'y': defaultPercent / 100 * window.innerHeight,
-            'width': defaultPedalWidth,
-            'height': defaultPedalHeight,
             'boardId': pedalMaxId + 1,
             'toggled': true,
             'pedal': findPedal(pedalTypeMap.get(pedalId)),
