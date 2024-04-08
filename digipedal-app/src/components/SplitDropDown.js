@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Dropdown, Button, Container, ButtonGroup, InputGroup, Form } from 'react-bootstrap';
 import { deleteBoard, renameBoard } from '../firebaseOperations';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import WarningModal from './WarningModal';
 import '../App.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,13 +11,23 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function SplitDropDown({id, name}) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [newName, setNewName] = useState("");
+  const [showModal, setShowModal] = useState(false); 
+
   const navigate = useNavigate();
 
   // Options for the dropdown
   // Function to handle selection
-  const handleDelete = async (e) => {
-    // await deleteBoard(id.toString());
+  const handleDelete = () => {
+    setShowModal(true); 
+  };
+
+  const handleConfirmDelete = async () => {
+    await deleteBoard(id.toString());
     navigate(0);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   const handleRename = (e) => {
@@ -70,6 +81,7 @@ function SplitDropDown({id, name}) {
           }
         </Dropdown.Menu>
       </Dropdown>
+      <WarningModal showModal={showModal} handleClose={handleCloseModal} handleDelete={handleConfirmDelete} />
     </Container>);
 }
 

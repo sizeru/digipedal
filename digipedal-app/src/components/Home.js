@@ -29,6 +29,7 @@ function Home() {
   const newBoard = () => {
     setLoading(true);
     createBoard(boards.length.toString()).then(() => {
+      console.log(boards.length);
       navigate(`/board/${boards.length}`);
     });
   };
@@ -52,15 +53,14 @@ function Home() {
           <div className="col-12">
             <div className="row board-margins">
               {boards.map((board) => (
-                <div className="col-12 col-md-6 col-lg-4 col-xl-3" key={"bootstrap card:" + board.id}>
+                <div className="col-12 col-md-6 col-lg-4 col-xl-3" id={"bootstrap card:" + board.id}>
                   <div className="card">
-                  {/* {board.id != 0 ? <SplitDropDown id={board.id} setLoading={setLoading} />: <div></div>} */}
                     <img  src={`${basePath}/board_previews/${board.image}`}    
                           className="card-img-top" 
                           alt={board.name} 
                           key={board.name} /> 
                     <div className="card-body">
-                      {board.id !== 0 ? 
+                      {board.id != 0 ? 
                         <SplitDropDown id={board.id} setLoading={setLoading} name={board.name}/>
                        : 
                       <div>

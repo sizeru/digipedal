@@ -49,6 +49,7 @@ export const createBoard = async (boardId) => {
     try {
         await setDoc(boardRef, {name: `Board ${boardId}`});
         console.log("Board created successfully!");
+        // Add pedals subcollection here
     } catch (error) {
         console.error("Error creating board:", error);
     }
@@ -72,6 +73,10 @@ export const renameBoard = async (boardId, newName) => {
 // Deletes board from list of boards
 export const deleteBoard = async (boardId) => {
     const boardRef = doc(db, 'boards', boardId);
+    const boardDoc = await getDoc(boardRef);
+    console.log(boardId);
+    console.log(boardDoc);
+    console.log(boardDoc.exists());
     try {
         await deleteDoc(boardRef);
         console.log("Board deleted successfully!");
@@ -85,9 +90,8 @@ export const deleteBoard = async (boardId) => {
 export const getBoards = async () => {
     const boards = collection(db, 'boards');
     const boardsDocs = await getDocs(boards);
-    const boardsList = boardsDocs.docs.map( (doc, idx) => {
-      // console.log(doc.data());
-      return {id:idx, name:doc.data().name, image:doc.data().name + '.png'}
+    const boardsList = boardsDocs.docs.map( (doc) => {
+      return {id:doc.id, name:doc.data().name, image:doc.data().name + '.png'}
     });
     return boardsList;
 }
