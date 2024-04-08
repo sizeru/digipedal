@@ -28,7 +28,7 @@ export const getPedals = async () => {
   const pedalsDocs = await getDocs(pedals);
   const pedalsList = pedalsDocs.docs.map( (doc, idx) => {
     // console.log(doc.data());
-    return {id:idx, name:doc.data().name, image:doc.data().name + '.svg'}
+    return {id:doc.data().id, name:doc.data().name}
   });
   return pedalsList;
 }
@@ -98,13 +98,11 @@ export const getBoardById = async (boardId) => {
             console.log(data);
             return {
                 pedal_id: data.pedal_id, 
-                x: data.x, 
-                y: data.y,
-                name: data.name,
+                xPercent: data.xPercent, 
+                yPercent: data.yPercent,
                 toggled: data.toggled,
-                param_vals: data.param_vals,
-                image: data.name + '.svg'}
-        });
+                param_vals: data.param_vals
+        }});
         const retObj = {
             "name": boardDoc.data(),
             "pedals": pedalsList
