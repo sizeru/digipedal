@@ -6,11 +6,10 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import './Navbar.css';
 import "./Board.css";
 import Loading from './Loading';
-import {Row, Col, Button} from 'react-bootstrap';
 import InfoModal from './InfoModal';
 
 // drag and drop stuff
-import {DndContext, DragOverlay} from '@dnd-kit/core';
+import {DndContext} from '@dnd-kit/core';
 import Draggable from './dnd/Draggable';
 import Droppable from './dnd/Droppable';
 import {restrictToParentElement} from '@dnd-kit/modifiers';
@@ -18,11 +17,9 @@ import {restrictToParentElement} from '@dnd-kit/modifiers';
 // pedal browser stuff
 import PedalBrowser from './PedalBrowser';
 
-// pedals
-import AmpPedal from './pedal_components/AmpPedal';
 
 // attaching to front end
-import {getBoardById, getPedals, getPedalById} from '../firebaseOperations';
+import {getBoardById, getPedalById} from '../firebaseOperations';
 import {findPedal} from './pedal_components/PedalFinder'
 
 function Board( {boards, pedalTypeMap} ) {
@@ -30,10 +27,7 @@ function Board( {boards, pedalTypeMap} ) {
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
-    const [helpShow, setHelpShow] = useState(false);
 
-    const handleClose = () => setHelpShow(false);
-    const handleShow = () => setHelpShow(true);
     const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
@@ -138,7 +132,6 @@ function Board( {boards, pedalTypeMap} ) {
         ctx.moveTo(prevX, prevY);
         ctx.lineTo(currX, currY);
         ctx.stroke(); // Render the path
-        console.log(`Tried to draw line from (${prevX}, ${prevY}) to (${currX}, ${currY})`)
     }
 
     function drawLines(){
@@ -153,8 +146,9 @@ function Board( {boards, pedalTypeMap} ) {
         canvas.height = window.innerHeight;
 
         let ctx = canvas.getContext('2d');
-        
 
+        let drawnLines = [];
+        
         // make it so it draws a from start to first pedal
         let prevX = 0
         let prevY = window.innerHeight *.5;
@@ -162,12 +156,17 @@ function Board( {boards, pedalTypeMap} ) {
             let [currX, currY] = getPedalXY(pedal);
             currX += Math.round(pedal.width / 2) || 0;
             currY += Math.round(pedal.height / 2) || 0;
+            drawnLines.push({prevX: prevX, prevY: prevY, currX: currX, currY:currY})
             drawLine(ctx, prevX, prevY, currX, currY)
             prevX = currX;
             prevY = currY;
         });
         // drawing a line from last pedal to the end
         drawLine(ctx, prevX, prevY, window.innerWidth, window.innerHeight *.5)
+        drawnLines.push({prevX: prevX, prevY: prevY, currX: window.innerWidth, currY:window.innerHeight *.5})
+
+        console.log("drawnLines:")
+        console.log(drawnLines)
     }
 
     // whenever the currboard is changed, we need to remake the pedal map
@@ -311,10 +310,7 @@ function Board( {boards, pedalTypeMap} ) {
                     <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button>
                 </div>
             </div>  
-            <Row>        
-                <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
-                <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
-            </Row>
+            <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)} /> : null}
 
             <canvas id="overlayCanvas" />
@@ -366,7 +362,7 @@ function Board( {boards, pedalTypeMap} ) {
             if(onClick){
                 console.log("Clicking on the underlying thing:")
                 console.log(event.activatorEvent.srcElement)
-                onClick()
+                onClick(event)
             }
             return;
         }
