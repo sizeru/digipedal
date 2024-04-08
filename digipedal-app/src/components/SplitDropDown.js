@@ -15,7 +15,7 @@ function SplitDropDown({id, name}) {
   // Options for the dropdown
   // Function to handle selection
   const handleDelete = async (e) => {
-    await deleteBoard(id.toString());
+    // await deleteBoard(id.toString());
     navigate(0);
   };
 
@@ -43,41 +43,6 @@ function SplitDropDown({id, name}) {
 
   return (
     <Container className="custom-button-container">
-  
-      {/* <Row>
-        <Col md={8}>
-          <Button variant="outline-light" className="board-title" as={Link} to={"/board/"+ id}> 
-            {name} 
-          </Button>
-        </Col>
-        <Col md={4}>
-          <div className="share-drop">
-          <SplitButton
-            id="dropdown-split-basic"
-            title={selectedItem}
-            variant="success"
-            onSelect={handleSelect}
-          >
-            {options.map((option, index) => (
-              <Dropdown.Item key={index} eventKey={option}>
-                {option}
-              </Dropdown.Item>
-            ))}
-          </SplitButton>
-
-          {isRenaming && (
-              <input
-                type="text"
-                placeholder="New name"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={handleRename}
-                autoFocus
-              />
-              )}
-          </div>
-        </Col>
-      </Row> */}
       <Dropdown className="w-100 custom-button-group" as={ButtonGroup}>
         {isRenaming ?
         <InputGroup> 
