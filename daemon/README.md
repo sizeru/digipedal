@@ -23,22 +23,22 @@ The options are as follows:
 
 ## COMMANDS
 The server will respond to the following http requests:
-* **DELETE** /boards?board_index=*board_index*
+* **DELETE** /board?board_index=*board_index*
     - Deletes the all pedals from a board
-* **GET** /boards/active
+* **GET** /board/active
     - Returns the index of the active board
-* **PUT** /boards/active
+* **PUT** /board/active
     - Sets the current board to the specified board index
     - Body is a JSON file which includes:
         + "board_index": *board_index*
-* **POST** /boards/pedal
+* **POST** /board/pedal
     - Adds a pedal to the board at this index. Should this index be out of range, will insert it as the last pedal.
     - Body is a JSON file which includes the tarball. This tarball contains the manifest `.ttl`, the pedal `.ttl`, and the `.so` file for the pedal. If the pedal already exists on the server, the tarball does not need to be sent:
         + "board_index": *board index*
         + "pedal_index": *pedal index*
         + "pedal_uri": *pedal_uri*
         + "tarball" (optional): *pedal.tar.gz*
-* **PUT** /boards/pedal
+* **PUT** /board/pedal
     - Changes a parameter of a pedal 
     - Body is a JSON file which includes:
         + board_index: *board index*
@@ -47,7 +47,7 @@ The server will respond to the following http requests:
             * "*parameter 1 name*": "*parameter 1 value*"
             * "*parameter 2 name*": "*parameter 2 value*"
             * ...
-* **DELETE** /boards/pedal?board_index=*board_index*&pedal_index=*pedal_index*
+* **DELETE** /board/pedal?board_index=*board_index*&pedal_index=*pedal_index*
     - Deletes the specified pedal from the pedal board
 * **GET** /pedal?pedal_uri=*pedal_uri*
     - Returns a "200" HTTP response code if the pedal exists already on the machine, and a "404" otherwise. This can be used to avoid sending files over the network.
