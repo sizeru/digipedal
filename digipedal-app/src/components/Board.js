@@ -270,6 +270,20 @@ function Board( {boards, pedalTypeMap} ) {
         console.log(pedalsMap)
     }
 
+    function togglePedal(boardId){
+        console.log("togglePedal: " + boardId);
+        const activePedal = pedalsMap.get(boardId);
+        activePedal.toggled = activePedal.toggled ? false : true;
+        let newMap = new Map(pedalsMap);
+        newMap.set(boardId, activePedal)
+        setPedalsMap(newMap);
+        console.log(newMap)
+    }
+
+    function toggleInfoModal(pedal_id){
+
+    }
+
 
     return (
         isLoading ? 
@@ -308,7 +322,10 @@ function Board( {boards, pedalTypeMap} ) {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
-                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals} deletePedal={() => deletePedal(pedal.boardId)}/>
+                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals} 
+                            deletePedal={() => deletePedal(pedal.boardId)}
+                            togglePedal={() => togglePedal(pedal.boardId)}/>
+                            {/* <InfoModal showing={pedal.showing}handleClose= pedals= pedalId={pedal.pedal_id}/> */}
                         </Draggable>);
                     })}
                 </Droppable>
