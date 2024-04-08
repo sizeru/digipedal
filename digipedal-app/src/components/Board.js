@@ -261,7 +261,7 @@ function Board( {boards, pedalTypeMap} ) {
 
     function deletePedal(pedalId){
         console.log("deletePedal: " + pedalId);
-        const activePedal = pedalsMap.get(id);
+        const activePedal = pedalsMap.get(pedalId);
         
         let newMap = new Map(pedalsMap);
         newMap.delete(activePedal.boardId)
@@ -269,6 +269,7 @@ function Board( {boards, pedalTypeMap} ) {
         setPedalsMap(newMap);
         console.log(pedalsMap)
     }
+
 
     return (
         isLoading ? 
@@ -335,13 +336,12 @@ function Board( {boards, pedalTypeMap} ) {
         setCloneElement(null);
         console.log("handleDragEnd")
         console.log(event)
-        if(isDeleteHeld){
-            return deletePedal(event)
-        }
         
         if(Math.abs(event.delta.x) < 1 && Math.abs(event.delta.y) < 1){
+            console.log("Probably a click!")
             // checking if the thing they are trying to click on has an onclick function
             let onClick = Object.values(event.activatorEvent.srcElement)[1].onClick
+            console.log(event.activatorEvent.srcElement)
             if(onClick){
                 console.log("Clicking on the underlying thing:")
                 console.log(event.activatorEvent.srcElement)
