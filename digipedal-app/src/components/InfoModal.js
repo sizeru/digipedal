@@ -4,16 +4,11 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
 import './InfoModal.css';
-import { useState, useEffect } from 'react';
+import {findPedal} from './pedal_components/PedalFinder'
 
-function InfoModal( {showing, handleClose, pedals, pedalId} ) {
-    const [pedalInfo, setPedalInfo] = useState(null);
-    const basePath = process.env.PUBLIC_URL;
+function InfoModal( {showing, handleClose, pedalInfo} ) {
 
-    useEffect(() => {
-        setPedalInfo(pedals.find((pedal) => pedal.id == pedalId));
-    }, [pedals, pedalId]);
-    
+    let PedalElement = findPedal(pedalInfo.name);
     return ( 
         <div>  
             <Modal  show={showing} 
@@ -30,7 +25,7 @@ function InfoModal( {showing, handleClose, pedals, pedalId} ) {
                         <Row>
                             <Col md={6}>
                                 <div className="item-container">
-                                    <img src={pedalInfo ? basePath + "/pedals" + pedalInfo.image : ""} alt={pedalInfo ? pedalInfo.name : ""} className="pedal-image"/>
+                                    <PedalElement width={window.innerWidth * .3} height={window.innerHeight * .5} isStatic={true}/>
                                 </div>
                             </Col>
                             <Col md={6}>
@@ -42,13 +37,13 @@ function InfoModal( {showing, handleClose, pedals, pedalId} ) {
                                         <p> {pedalInfo ? pedalInfo.description : ""} </p>
                                     </Col>
                                     {pedalInfo ? 
-                                    pedalInfo.effects.map( (effect, index) => (
-                                    <Row key={"Effect " + index}>
+                                    pedalInfo.parameters.map( (parameter, index) => (
+                                    <Row key={"Parameter " + index}>
                                         <Col className="headers" md={3}>
-                                            <h4> {effect.effect_name} </h4> 
+                                            <h4> {parameter.name} </h4> 
                                         </Col>
                                         <Col md={9}>
-                                            <p> {effect.effect_description} </p>
+                                            <p> {parameter.description} </p>
                                         </Col>
                                     </Row>
                                     )) : ""}

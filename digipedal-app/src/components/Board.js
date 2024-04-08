@@ -6,11 +6,10 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import './Navbar.css';
 import "./Board.css";
 import Loading from './Loading';
-import {Row, Col, Button} from 'react-bootstrap';
 import InfoModal from './InfoModal';
 
 // drag and drop stuff
-import {DndContext, DragOverlay} from '@dnd-kit/core';
+import {DndContext} from '@dnd-kit/core';
 import Draggable from './dnd/Draggable';
 import Droppable from './dnd/Droppable';
 import {restrictToParentElement} from '@dnd-kit/modifiers';
@@ -18,11 +17,9 @@ import {restrictToParentElement} from '@dnd-kit/modifiers';
 // pedal browser stuff
 import PedalBrowser from './PedalBrowser';
 
-// pedals
-import AmpPedal from './pedal_components/AmpPedal';
 
 // attaching to front end
-import {getBoardById, getPedals} from '../firebaseOperations';
+import {getBoardById, getPedalById} from '../firebaseOperations';
 import {findPedal} from './pedal_components/PedalFinder'
 
 function Board( {boards, pedalTypeMap} ) {
@@ -30,16 +27,13 @@ function Board( {boards, pedalTypeMap} ) {
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
-    const [helpShow, setHelpShow] = useState(false);
 
-    const handleClose = () => setHelpShow(false);
-    const handleShow = () => setHelpShow(true);
     const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
 
-    const defaultPedalWidth = 140;
-    const defaultPedalHeight = 200;
+    const defaultPedalWidth = window.innerWidth / 10;
+    const defaultPedalHeight = defaultPedalWidth * 1.5;
 
     // all the cloning shadow stuff
     const [cloneElement, setCloneElement] = useState(null);
@@ -106,29 +100,6 @@ function Board( {boards, pedalTypeMap} ) {
         console.log("More");
     };
 
-    
-    // holding delete detection
-    const [isDeleteHeld, setIsDeleteHeld] = useState(false);
-
-    // detecting if the delete key is held down
-    const handleKeyDown = (event) => {
-        if (event.key === 'Delete') {
-            setIsDeleteHeld(true);
-        }
-    };
-
-    // dealing with if they release the key
-    const handleKeyUp = (event) => {
-        if (event.key === 'Delete') {
-            setIsDeleteHeld(false);
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('keyup', handleKeyUp);
-    }, []);
-
     function getPedalXY(pedal){
         console.log(pedal)
         if(pedal.x && pedal.y && pedal.height && pedal.width){
@@ -149,7 +120,6 @@ function Board( {boards, pedalTypeMap} ) {
         return [pedal.x, pedal.y];
     }
     function drawLine(ctx, prevX, prevY, currX, currY){
-        
         ctx.beginPath();
         // https://stackoverflow.com/questions/61122649/how-to-add-gradient-to-strokestyle-canvas-in-javascript#:~:text=You%20can%20create%20a%20CanvasGradient%20by%20calling%20the,it%20by%20calling%20the%20method%20addColorStop%20%28offset%2C%20color%29.
         const gradient = ctx.createLinearGradient(prevX, prevY, currX, currY);
@@ -161,7 +131,20 @@ function Board( {boards, pedalTypeMap} ) {
         ctx.moveTo(prevX, prevY);
         ctx.lineTo(currX, currY);
         ctx.stroke(); // Render the path
-        console.log(`Tried to draw line from (${prevX}, ${prevY}) to (${currX}, ${currY})`)
+
+        // drawing an indicator for flow
+        ctx.beginPath()
+        ctx.ellipse(currX - window.innerWidth / 40, currY + window.innerWidth / 66, window.innerWidth / 150, window.innerHeight / 25, 45, 0, 180)
+        ctx.fillStyle = "#006400"
+        ctx.fill()
+        ctx.stroke();
+        
+        ctx.beginPath()
+        ctx.ellipse(currX - window.innerWidth / 40, currY - window.innerWidth / 66, window.innerWidth / 150, window.innerHeight /25, -45, 0, 180)
+        ctx.strokeStyle = null
+        ctx.fillStyle = "#006400"
+        ctx.fill()
+        ctx.stroke();
     }
 
     function drawLines(){
@@ -176,21 +159,28 @@ function Board( {boards, pedalTypeMap} ) {
         canvas.height = window.innerHeight;
 
         let ctx = canvas.getContext('2d');
-        
 
+        let drawnLines = [];
+        const sortedPedalsEntries = [...pedalsMap.entries()].sort((a, b) => a[1].x - b[1].x);
+        console.log(sortedPedalsEntries)
         // make it so it draws a from start to first pedal
         let prevX = 0
         let prevY = window.innerHeight *.5;
-        pedalsMap.forEach((pedal) => {  
+        sortedPedalsEntries.forEach((pedalEntry) => {  
+            let pedal = pedalEntry[1]
             let [currX, currY] = getPedalXY(pedal);
-            currX += Math.round(pedal.width / 2) || 0;
             currY += Math.round(pedal.height / 2) || 0;
+            drawnLines.push({prevX: prevX, prevY: prevY, currX: currX, currY:currY})
             drawLine(ctx, prevX, prevY, currX, currY)
-            prevX = currX;
+            prevX = currX + pedal.width;
             prevY = currY;
         });
         // drawing a line from last pedal to the end
         drawLine(ctx, prevX, prevY, window.innerWidth, window.innerHeight *.5)
+        drawnLines.push({prevX: prevX, prevY: prevY, currX: window.innerWidth, currY:window.innerHeight *.5})
+
+        console.log("drawnLines:")
+        console.log(drawnLines)
     }
 
     // whenever the currboard is changed, we need to remake the pedal map
@@ -242,8 +232,6 @@ function Board( {boards, pedalTypeMap} ) {
             'yPercent': defaultPercent,
             'x': defaultPercent / 100 * window.innerWidth,
             'y': defaultPercent / 100 * window.innerHeight,
-            'width': defaultPedalWidth,
-            'height': defaultPedalHeight,
             'boardId': pedalMaxId + 1,
             'toggled': true,
             'pedal': findPedal(pedalTypeMap.get(pedalId)),
@@ -259,11 +247,9 @@ function Board( {boards, pedalTypeMap} ) {
         console.log(pedalsMap)
     };
 
-    function deletePedal(event){
-        console.log(`deletePedal:` )
-        console.log(event)
-
-        const activePedal = pedalsMap.get(event.active.id);
+    function deletePedal(pedalId){
+        console.log("deletePedal: " + pedalId);
+        const activePedal = pedalsMap.get(pedalId);
         
         let newMap = new Map(pedalsMap);
         newMap.delete(activePedal.boardId)
@@ -271,6 +257,48 @@ function Board( {boards, pedalTypeMap} ) {
         setPedalsMap(newMap);
         console.log(pedalsMap)
     }
+
+    function togglePedal(boardId){
+        console.log("togglePedal: " + boardId);
+        const activePedal = pedalsMap.get(boardId);
+        activePedal.toggled = activePedal.toggled ? false : true;
+        let newMap = new Map(pedalsMap);
+        newMap.set(boardId, activePedal)
+        setPedalsMap(newMap);
+        console.log(newMap)
+    }
+
+    let [pedalInfoMap, setPedalInfoMap] = useState(new Map())
+    let [shownPedalId, setShownPedalId] = useState(null)
+    function showInfoModal(pedal_id){
+        // checking that we actually have the info about the pedal
+        console.log("showInfoModal for pedal " + pedal_id);
+        // we are resetting it back so just set it to null
+        if(pedal_id == null){
+            setShownPedalId(pedal_id);
+            return;
+        }
+        let pedalInfo = pedalInfoMap.get(pedal_id);
+        console.log(pedalInfo)
+        if(pedalInfo){
+            // all we need to do is update which modal is showing 
+            setShownPedalId(pedal_id);
+        } else {
+            // we need to get the info about it and set it to showing
+            const setNewPedalInfo = async () => {
+                let newPedalInfo = await getPedalById(`${pedal_id}`);
+                console.log(newPedalInfo)
+                let newPedalInfoMap = new Map(pedalInfoMap);
+                newPedalInfoMap.set(pedal_id, newPedalInfo)
+                setPedalInfoMap(newPedalInfoMap)
+                setShownPedalId(pedal_id);
+                console.log(newPedalInfoMap)
+            }
+            setNewPedalInfo()
+        }
+
+    }
+
 
     return (
         isLoading ? 
@@ -281,8 +309,8 @@ function Board( {boards, pedalTypeMap} ) {
                     <a className="navbar-brand" href={basePath}>
                         <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
                     </a>
-                    <button className="nav-btn" onClick={undo}> <img src="../navbar_icons/undo.png" className="undo" alt="Undo" /> </button>
-                    <button className="nav-btn" onClick={redo}> <img src="../navbar_icons/undo.png" className="redo" alt="Redo"/> </button>
+                    {/* <button className="nav-btn" onClick={undo}> <img src="../navbar_icons/undo.png" className="undo" alt="Undo" /> </button>
+                    <button className="nav-btn" onClick={redo}> <img src="../navbar_icons/undo.png" className="redo" alt="Redo"/> </button> */}
                 </div>
                 <a className="bungee-regular"> {
                 currBoard.name.name.length > 12 ? currBoard.name.name.substring(0,10) + '...' : currBoard.name.name 
@@ -290,15 +318,13 @@ function Board( {boards, pedalTypeMap} ) {
                 <div className="right-side icon-container-right"> 
                     <button className="nav-btn" onClick={playPauseToggle}> 
                     {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
-                    <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
-                    <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button>
+                    {/* <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
+                    <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button> */}
+                    <div style={{"opacity": 0}}>||||||||||||</div>
                 </div>
             </div>  
-            <Row>        
-                <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
-                <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
-            </Row>
-            {/* <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} /> */}
+            <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
+            {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)} /> : null}
 
             <canvas id="overlayCanvas" />
             
@@ -309,7 +335,10 @@ function Board( {boards, pedalTypeMap} ) {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
-                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals}/>
+                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals} 
+                            deletePedal={() => deletePedal(pedal.boardId)}
+                            togglePedal={() => togglePedal(pedal.boardId)}
+                            showInfoModal={() => showInfoModal(pedal.pedal_id)}/>
                         </Draggable>);
                     })}
                 </Droppable>
@@ -337,17 +366,16 @@ function Board( {boards, pedalTypeMap} ) {
         setCloneElement(null);
         console.log("handleDragEnd")
         console.log(event)
-        if(isDeleteHeld){
-            return deletePedal(event)
-        }
         
         if(Math.abs(event.delta.x) < 1 && Math.abs(event.delta.y) < 1){
+            console.log("Probably a click!")
             // checking if the thing they are trying to click on has an onclick function
             let onClick = Object.values(event.activatorEvent.srcElement)[1].onClick
+            console.log(event.activatorEvent.srcElement)
             if(onClick){
                 console.log("Clicking on the underlying thing:")
                 console.log(event.activatorEvent.srcElement)
-                onClick()
+                onClick(event)
             }
             return;
         }
