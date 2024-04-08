@@ -8,7 +8,7 @@ function findPedal(name){
         default:
     }
     // oh no we didnt find it1
-    console.error("findPedal error: what is a " + name);
+    // console.error("findPedal error: what is a " + name);
     // returning something so it can at least load if there is an error
     return ()=> (<></>)
 }
