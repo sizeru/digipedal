@@ -284,6 +284,7 @@ async fn delete_pedals(req: Request<hyper::body::Incoming>) -> Result<Response<F
         let mut ll = LinkedList::new();
         ll.push_front(input);
         ll.push_back(output);
+        // TODO: Finish modifying board
     }
 
     // info!("Succesfully parsed json: {json:#?}");
