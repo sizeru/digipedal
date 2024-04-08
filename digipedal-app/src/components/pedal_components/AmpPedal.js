@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 const minAmplifcation = 0;

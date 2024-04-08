@@ -38,7 +38,7 @@ function PedalBrowser(props) {
               // console.log("pedalId")
               // console.log(pedalId)
               let PedalElement = findPedal(pedalType);
-              console.log(PedalElement)
+              // console.log(PedalElement)
               return (
               <button onClick={(event) => addPedal(event, pedalId)}>
                   {pedalType}

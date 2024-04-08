@@ -1,4 +1,4 @@
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 // import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -49,8 +49,22 @@ export const createBoard = async (boardId) => {
     try {
         await setDoc(boardRef, {name: `Board ${boardId}`});
         console.log("Board created successfully!");
+        // Add pedals subcollection here
     } catch (error) {
         console.error("Error creating board:", error);
+    }
+}
+
+export const renameBoard = async (boardId, newName) => {
+    const boardRef = doc(db, 'boards', boardId);
+    // console.log(boardRef.data());
+    console.log("name:", newName);
+    try {
+
+        await updateDoc(boardRef, {name: newName});
+        console.log("Board renamed successfully!");
+    } catch (error) {
+        console.error("Error renaming board:", error);
     }
 }
 
@@ -59,6 +73,10 @@ export const createBoard = async (boardId) => {
 // Deletes board from list of boards
 export const deleteBoard = async (boardId) => {
     const boardRef = doc(db, 'boards', boardId);
+    const boardDoc = await getDoc(boardRef);
+    console.log(boardId);
+    console.log(boardDoc);
+    console.log(boardDoc.exists());
     try {
         await deleteDoc(boardRef);
         console.log("Board deleted successfully!");
@@ -72,9 +90,8 @@ export const deleteBoard = async (boardId) => {
 export const getBoards = async () => {
     const boards = collection(db, 'boards');
     const boardsDocs = await getDocs(boards);
-    const boardsList = boardsDocs.docs.map( (doc, idx) => {
-      // console.log(doc.data());
-      return {id:idx, name:doc.data().name, image:doc.data().name + '.png'}
+    const boardsList = boardsDocs.docs.map( (doc) => {
+      return {id:doc.id, name:doc.data().name, image:doc.data().name + '.png'}
     });
     return boardsList;
 }
