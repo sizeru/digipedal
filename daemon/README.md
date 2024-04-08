@@ -13,41 +13,49 @@ The **pdb** daemon is an http server which manages JACK connections. Pd
 
 The options are as follows:
 * **-d**
-	- Daemonize. Detach the server and become a daemon.
+    - Daemonize. Detach the server and become a daemon.
 * **-f** *file*
-	- Specifies the configuration file. The default is */etc/pbd.conf*
+    - Specifies the configuration file. The default is */etc/pbd.conf*
 * **-n**
-	- Check that the configuration is valid, but do not start the daemon.
+    - Check that the configuration is valid, but do not start the daemon.
 * **-v**
-	- Verbose mode. Prints to the command line what would typically be written to the log.
+    - Verbose mode. Prints to the command line what would typically be written to the log.
 
 ## COMMANDS
 The server will respond to the following http requests:
-* **GET** /pedals/*pedal_uri*
-	- Returns a "1" if the pedal exists already on the machine, and a "0" otherwise. This can be used to avoid sending files over the network.
-* **PUT** /boards/*board_id*/pedals/*pedal_index*
-	- Changes a parameter of a pedal 
-	- Body is a JSON file which includes:
-		+ param: *parameter name*
-		+ value: *parameter value*
-* **DELETE** /boards/*board_id*/pedals/*pedal_index*
-	- Deletes the specified pedal from the pedal board
-* **POST** /boards/*board_id*/pedals/*pedal_index*
-	- Adds a pedal to the board at this index. Should this index be out of range, will insert it as the last pedal.
-	- Body is a JSON file which includes the tarball. This tarball contains the manifest `.ttl`, the pedal `.ttl`, and the `.so` file for the pedal. If the pedal already exists on the server, the tarball does not need to be sent:
-		+ "pedal_uri": *pedal_uri*
-		+ "tarball" (optional): *pedal.tar.gz*
-* **GET** /boards/current
-	- Returns the id of the current board
-* **PUT** /boards/current
-	- Sets the current board to the specified board id
-	- Body is a JSON file which includes:
-		+ board_id: *board_id*
+* **DELETE** /boards?board_index=*board_index*
+    - Deletes the all pedals from a board
+* **GET** /boards/active
+    - Returns the index of the active board
+* **PUT** /boards/active
+    - Sets the current board to the specified board index
+    - Body is a JSON file which includes:
+        + "board_index": *board_index*
+* **POST** /boards/pedal
+    - Adds a pedal to the board at this index. Should this index be out of range, will insert it as the last pedal.
+    - Body is a JSON file which includes the tarball. This tarball contains the manifest `.ttl`, the pedal `.ttl`, and the `.so` file for the pedal. If the pedal already exists on the server, the tarball does not need to be sent:
+        + "board_index": *board index*
+        + "pedal_index": *pedal index*
+        + "pedal_uri": *pedal_uri*
+        + "tarball" (optional): *pedal.tar.gz*
+* **PUT** /boards/pedal
+    - Changes a parameter of a pedal 
+    - Body is a JSON file which includes:
+        + board_index: *board index*
+        + pedal_index: *pedal index*
+        + param_vals:
+            * "*parameter 1 name*": "*parameter 1 value*"
+            * "*parameter 2 name*": "*parameter 2 value*"
+            * ...
+* **DELETE** /boards/pedal?board_index=*board_index*&pedal_index=*pedal_index*
+    - Deletes the specified pedal from the pedal board
+* **GET** /pedal?pedal_uri=*pedal_uri*
+    - Returns a "200" HTTP response code if the pedal exists already on the machine, and a "404" otherwise. This can be used to avoid sending files over the network.
 
 ## FILES
 * */etc/pbd.conf*
-	- Default configuration file
+    - Default configuration file
 * */var/log/pbd/access.log*
-	- Default access log
+    - Default access log
 * */var/log/pbd/error.log*
-	- Default error log
+    - Default error log
