@@ -357,23 +357,62 @@ async fn process_req(req: Request<hyper::body::Incoming>) -> Result<Response<Ful
         (&Method::PUT, "/board/active") => set_active_board(req).await,
         (&Method::POST, "/board/pedal") => add_pedal(req).await,
         (&Method::PUT, "/board/pedal") => update_pedal(req).await,
-        (&Method::DELETE, "/board/pedal") => async_todo().await,
-        (&Method::GET, "/pedal") => async_todo().await,
+        (&Method::DELETE, "/board/pedal") => delete_pedal(req).await,
+        (&Method::GET, "/pedal") => async_unimplemented().await,
         (_, _) => not_supported().await,
     };
+    // TODO: Unwrap is dangerous. Need to provide an error response if any of these api calls fail.
     return Ok(response.unwrap());
     // return Ok(Response::new(Full::new(Bytes::from(response))));
 }
 
-async fn async_todo() -> Result<Response<Full<Bytes>>, Error> {
-    return Ok(Response::new(Full::from("TODO")));
+async fn async_unimplemented() -> Result<Response<Full<Bytes>>, Error> {
+    return Ok(Response::new(Full::from("Unimplemented")));
 }
 
 async fn not_supported() -> Result<Response<Full<Bytes>>, Error> {
     return Ok(Response::new(Full::from("This uri is not supported")));
 }
 
-// Update the controls of a pedal
+async fn delete_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
+    let queries = get_queries(&req);
+    let board_index = get_query_usize(&queries, "board_index")?;
+    let pedal_index = get_query_usize(&queries, "pedal_index")?;
+    
+    // Delete this pedal
+    let boards = &mut set().write().await.boards;
+    let board = match boards.get_mut(board_index) {
+        Some(board) => Ok(board),
+        None => if board_index == boards.len() + 1 {
+            boards.push(Board::new());
+            Ok(boards.get_mut(board_index).unwrap())
+        } else {
+            Err(Error::BoardIndexOOB(board_index))
+        }
+    }?;
+
+    let mut after = board.pedals.split_off(pedal_index);
+    let before = board.pedals.borrow_mut();
+    let target_pedal = after.pop_front().ok_or(Error::PedalsMissing)?; // TODO: This error names are shitty
+    let pedal_after = after.front().ok_or(Error::PedalsMissing)?;
+    let pedal_before = before.back().ok_or(Error::PedalsMissing)?;
+    let disconnect_first = Command::new("jack_disconnect")
+        .args(&[&target_pedal.input_port, &pedal_before.output_port])
+        .output().await
+        .map_err(|e| Error::Command(e))?;
+    let disconnect_second = Command::new("jack_disconnect")
+        .args(&[&target_pedal.output_port, &pedal_after.input_port])
+        .output().await
+        .map_err(|e| Error::Command(e))?;
+    let connect_first = Command::new("jack_connect")
+        .args(&[&pedal_before.output_port, &pedal_after.input_port])
+        .output().await
+        .map_err(|e| Error::Command(e))?;
+    before.append(&mut after);
+    target_pedal.process.unwrap().kill();
+    Ok(Response::new(Full::new(Bytes::new())))
+}
+
 async fn update_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
     // Read values from JSON
     let json = get_json_from_body(req.into_body()).await?;
@@ -535,7 +574,7 @@ async fn set_active_board(req: Request<hyper::body::Incoming>) -> Result<Respons
 // Delete all pedals from a specified board
 async fn delete_pedals(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
     let queries = get_queries(&req);
-    let board_index = get_query_usize(queries, "board_index")?;
+    let board_index = get_query_usize(&queries, "board_index")?;
     // Remove all boards
     let mut set = set()
         .write()
@@ -569,7 +608,7 @@ async fn delete_pedals(req: Request<hyper::body::Incoming>) -> Result<Response<F
     return Ok(Response::new(Full::new(Bytes::from(""))));
 }
 
-fn get_query_usize(queries: HashMap<String, String>, key: &str) -> Result<usize, Error> {
+fn get_query_usize(queries: &HashMap<String, String>, key: &str) -> Result<usize, Error> {
     let board_index = queries
         .get(key)
         .map(|b_idx| b_idx.parse().unwrap_or(-1))
