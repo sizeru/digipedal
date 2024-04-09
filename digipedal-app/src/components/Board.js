@@ -299,7 +299,7 @@ function Board( {boards, pedalTypeMap} ) {
                 <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
                 <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
-            <GenericInterfaceModal pedal_id={1} show={helpShow} handleClose={handleClose} />
+            <GenericInterfaceModal pedal_id={5} show={helpShow} handleClose={handleClose} />
 
             <canvas id="overlayCanvas" />
             

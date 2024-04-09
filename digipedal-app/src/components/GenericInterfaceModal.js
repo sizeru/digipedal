@@ -29,14 +29,26 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
     }, []);
 
     const changePedalVal = (param, value) => {
-        console.log(param + " : " + value);
+        // console.log(param + " : " + value);
         let editingPedalVals = {...newPedalVals};
         editingPedalVals[param] = value;
         setNewPedalVals(editingPedalVals);
     };
 
+    const calculateStep = (param) => {
+        if (param.step === "log") {
+            let step = (Math.log(param.maximum) - Math.log(param.minimum)) / (param.maximum - param.minimum);
+            console.log("step: " + step);
+            return step;
+        } else {
+            return (param.maximum - param.minimum) / 100;
+        }
+    }
+
     function valueLabelFormat(value, unit) {
-        if (unit === "none") return value;
+        if (unit == "coef") return value * 100 + "%";
+        else if (unit == "degree") return value + "°";
+        else if (unit === "none" || unit === undefined) return value;
         return `${value} ${unit}`;
     }
 
@@ -45,18 +57,16 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
             <Row>
                 { pedalParams.map((param) => {
                     return (
-                        <InputGroup>
+                        <InputGroup className="params">
                             {param.unit === "dropdown" ? (
                                 <div>
                                     <Form.Label> {param.name} </Form.Label>
-                                    <Form.Select defaultValue={pedalVals[param.name]} onChange={(e) => changePedalVal(param.name, e.target.value)}>
-                                        {(() => {
-                                            let options = [];
-                                            for (let i = param.minimum; i < param.maximum; i++) {
-                                                options.push(<option value={i}> {i} </option>);
-                                            }
-                                            return options;
-                                        })()}
+                                    <Form.Select 
+                                        defaultValue={param.options[pedalVals[param.name]]} 
+                                        onChange={(e) => changePedalVal(param.name, e.target.value)}>
+                                    { param.options.map((option, index) => {
+                                        return <option key={index} value={option}> {option} </option>;
+                                    })}
                                     </Form.Select>
                                 </div>
                             ) : param.unit === "toggle" ? (
@@ -67,14 +77,20 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                             ) : (
                                 <div className="slider-con">
                                     <Form.Label> {param.name} </Form.Label>
-                                    <Col md={12}></Col>
-                                    <Slider 
-                                        id={param.name +"Slider"} 
-                                        min={param.minimum} 
-                                        max={param.maximum} 
-                                        defaultValue={pedalVals[param.name]} valueLabelDisplay="auto" 
-                                        valueLabelFormat={value => {return valueLabelFormat(value, param.unit)}}
-                                        step={(param.maximum-param.minimum)/50} onChange={(e) => changePedalVal(param.name, e.target.value)}/>
+                                    <Row>
+                                        <Col md={8}>
+                                            <Slider 
+                                                id={param.name +"Slider"} 
+                                                min={param.minimum} 
+                                                max={param.maximum} 
+                                                defaultValue={pedalVals[param.name]} valueLabelDisplay="auto" 
+                                                valueLabelFormat={value => {return valueLabelFormat(value, param.unit)}}
+                                                step={calculateStep(param)} onChange={(e) => changePedalVal(param.name, e.target.value)}/>
+                                        </Col>
+                                        <Col md={4}>
+                                            <Form.Control type="number" value={newPedalVals[param.name]} onChange={(e) => changePedalVal(param.name, e.target.value)} />
+                                        </Col>
+                                    </Row>
                                 </div>
                             )}
                         </InputGroup>
