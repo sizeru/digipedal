@@ -1,14 +1,5 @@
 use std::{
-    borrow::BorrowMut,
-    collections::{HashMap, LinkedList},
-    convert::Infallible,
-    env,
-    fs,
-    io,
-    net::SocketAddr,
-    path::PathBuf,
-    str::Utf8Error,
-    sync::OnceLock
+    borrow::BorrowMut, collections::{HashMap, LinkedList}, convert::Infallible, env, fs, io, net::SocketAddr, path::{Path, PathBuf}, process::ExitStatus, str::Utf8Error, sync::OnceLock
 };
 use http_body_util::{BodyExt, Full};
 use hyper::{
@@ -20,16 +11,18 @@ use hyper::{
     Response
 };
 use hyper_util::rt::TokioIo;
+// use jack::jack_sys::{jack_client_open, jack_connect};
 use json::JsonValue;
 use log::{info, error};
 use daemonize::Daemonize;
 use tokio::{
-    net::TcpListener, process::Command, sync::RwLock
+    net::TcpListener, process::{Child, Command}, sync::RwLock
 };
+use turtle_syntax::Parse;
 
 static SET: OnceLock<RwLock<SetList>> = OnceLock::new();
 fn set() -> &'static RwLock<SetList> {
-    SET.get_or_init(|| RwLock::new(SetList::new()))
+    SET.get_or_init(|| RwLock::new(SetList::default()))
 }
 
 #[derive(Debug)]
@@ -46,8 +39,20 @@ enum Error {
     BodyNotUtf8(Utf8Error),
     BodynotJSON,
     QueryNotPresent,
-    BoardIndexOOB(i32),
-    JSONInvalidFormat,
+    BoardIndexOOB(usize),
+    JsonUnexpectedKey(Option<String>),
+    JsonNoBoardIndex,
+    JsonNoPedalIndex,
+    JsonNoPedalUri,
+    JalvCannotStart(io::Error),
+    PedalsMissing,
+    WalkDirError(walkdir::Error),
+    ManifestRead(io::Error),
+    TtfParse,
+    Unimplemented,
+    Command(io::Error),
+    CommandExitFailure(ExitStatus),
+    CommmandResponseNotUtf8(Utf8Error),
 }
 
 #[derive(Debug)]
@@ -91,15 +96,22 @@ struct Config {
     pid_file: PathBuf, 
     plugin_dir: PathBuf,
     addr: SocketAddr,
+    audio_in: String,
+    audio_out: String,
+    data_dir: PathBuf,
 }
 
 impl std::default::Default for Config {
     fn default() -> Self {
+        // TODO: Add system audio_in and audio_out to config
         Self {
             log_file: PathBuf::from("/var/log/pdb.log"),
             pid_file: PathBuf::from("/var/run/pdb.pid"),
             plugin_dir: PathBuf::from("/usr/lib/lv2"),
             addr: "127.0.0.1:3444".parse().unwrap(),
+            audio_in: String::from("system:capture_1"),
+            audio_out: String::from("system:output_1"),
+            data_dir: PathBuf::from("/var/lib/pdb"),
         }
     }
 }
@@ -118,6 +130,9 @@ impl Config {
                     "pid_file" => config.pid_file = value.parse().unwrap(),
                     "plugin_dir" => config.plugin_dir = value.parse().unwrap(),
                     "addr" => config.addr = value.parse().unwrap(),
+                    "audio_in" => config.audio_in = value.to_owned(),
+                    "audio_out" => config.audio_out = value.to_owned(),
+                    "data_dir" => config.data_dir = value.parse().unwrap(),
                     _ => return Err(Error::ConfigParse(line_num)),
                 }
             }
@@ -185,15 +200,57 @@ fn main() -> Result<(), Error> {
     Ok(())
 }
 
-struct Pedal {
-    uri: String,
+struct JackClient {
+    name: String,
+    process: Option<Child>,
     config_values: HashMap<String, String>,
     input_port: String,
     output_port: String,
 }
 
+impl JackClient {
+    fn bind<A, B, C>(client_name: A, input_port: B, output_port: C) -> Self 
+        where A: ToString, B: ToString, C: ToString
+    {
+        Self {
+            name: client_name.to_string(),
+            process: None,
+            config_values: HashMap::new(),
+            input_port: input_port.to_string(),
+            output_port: output_port.to_string(),
+        }
+    }
+
+    async fn launch_plugin(lv2_dir: &Path, pedal_uri: &str) -> Result<Self, Error> {
+        for entry in walkdir::WalkDir::new(lv2_dir) { // TODO: BLOCKING CODE HERE.
+            let entry = entry.map_err(|e| Error::WalkDirError(e))?;
+            let file_name = entry.file_name();
+            if file_name == "manifest.ttl" {
+                let contents = tokio::fs::read_to_string(file_name).await.map_err(|e| Error::ManifestRead(e))?;
+                let doc = turtle_syntax::Document::parse_str(&contents, |span| span)
+                    .map_err(|e| Error::TtfParse)?;
+                for statement in &doc.statements {
+                    info!("Statement: {statement:#?}");
+                }
+            }
+        }
+        /*
+         * 1. Search for lv2 plugin
+         * 2. Parse manifest and bind
+         * 3. 
+         *  */
+        // launch in jalv
+        // read input and output ports
+        return Err(Error::Unimplemented);
+    }
+
+    fn kill(mut self) {
+
+    }
+}
+
 struct Board {
-    pedals: LinkedList<Pedal>
+    pedals: LinkedList<JackClient>
 }
 
 impl Board {
@@ -207,13 +264,15 @@ impl Board {
 // a SetList is a combination of several pedal boards
 struct SetList {
     active: usize,
+    system_audio: JackClient, // assuming mono audio for rn
     boards: Vec<Board>
 }
 
-impl SetList {
-    fn new() -> Self {
+impl Default for SetList {
+    fn default() -> Self {
         Self {
             active: 0,
+            system_audio: JackClient::bind("system", "capture_1", "output_1"),
             boards: Vec::new(),
         }
     }
@@ -222,9 +281,44 @@ impl SetList {
 // Run the jack server. This function will often never return
 #[tokio::main]
 async fn run_server(config: Config) -> Result<(), Error> {
-    info!("Starting server!");
+    info!("Launching server...");
     let listener = TcpListener::bind(config.addr).await.map_err(|e| Error::TcpBind(e))?;
     info!("Bound to address: {}", config.addr);
+    let output = Command::new("aj-snapshot")
+        .arg("-jx")
+        .output().await
+        .map_err(|e| Error::Command(e))?;
+    if !output.status.success() {
+        info!(
+            "(aj-snapshot -jx) {}",
+            std::str::from_utf8(output.stderr.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?
+        );
+        return Err(Error::CommandExitFailure(output.status))
+    }
+    info!(
+        "(aj-snapshot -jx) {}",
+        std::str::from_utf8(output.stdout.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?
+    );
+    let output = Command::new("jack_connect")
+        .args(&[&config.audio_in, &config.audio_out])
+        .output().await
+        .map_err(|e| Error::Command(e))?;
+    if !output.status.success() {
+        info!(
+            "(jack_connect {} {}) {}",
+            &config.audio_in,
+            &config.audio_out,
+            std::str::from_utf8(output.stderr.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?
+        );
+        return Err(Error::CommandExitFailure(output.status))
+    }
+    info!(
+        "(jack_connect {} {}) {}",
+        &config.audio_in,
+        &config.audio_out,
+        std::str::from_utf8(output.stdout.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?
+    );
+    info!("...Server launched!");
 
     // let boards: Arc<Mutex<Vec<Board>>> = Arc::new(Mutex::new(Vec::new()));
     loop {
@@ -248,7 +342,7 @@ async fn process_req(req: Request<hyper::body::Incoming>) -> Result<Response<Ful
         (&Method::DELETE, "/board") => delete_pedals(req).await,
         (&Method::GET, "/board/active") => get_active_board().await,
         (&Method::PUT, "/board/active") => set_active_board(req).await,
-        (&Method::POST, "/board/pedal") => async_todo().await,
+        (&Method::POST, "/board/pedal") => add_pedal(req).await,
         (&Method::PUT, "/board/pedal") => async_todo().await,
         (&Method::DELETE, "/board/pedal") => async_todo().await,
         (&Method::GET, "/pedal") => async_todo().await,
@@ -266,6 +360,48 @@ async fn not_supported() -> Result<Response<Full<Bytes>>, Error> {
     return Ok(Response::new(Full::from("This uri is not supported")));
 }
 
+async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
+    // Read values from JSON
+    let json = get_json_from_body(req.into_body()).await?;
+    let mut board_index = None;
+    let mut pedal_index = None;
+    let mut pedal_uri = None;
+    let mut tarball = None;
+    for (key, value) in json.entries() {
+        match key {
+            "board_index" => board_index = value.as_usize(),
+            "pedal_index" => pedal_index = value.as_usize(),
+            "pedal_uri" => pedal_uri = value.as_str(),
+            "tarball" => tarball = value.as_str(),
+            _ => return Err(Error::JsonUnexpectedKey(value.as_str().map(|str| str.to_owned()))),
+        }
+    }
+    if board_index.is_none() { return Err(Error::JsonNoBoardIndex); }
+    let board_index = board_index.unwrap();
+    if pedal_index.is_none() { return Err(Error::JsonNoPedalIndex); }
+    let pedal_index = pedal_index.unwrap();
+    if pedal_uri.is_none() { return Err(Error::JsonNoPedalUri); }
+    let pedal_uri = pedal_uri.unwrap();
+
+    // Insert pedal
+    // let child = Command::new("jalv")
+    //     .args(&[pedal_uri])
+    //     .spawn()
+    //     .map_err(|e| Error::JalvCannotStart(e))?;
+    // let board = set().write().await.boards.get(board_index).ok_or(Error::BoardIndexOOB(board_index))?;
+    // let pedal_after = board.pedals.split_off(pedal_index);
+    // let pedal_before = board.pedals.back().ok_or(Error::PedalsMissing)?;
+
+    // let pedal_from = 
+    // let disconnect_command = Command::new("jack_disconnect")
+    //     .args(&[])
+    // let set = set().write().await;
+    // if board_index >= set.boards.len() {
+
+    // }
+    todo!()
+}
+
 fn insert_at(l: &mut LinkedList<u8>, idx: usize, val: u8) {
     let mut tail = l.split_off(idx);
     l.push_back(val);
@@ -278,7 +414,6 @@ async fn get_active_board() -> Result<Response<Full<Bytes>>, Error> {
 }
 
 async fn set_active_board(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
-    let queries = get_queries(&req);
     let json = get_json_from_body(req.into_body()).await?;
     let mut board_index = None;
     for (key, value) in json.entries() {
@@ -286,12 +421,10 @@ async fn set_active_board(req: Request<hyper::body::Incoming>) -> Result<Respons
             board_index = value.as_usize();
         }
     }
-    return if let Some(index) = board_index {
-        set().write().await.active = index;
-        Ok(Response::new(Full::new(Bytes::new())))
-    } else {
-        Err(Error::JSONInvalidFormat)
-    }
+    if board_index.is_none() { return Err(Error::JsonNoBoardIndex); }
+
+    set().write().await.active = board_index.unwrap();
+    Ok(Response::new(Full::new(Bytes::new())))
 }
 
 // Delete all pedals from a specified board
@@ -337,7 +470,7 @@ fn get_query_usize(queries: HashMap<String, String>, key: &str) -> Result<usize,
         .map(|b_idx| b_idx.parse().unwrap_or(-1))
         .unwrap_or(-1);
     return if board_index == -1 {
-        Err(Error::BoardIndexOOB(board_index))
+        Err(Error::BoardIndexOOB(board_index as usize))
     } else {
         Ok(board_index as usize)
     };
@@ -357,11 +490,11 @@ async fn get_json_from_body(body: hyper::body::Incoming) -> Result<JsonValue, Er
     let body = body
         .collect()
         .await
-        .map_err(|e| Error::BodyUnreadable)?
+        .map_err(|_e| Error::BodyUnreadable)?
         .to_bytes();
     let contents = std::str::from_utf8(body.as_ref())
         .map_err(|e| Error::BodyNotUtf8(e))?;
-    json::parse(contents).map_err(|e| Error::BodynotJSON)
+    json::parse(contents).map_err(|_e| Error::BodynotJSON)
 }
 
 /*
