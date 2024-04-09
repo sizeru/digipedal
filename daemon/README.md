@@ -2,9 +2,10 @@
 The pedalboard daemon is responsible for maintaining the correct order of JACK connections between audio outputs, inputs, and pedals. It is configured via a config file, and it is controlld using HTTP requests at runtime.
 
 ## Dependencies
-* jackd
-* jack-example-tools
-* aj-snapshot
+* jackd - To run the JACK server
+* jack-example-tools - Tools for configuring JACK connections
+* aj-snapshot - Tools for snapshoting JACK state (pedalboards)
+* jalv - JACK plugin host
 
 ## Usage
 ##### NAME
