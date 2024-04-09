@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function SplitDropDown(id, setLoading) {
   const [selectedItem, setSelectedItem] = useState('...');
   const [isRenaming, setIsRenaming] = useState(false);
-  const [newName, setNewName] = useState('');
+  const [newName, setNewName] = useState("");
   const [showModal, setShowModal] = useState(false); 
 
   // Options for the dropdown
