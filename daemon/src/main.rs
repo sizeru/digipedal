@@ -377,7 +377,7 @@ async fn not_supported() -> Result<Response<Full<Bytes>>, Error> {
 async fn delete_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
     let queries = get_queries(&req);
     let board_index = get_query_usize(&queries, "board_index")?;
-    let pedal_index = get_query_usize(&queries, "pedal_index")?;
+    let pedal_index = get_query_usize(&queries, "pedal_index")? + 1;
     
     // Delete this pedal
     let boards = &mut set().write().await.boards;
