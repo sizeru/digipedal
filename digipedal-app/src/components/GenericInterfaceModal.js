@@ -35,6 +35,11 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
         setNewPedalVals(editingPedalVals);
     };
 
+    function valueLabelFormat(value, unit) {
+        if (unit === "none") return value;
+        return `${value} ${unit}`;
+    }
+
     const adjuster = () => {
         return (
             <Row>
@@ -63,7 +68,13 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                                 <div className="slider-con">
                                     <Form.Label> {param.name} </Form.Label>
                                     <Col md={12}></Col>
-                                    <Slider id={param.name +"Slider"} min={param.minimum} max={param.maximum} defaultValue={pedalVals[param.name]} valueLabelDisplay="auto" step={(param.maximum-param.minimum)/50} onChange={(e) => changePedalVal(param.name, e.target.value)}/>
+                                    <Slider 
+                                        id={param.name +"Slider"} 
+                                        min={param.minimum} 
+                                        max={param.maximum} 
+                                        defaultValue={pedalVals[param.name]} valueLabelDisplay="auto" 
+                                        valueLabelFormat={value => {return valueLabelFormat(value, param.unit)}}
+                                        step={(param.maximum-param.minimum)/50} onChange={(e) => changePedalVal(param.name, e.target.value)}/>
                                 </div>
                             )}
                         </InputGroup>

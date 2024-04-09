@@ -310,7 +310,7 @@ function Board( {boards, pedalTypeMap} ) {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
-                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals}/>
+                            <PedalElement width={defaultPedalWidth * (pedal.boardId)} height={defaultPedalHeight * (pedal.boardId)} toggled={pedal.toggled} param_vals={pedal.param_vals}/>
                         </Draggable>);
                     })}
                 </Droppable>
