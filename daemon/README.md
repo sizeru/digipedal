@@ -43,6 +43,8 @@ The server will respond to the following http requests:
         + "board_index": *board index*
         + "pedal_index": *pedal index*
         + "pedal_uri": *pedal_uri*
+        + "audio_in": *audio_in_port_name*
+        + "audio_out": *audio_out_port_name*
         + "tarball" (optional): *pedal.tar.gz*
 * **PUT** /board/pedal
     - Changes a parameter of a pedal 
