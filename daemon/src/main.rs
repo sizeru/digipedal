@@ -49,6 +49,8 @@ enum Error {
     JsonNoBoardIndex,
     JsonNoPedalIndex,
     JsonNoPedalUri,
+    JsonNoPedalInput,
+    JsonNoPedalOutput,
     JalvCannotStart(io::Error),
     PedalsMissing,
     WalkDirError(walkdir::Error),
@@ -58,6 +60,7 @@ enum Error {
     Command(io::Error),
     CommandExitFailure(ExitStatus),
     CommmandResponseNotUtf8(Utf8Error),
+    PedalOOB(usize),
 }
 
 #[derive(Debug)]
@@ -208,10 +211,10 @@ fn main() -> Result<(), Error> {
 struct JackClient {
     name: String,
     process: Option<Child>,
-    config_values: HashMap<String, String>,
     input_port: String,
     output_port: String,
 }
+// TODO: To update the controls of a client, I need to write to the stdin of the child process. <param> = <value>
 
 impl JackClient {
     fn bind<A, B, C>(client_name: A, input_port: B, output_port: C) -> Self 
@@ -220,7 +223,6 @@ impl JackClient {
         Self {
             name: client_name.to_string(),
             process: None,
-            config_values: HashMap::new(),
             input_port: input_port.to_string(),
             output_port: output_port.to_string(),
         }
@@ -365,6 +367,7 @@ async fn not_supported() -> Result<Response<Full<Bytes>>, Error> {
     return Ok(Response::new(Full::from("This uri is not supported")));
 }
 
+// Adds a pedal to the board.
 async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
     // Read values from JSON
     let json = get_json_from_body(req.into_body()).await?;
@@ -372,12 +375,16 @@ async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<
     let mut pedal_index = None;
     let mut pedal_uri = None;
     let mut tarball = None;
+    let mut audio_in = None;
+    let mut audio_out = None;
     for (key, value) in json.entries() {
         match key {
             "board_index" => board_index = value.as_usize(),
             "pedal_index" => pedal_index = value.as_usize(),
             "pedal_uri" => pedal_uri = value.as_str(),
             "tarball" => tarball = value.as_str(),
+            "audio_in" => audio_in = value.as_str(),
+            "audio_out" => audio_out = value.as_str(),
             _ => return Err(Error::JsonUnexpectedKey(value.as_str().map(|str| str.to_owned()))),
         }
     }
@@ -387,31 +394,62 @@ async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<
     let pedal_index = pedal_index.unwrap();
     if pedal_uri.is_none() { return Err(Error::JsonNoPedalUri); }
     let pedal_uri = pedal_uri.unwrap();
+    if audio_in.is_none() { return Err(Error::JsonNoPedalInput); }
+    let audio_in = audio_in.unwrap();
+    if audio_out.is_none() { return Err(Error::JsonNoPedalOutput); }
+    let audio_out = audio_out.unwrap();
 
-    // Insert pedal
-    // let child = Command::new("jalv")
-    //     .args(&[pedal_uri])
-    //     .spawn()
-    //     .map_err(|e| Error::JalvCannotStart(e))?;
-    // let board = set().write().await.boards.get(board_index).ok_or(Error::BoardIndexOOB(board_index))?;
-    // let pedal_after = board.pedals.split_off(pedal_index);
-    // let pedal_before = board.pedals.back().ok_or(Error::PedalsMissing)?;
+    let boards = &mut set().write().await.boards;
+    let board = match boards.get_mut(board_index) {
+        Some(board) => Ok(board),
+        None => if board_index == boards.len() + 1 {
+            boards.push(Board::new());
+            Ok(boards.get_mut(board_index).unwrap())
+        } else {
+            Err(Error::BoardIndexOOB(board_index))
+        }
+    }?;
 
-    // let pedal_from = 
-    // let disconnect_command = Command::new("jack_disconnect")
-    //     .args(&[])
-    // let set = set().write().await;
-    // if board_index >= set.boards.len() {
+    // Instantiate pedal. Insert into list. Add to JACK. Update metadata.
+    let child = Command::new("jalv")
+        .args(&[pedal_uri])
+        .spawn()
+        .map_err(|e| Error::JalvCannotStart(e))?;
+    let client = JackClient {
+        name: "digi0".to_owned(), // TODO: Name must be unique and dynamically generated. Should be linked with jalv.
+        process: Some(child),
+        input_port: audio_in.to_owned(),
+        output_port: audio_out.to_owned(),
+    };
 
-    // }
-    todo!()
+    // Reconnect surrounding pedals
+    let pedal_index = pedal_index + 1; // Shift pedal index to account for dummy pedals
+    let mut after = board.pedals.split_off(pedal_index);
+    let pedal_after = after.front().ok_or(Error::PedalOOB(pedal_index))?;
+    let before = board.pedals.borrow_mut();
+    let pedal_before = before.back().ok_or(Error::PedalOOB(pedal_index))?;
+    let disconnect_output = Command::new("jack_disconnect")
+        .args(&[&pedal_before.output_port, &pedal_after.input_port])
+        .output().await
+        .map_err(|e| Error::Command(e))?;
+    let connect_first = Command::new("jack_connect")
+        .args(&[&pedal_before.output_port, &client.input_port])
+        .output().await
+        .map_err(|e| Error::Command(e))?;
+    let connect_first = Command::new("jack_connect")
+        .args(&[&client.output_port, &pedal_after.input_port])
+        .output().await
+        .map_err(|e| Error::Command(e))?;
+    before.push_back(client);
+    before.append(&mut after);
+    Ok(Response::new(Full::new(Bytes::new())))
 }
 
-fn insert_at(l: &mut LinkedList<u8>, idx: usize, val: u8) {
-    let mut tail = l.split_off(idx);
-    l.push_back(val);
-    l.append(&mut tail);
-}
+// fn insert_at(l: &mut LinkedList<JackClient>, idx: usize, val: JackClient) {
+//     let mut tail = l.split_off(idx);
+//     l.push_back(val);
+//     l.append(&mut tail);
+// }
 
 async fn get_active_board() -> Result<Response<Full<Bytes>>, Error> {
     let active_index = set().read().await.active;
