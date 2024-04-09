@@ -7,6 +7,8 @@ import './Navbar.css';
 import "./Board.css";
 import Loading from './Loading';
 import InfoModal from './InfoModal';
+import ShareModal from './ShareModal';
+import setShowShareModal from './ShareModal';
 
 // drag and drop stuff
 import {DndContext} from '@dnd-kit/core';
@@ -28,6 +30,14 @@ function Board( {boards, pedalTypeMap} ) {
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
 
+
+    const [sharing, setSharing] = useState(false);
+    
+    const handleShareClose = () => setSharing(false);
+    const handleShare = () => setSharing(true);
+
+    // const handleClose = () => setHelpShow(false);
+    // const handleShow = () => setHelpShow(true);
     const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
@@ -92,8 +102,10 @@ function Board( {boards, pedalTypeMap} ) {
 
     }
 
-    const share = () => {
+    const shareWindow = () => {
         console.log("Share");
+        setShowShareModal(true);
+        
     }
 
     const more = () => {   
@@ -318,6 +330,9 @@ function Board( {boards, pedalTypeMap} ) {
                 <div className="right-side icon-container-right"> 
                     <button className="nav-btn" onClick={playPauseToggle}> 
                     {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
+
+                    <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
+                    
                     {/* <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
                     <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button> */}
                     <div style={{"opacity": 0}}>||||||||||||</div>
@@ -325,9 +340,15 @@ function Board( {boards, pedalTypeMap} ) {
             </div>  
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)} /> : null}
-
+            <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
             <canvas id="overlayCanvas" />
             
+
+                    
+                
+           
+            
+
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
                     <div ref={pedalBoardRef}/>
