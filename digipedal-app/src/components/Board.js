@@ -8,6 +8,8 @@ import "./Board.css";
 import Loading from './Loading';
 import {Row, Col, Button} from 'react-bootstrap';
 import InfoModal from './InfoModal';
+import ShareModal from './ShareModal';
+import setShowShareModal from './ShareModal';
 
 // drag and drop stuff
 import {DndContext, DragOverlay} from '@dnd-kit/core';
@@ -27,6 +29,12 @@ function Board( {boards, pedalData} ) {
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
     const [helpShow, setHelpShow] = useState(false);
+
+
+    const [sharing, setSharing] = useState(false);
+    
+    const handleShareClose = () => setSharing(false);
+    const handleShare = () => setSharing(true);
 
     const handleClose = () => setHelpShow(false);
     const handleShow = () => setHelpShow(true);
@@ -83,8 +91,10 @@ function Board( {boards, pedalData} ) {
 
     }
 
-    const share = () => {
+    const shareWindow = () => {
         console.log("Share");
+        setShowShareModal(true);
+        
     }
 
     const more = () => {   
@@ -246,7 +256,7 @@ function Board( {boards, pedalData} ) {
                 <div className="right-side icon-container-right"> 
                     <button className="nav-btn" onClick={playPauseToggle}> 
                     {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
-                    <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
+                    <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
                     <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button>
                 </div>
             </div>  
@@ -254,6 +264,8 @@ function Board( {boards, pedalData} ) {
                 <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
                 <PedalBrowser pedalsMap={pedalsMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
+           
+            <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
             <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} />
             <canvas id="overlayCanvas"></canvas>
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
