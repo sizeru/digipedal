@@ -93,7 +93,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                     </div>
                 );
             return (
-                <Col md={3} key={index}>
+                <Col /*md={6}*/ key={index}>
                     <InputGroup className="params">
                         {inputGroupContent}
                     </InputGroup>
