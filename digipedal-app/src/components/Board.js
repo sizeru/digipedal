@@ -111,8 +111,7 @@ function Board( {boards, pedalTypeMap} ) {
             deletePedal(pedal.pedalId);
         });
         closeDeletingPedalsModal();
-        setLoading(true);
-        setLoading(false);
+        window.location.reload();
     }
 
     const playPauseToggle = () => {
