@@ -29,8 +29,11 @@ fn set() -> &'static RwLock<SetList> {
 }
 
 static CONFIG: OnceLock<RwLock<Config>> = OnceLock::new();
-fn set_config(config_file: &str) -> &'static RwLock<Config> {
-    CONFIG.get_or_init(|| RwLock::new(Config::parse_from(config_file).unwrap_or(Config::default())))
+fn set_config(config: Config) -> &'static RwLock<Config> {
+    CONFIG.get_or_init(|| RwLock::new(config))
+}
+fn get_config() -> &'static RwLock<Config> {
+    CONFIG.get().unwrap()
 }
 
 #[derive(Debug)]
@@ -48,7 +51,7 @@ enum Error {
     BodynotJSON,
     QueryNotPresent,
     BoardIndexOOB(usize),
-    JsonUnexpectedKey(Option<String>),
+    JsonUnexpectedKey(String),
     JsonNoBoardIndex,
     JsonNoPedalIndex,
     JsonNoPedalUri,
@@ -267,9 +270,30 @@ struct Board {
 }
 
 impl Board {
-    fn new() -> Self {
-        Self {
-            pedals: LinkedList::new(),
+    // fn init(input_port: &str, output_port: &str) -> Self {
+    //     let pedals = LinkedList::new();
+
+    //     Self {
+    //     }
+    // }
+
+    async fn new() -> Self {
+        let config = CONFIG.get().unwrap().read().await;
+        let mut pedals = LinkedList::new();
+        pedals.push_back(JackClient {
+            name: "system".to_owned(),
+            process: None,
+            input_port: "dummy".to_owned(),
+            output_port: config.audio_in.to_string(),
+        });
+        pedals.push_back(JackClient {
+            name: "system".to_owned(),
+            process: None,
+            input_port: config.audio_out.to_string(),
+            output_port: "dummy".to_owned(),
+        });
+        return Board {
+            pedals
         }
     }
 }
@@ -296,7 +320,8 @@ impl Default for SetList {
 async fn run_server(config: Config) -> Result<(), Error> {
     info!("Launching server...");
     let listener = TcpListener::bind(config.addr).await.map_err(|e| Error::TcpBind(e))?;
-    info!("Bound to address: {}", config.addr);
+    set_config(config);
+    info!("Bound to address: {}", get_config().read().await.addr);
     let output = Command::new("aj-snapshot")
         .arg("-jx")
         .output().await
@@ -313,22 +338,22 @@ async fn run_server(config: Config) -> Result<(), Error> {
         std::str::from_utf8(output.stdout.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?
     );
     let output = Command::new("jack_connect")
-        .args(&[&config.audio_in, &config.audio_out])
+        .args(&[&get_config().read().await.audio_in, &get_config().read().await.audio_out])
         .output().await
         .map_err(|e| Error::Command(e))?;
     if !output.status.success() {
         info!(
             "(jack_connect {} {}) {}",
-            &config.audio_in,
-            &config.audio_out,
+            get_config().read().await.audio_in,
+            get_config().read().await.audio_out,
             std::str::from_utf8(output.stderr.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?
         );
         return Err(Error::CommandExitFailure(output.status))
     }
     info!(
         "(jack_connect {} {}) {}",
-        &config.audio_in,
-        &config.audio_out,
+        get_config().read().await.audio_in,
+        get_config().read().await.audio_out,
         std::str::from_utf8(output.stdout.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?
     );
     info!("...Server launched!");
@@ -384,7 +409,7 @@ async fn delete_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Fu
     let board = match boards.get_mut(board_index) {
         Some(board) => Ok(board),
         None => if board_index == boards.len() + 1 {
-            boards.push(Board::new());
+            boards.push(Board::new().await);
             Ok(boards.get_mut(board_index).unwrap())
         } else {
             Err(Error::BoardIndexOOB(board_index))
@@ -433,7 +458,7 @@ async fn update_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Fu
                         ));
                 }
             },
-            _ => return Err(Error::JsonUnexpectedKey(value.as_str().map(|string| string.to_owned()))),
+            _ => return Err(Error::JsonUnexpectedKey(key.to_owned())),
         }
     }
     if board_index.is_none() { return Err(Error::JsonNoBoardIndex); }
@@ -486,7 +511,7 @@ async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<
             "tarball" => tarball = value.as_str(),
             "audio_in" => audio_in = value.as_str(),
             "audio_out" => audio_out = value.as_str(),
-            _ => return Err(Error::JsonUnexpectedKey(value.as_str().map(|str| str.to_owned()))),
+            _ => return Err(Error::JsonUnexpectedKey(key.to_owned())),
         }
     }
     if board_index.is_none() { return Err(Error::JsonNoBoardIndex); }
@@ -503,25 +528,29 @@ async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<
     let boards = &mut set().write().await.boards;
     let board = match boards.get_mut(board_index) {
         Some(board) => Ok(board),
-        None => if board_index == boards.len() + 1 {
-            boards.push(Board::new());
+        None => if board_index == boards.len() {
+            boards.push(Board::new().await);
             Ok(boards.get_mut(board_index).unwrap())
         } else {
             Err(Error::BoardIndexOOB(board_index))
         }
     }?;
 
-    // Instantiate pedal. Insert into list. Add to JACK. Update metadata.
-    let child = Command::new("jalv")
-        .args(&[pedal_uri])
-        .spawn()
-        .map_err(|e| Error::JalvCannotStart(e))?;
-    let client = JackClient {
+    let mut client = JackClient {
         name: "digi0".to_owned(), // TODO: We do not care about name. Only name of ports, which is assigned.
-        process: Some(child),
+        process: None,
         input_port: audio_in.to_owned(),
         output_port: audio_out.to_owned(),
     };
+    // Instantiate pedal. Insert into list. Add to JACK. Update metadata.
+    let child = Command::new("jalv")
+        .args(&["-x", "-n", &client.name, &pedal_uri])
+        .spawn()
+        .map_err(|e| Error::JalvCannotStart(e))?;
+    client.process = Some(child);
+    client.input_port = format!("{}:{}", &client.name, &client.input_port);
+    client.output_port = format!("{}:{}", &client.name, &client.output_port);
+    info!("Spawned a child succesfully");
 
     // Reconnect surrounding pedals
     let pedal_index = pedal_index + 1; // Shift pedal index to account for dummy pedals
@@ -529,18 +558,45 @@ async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<
     let pedal_after = after.front().ok_or(Error::PedalOOB(pedal_index))?;
     let before = board.pedals.borrow_mut();
     let pedal_before = before.back().ok_or(Error::PedalOOB(pedal_index))?;
+
     let disconnect_output = Command::new("jack_disconnect")
         .args(&[&pedal_before.output_port, &pedal_after.input_port])
         .output().await
         .map_err(|e| Error::Command(e))?;
+    if disconnect_output.status.success() {
+        let output= std::str::from_utf8(disconnect_output.stdout.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?;
+        info!("(jack_disconnect {} {}) {output}", &pedal_before.output_port, &pedal_after.input_port);
+    } else {
+        let output= std::str::from_utf8(disconnect_output.stderr.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?;
+        info!("(jack_disconnect {} {}) {output}", &pedal_before.output_port, &pedal_after.input_port);
+    }
+
+    let _sleep = tokio::time::sleep(tokio::time::Duration::from_millis(500)); // TODO: RACE CONDITION WHAT
     let connect_first = Command::new("jack_connect")
         .args(&[&pedal_before.output_port, &client.input_port])
         .output().await
         .map_err(|e| Error::Command(e))?;
-    let connect_first = Command::new("jack_connect")
+    if connect_first.status.success() {
+        let output= std::str::from_utf8(connect_first.stdout.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?;
+        info!("(jack_connect {} {}) {output}", &pedal_before.output_port, &client.input_port);
+    } else {
+        let output= std::str::from_utf8(connect_first.stderr.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?;
+        info!("(jack_connect {} {}) {output}", &pedal_before.output_port, &client.input_port);
+    }
+
+    let connect_second = Command::new("jack_connect")
         .args(&[&client.output_port, &pedal_after.input_port])
         .output().await
         .map_err(|e| Error::Command(e))?;
+    if connect_second.status.success() {
+        let output= std::str::from_utf8(connect_second.stdout.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?;
+        info!("(jack_connect {} {}) {output}", &client.output_port, &pedal_after.input_port);
+    } else {
+        let output= std::str::from_utf8(connect_second.stderr.as_slice()).map_err(|e| Error::CommmandResponseNotUtf8(e))?;
+        info!("(jack_connect {} {}) {output}", &client.output_port, &pedal_after.input_port);
+
+    }
+
     before.push_back(client);
     before.append(&mut after);
     Ok(Response::new(Full::new(Bytes::new())))

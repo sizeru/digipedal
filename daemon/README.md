@@ -7,6 +7,17 @@ The pedalboard daemon is responsible for maintaining the correct order of JACK c
 * aj-snapshot - Tools for snapshoting JACK state (pedalboards)
 * jalv - JACK plugin host
 
+## Testing
+Put a new board onto the board
+```
+curl -X POST --json '{"board_index":0,"pedal_index":0,"pedal_uri":"http://calf.sourceforge.net/plugins/Reverb","audio_in":"in_l","audio_out":"out_l"}' 127.0.0.1:3444/board/pedal
+```
+
+Configure the settings of this pedal
+```
+curl -X PUT --json '{"board_index":0,"pedal_index":0,"param_vals":{"amount":"1"}}'
+```
+
 ## Usage
 ##### NAME
 **pbd** - Pedalboard Daemon
