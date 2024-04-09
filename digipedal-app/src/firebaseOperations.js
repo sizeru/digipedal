@@ -195,3 +195,12 @@ export const deletePedalFromBoard = async (boardId, pedalNumber) => {
         console.error("Error getting pedal:", error);
     }
 }
+
+export const deleteAllFromBoard = async (boardId) => {
+    const pedals = collection(db, 'boards', boardId, 'pedals');
+    const pedalsDocs = await getDocs(pedals);
+    pedalsDocs.docs.forEach( async (doc) => {
+        await deleteDoc(doc.ref);
+    });
+    console.log("All pedals removed successfully");
+}
