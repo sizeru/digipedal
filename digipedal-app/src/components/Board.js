@@ -2,11 +2,13 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle'; 
+import {Row, Button} from 'react-bootstrap';
 
 import './Navbar.css';
 import "./Board.css";
 import Loading from './Loading';
 import InfoModal from './InfoModal';
+import GenericInterfaceModal from "./GenericInterfaceModal";
 import ShareModal from './ShareModal';
 import setShowShareModal from './ShareModal';
 
@@ -29,6 +31,7 @@ function Board( {boards, pedalTypeMap} ) {
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
+    const [helpShow, setHelpShow] = useState(false)
 
 
     const [sharing, setSharing] = useState(false);
@@ -36,8 +39,8 @@ function Board( {boards, pedalTypeMap} ) {
     const handleShareClose = () => setSharing(false);
     const handleShare = () => setSharing(true);
 
-    // const handleClose = () => setHelpShow(false);
-    // const handleShow = () => setHelpShow(true);
+    const handleClose = () => setHelpShow(false);
+    const handleShow = () => setHelpShow(true);
     const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
@@ -338,6 +341,12 @@ function Board( {boards, pedalTypeMap} ) {
                     <div style={{"opacity": 0}}>||||||||||||</div>
                 </div>
             </div>  
+            <Row>        
+                <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
+                <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
+            </Row>
+            <GenericInterfaceModal pedal_id={6} show={helpShow} handleClose={handleClose} />
+
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)} /> : null}
             <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
@@ -356,7 +365,7 @@ function Board( {boards, pedalTypeMap} ) {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
-                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals} 
+                            <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
                             showInfoModal={() => showInfoModal(pedal.pedal_id)}/>

@@ -30,13 +30,13 @@ export const putActiveJACKBoard = async (board_idx) => {
     });
 }
 
-export const addJACKPedal = async (board_idx, pedal_idx, pedal_uri, tarball) => {
+export const addJACKPedal = async (board_idx, pedal_idx, pedal_uri, audio_in, audio_out, tarball) => {
     const response = await fetch(`http://localhost:3444/board/pedal`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({board_index: board_idx, pedal_index: pedal_idx, pedal_uri: pedal_uri, tarball: tarball})
+        body: JSON.stringify({board_index: board_idx, pedal_index: pedal_idx, pedal_uri: pedal_uri, audio_in:audio_in, audio_out:audio_out, tarball: tarball})
     });
     if (response.ok == 200) console.log("Pedal added successfully");
     else console.log("Server error on JACK POST pedal");
