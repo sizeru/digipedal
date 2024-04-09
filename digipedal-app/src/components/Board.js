@@ -21,8 +21,10 @@ import PedalBrowser from './PedalBrowser';
 
 
 // attaching to front end
-import {getBoardById, getPedalById} from '../firebaseOperations';
+
+import {getBoardById, getPedalById, deletePedalFromBoard} from '../firebaseOperations';
 import {findPedal} from './pedal_components/PedalFinder'
+import DeleteAllPedals from "./DeleteAllPedals";
 
 function Board( {boards, pedalTypeMap} ) {
     const { id }  = useParams();
@@ -30,11 +32,17 @@ function Board( {boards, pedalTypeMap} ) {
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
 
+    const [showDeletePedalsModal, setShowDeletingPedalModal] = useState(false);
 
     const [sharing, setSharing] = useState(false);
     
     const handleShareClose = () => setSharing(false);
     const handleShare = () => setSharing(true);
+    //DeletePedalsModals  
+    const closeDeletingPedalsModal = () => setShowDeletingPedalModal(false);
+    const openDeletingPedalsModal = () => setShowDeletingPedalModal(true);
+
+    //const handleDeleteAll = () => setShowingMod(true);
 
     // const handleClose = () => setHelpShow(false);
     // const handleShow = () => setHelpShow(true);
@@ -94,6 +102,17 @@ function Board( {boards, pedalTypeMap} ) {
 
     const redo = () => {
         console.log("Redo");
+    }
+
+    const handleDeleteAll = () => {
+        //setCurrBoard(null);
+
+        currBoard.pedals.forEach((pedal) => {
+            deletePedal(pedal.pedalId);
+        });
+        closeDeletingPedalsModal();
+        setLoading(true);
+        setLoading(false);
     }
 
     const playPauseToggle = () => {
@@ -341,8 +360,9 @@ function Board( {boards, pedalTypeMap} ) {
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)} /> : null}
             <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
+            <DeleteAllPedals showDeletePedalsModal={showDeletePedalsModal} closeDeletingPedalsModal={closeDeletingPedalsModal} openDeletingPedalsModal={openDeletingPedalsModal} handleDeleteAll={handleDeleteAll}/>
             <canvas id="overlayCanvas" />
-            
+                       
 
                     
                 

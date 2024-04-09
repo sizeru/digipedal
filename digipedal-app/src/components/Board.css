@@ -8,6 +8,19 @@ svg * {
 }
 
 
+#DeleteButton {
+  position: fixed; 
+  left: 20px; 
+  bottom: 20px; 
+  background-color: transparent; 
+  cursor: pointer; /* Change cursor on hover */
+}
+
+.trash {
+  width: 50px; 
+  height: auto; 
+}
+
 #PedalBrowserButton {
   z-index: 10000;
   touch-action: auto;
