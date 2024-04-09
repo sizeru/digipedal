@@ -33,6 +33,7 @@ function SplitDropDown({id, name}) {
   const handleRename = (e) => {
     setIsRenaming(true);
   };
+  
 
   const cancelRename = () => {
     setIsRenaming(false);

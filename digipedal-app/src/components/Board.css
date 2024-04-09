@@ -1,6 +1,10 @@
 .pedal {
     width: 15vw;
-    touch-action:initial;
+    touch-action: initial;
+}
+
+svg * {
+  touch-action: auto;
 }
 
 
