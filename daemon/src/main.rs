@@ -25,6 +25,11 @@ fn set() -> &'static RwLock<SetList> {
     SET.get_or_init(|| RwLock::new(SetList::default()))
 }
 
+static CONFIG: OnceLock<RwLock<Config>> = OnceLock::new();
+fn set_config(config_file: &str) -> &'static RwLock<Config> {
+    CONFIG.get_or_init(|| RwLock::new(Config::parse_from(config_file).unwrap_or(Config::default())))
+}
+
 #[derive(Debug)]
 enum Error {
     // During what operation did the error happen

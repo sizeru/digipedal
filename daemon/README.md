@@ -3,7 +3,7 @@ The pedalboard daemon is responsible for maintaining the correct order of JACK c
 
 ## Dependencies
 * jackd
-* jackdbus (for jack_connect)
+* jack-example-tools
 * aj-snapshot
 
 ## Usage
