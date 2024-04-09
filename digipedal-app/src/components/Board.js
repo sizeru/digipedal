@@ -8,6 +8,7 @@ import "./Board.css";
 import Loading from './Loading';
 import {Row, Col, Button} from 'react-bootstrap';
 import InfoModal from './InfoModal';
+import GenericInterfaceModal from "./GenericInterfaceModal";
 
 // drag and drop stuff
 import {DndContext, DragOverlay} from '@dnd-kit/core';
@@ -298,7 +299,7 @@ function Board( {boards, pedalTypeMap} ) {
                 <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
                 <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
-            {/* <InfoModal showing={helpShow} handleClose={handleClose} pedals={pedalData} pedalId={1} /> */}
+            <GenericInterfaceModal show={helpShow} handleClose={handleClose}/>
 
             <canvas id="overlayCanvas" />
             

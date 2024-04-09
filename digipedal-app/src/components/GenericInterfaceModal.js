@@ -1,47 +1,39 @@
-import { Modal } from 'react-bootstrap';
+import { Container, Row, Col, Modal, Button, InputGroup, Form } from 'react-bootstrap';
 
-function GenericInterfaceModal( {params_map} ) {
+function GenericInterfaceModal( {pedal_name, params_list, show, handleClose} ) {
     const basePath = process.env.PUBLIC_URL;
+    const [pedalVals, setPedalVals] = useState({});
+
+    useEffect(() => {
+        let pedalVals = {};
+        params_list.forEach((param) => {
+            pedalVals[param.name] = param.default;
+        });
+        setPedalVals(pedalVals);
+    }, []);
+
+    const adjuster = (param, idx) => {
+        <InputGroup>
+            <InputGroup.Text> {param.name} </InputGroup.Text>
+            <InputGroup.Checkbox checked={pedalVals[idx]} id={param.name} />
+        </InputGroup>
+    };
+
     return (
         <div>
-            <Modal  show={showing} 
+            <Modal  show={show} 
                     onHide={handleClose} 
                     size="xl"
                     aria-labelledby="contained-modal-title-vcenter"
                     className="modal-container"
                     centered>
                 <Modal.Header closeButton> 
-                    <Modal.Title className="modal-title-centered"> {pedalInfo ? (pedalInfo.name + ": " + pedalInfo.type) : 0} </Modal.Title>
+                    <Modal.Title className="modal-title-centered"> {pedalName ? (pedalName) : "Pedal Settings"} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="grid">
                     <Container>
                         <Row>
-                            <Col md={6}>
-                                <div className="item-container">
-                                    <img src={pedalInfo ? basePath + "/pedals" + pedalInfo.image : ""} alt={pedalInfo ? pedalInfo.name : ""} className="pedal-image"/>
-                                </div>
-                            </Col>
-                            <Col md={6}>
-                                <Row key="Description">
-                                    <Col className="headers" md={3}>
-                                        <h4> Info </h4> 
-                                    </Col>
-                                    <Col md={9}>
-                                        <p> {pedalInfo ? pedalInfo.description : ""} </p>
-                                    </Col>
-                                    {pedalInfo ? 
-                                    pedalInfo.effects.map( (effect, index) => (
-                                    <Row key={"Effect " + index}>
-                                        <Col className="headers" md={3}>
-                                            <h4> {effect.effect_name} </h4> 
-                                        </Col>
-                                        <Col md={9}>
-                                            <p> {effect.effect_description} </p>
-                                        </Col>
-                                    </Row>
-                                    )) : ""}
-                                </Row>
-                            </Col>
+                            {params_list.map((param, idx) => adjuster(param, idx))}
                         </Row>
                     </Container>
                 </Modal.Body>
