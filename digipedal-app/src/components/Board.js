@@ -31,6 +31,7 @@ function Board( {boards, pedalTypeMap} ) {
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
+    const [helpShow, setHelpShow] = useState(false)
 
 
     const [sharing, setSharing] = useState(false);
@@ -38,8 +39,8 @@ function Board( {boards, pedalTypeMap} ) {
     const handleShareClose = () => setSharing(false);
     const handleShare = () => setSharing(true);
 
-    // const handleClose = () => setHelpShow(false);
-    // const handleShow = () => setHelpShow(true);
+    const handleClose = () => setHelpShow(false);
+    const handleShow = () => setHelpShow(true);
     const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
     const [pedalMaxId, setPedalMaxId] = useState(1);
@@ -364,7 +365,7 @@ function Board( {boards, pedalTypeMap} ) {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
-                            <PedalElement width={defaultPedalWidth * (pedal.boardId % 2 + 1)} height={defaultPedalHeight * (pedal.boardId % 2 + 1)} toggled={pedal.toggled} param_vals={pedal.param_vals} 
+                            <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
                             showInfoModal={() => showInfoModal(pedal.pedal_id)}/>
