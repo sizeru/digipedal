@@ -16,7 +16,10 @@ use json::JsonValue;
 use log::{info, error};
 use daemonize::Daemonize;
 use tokio::{
-    net::TcpListener, process::{Child, Command}, sync::RwLock
+    net::TcpListener,
+    process::{Child, Command},
+    sync::RwLock,
+    io::AsyncWriteExt
 };
 use turtle_syntax::Parse;
 
@@ -51,8 +54,10 @@ enum Error {
     JsonNoPedalUri,
     JsonNoPedalInput,
     JsonNoPedalOutput,
+    JsonParamNotString,
     JalvCannotStart(io::Error),
     PedalsMissing,
+    PedalChildless,
     WalkDirError(walkdir::Error),
     ManifestRead(io::Error),
     TtfParse,
@@ -60,6 +65,7 @@ enum Error {
     Command(io::Error),
     CommandExitFailure(ExitStatus),
     CommmandResponseNotUtf8(Utf8Error),
+    CommandStdInFailure,
     PedalOOB(usize),
 }
 
@@ -350,7 +356,7 @@ async fn process_req(req: Request<hyper::body::Incoming>) -> Result<Response<Ful
         (&Method::GET, "/board/active") => get_active_board().await,
         (&Method::PUT, "/board/active") => set_active_board(req).await,
         (&Method::POST, "/board/pedal") => add_pedal(req).await,
-        (&Method::PUT, "/board/pedal") => async_todo().await,
+        (&Method::PUT, "/board/pedal") => update_pedal(req).await,
         (&Method::DELETE, "/board/pedal") => async_todo().await,
         (&Method::GET, "/pedal") => async_todo().await,
         (_, _) => not_supported().await,
@@ -365,6 +371,62 @@ async fn async_todo() -> Result<Response<Full<Bytes>>, Error> {
 
 async fn not_supported() -> Result<Response<Full<Bytes>>, Error> {
     return Ok(Response::new(Full::from("This uri is not supported")));
+}
+
+// Update the controls of a pedal
+async fn update_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Error> {
+    // Read values from JSON
+    let json = get_json_from_body(req.into_body()).await?;
+    let mut board_index = None;
+    let mut pedal_index = None;
+    let mut param_updates: Vec<(String, String)> = Vec::new();
+    for (key, value) in json.entries() {
+        match key {
+            "board_index" => board_index = value.as_usize(),
+            "pedal_index" => pedal_index = value.as_usize(),
+            "param_vals" => {
+                for (param_name, param_val) in value.entries() {
+                    param_updates.push((
+                        param_name.to_owned(), 
+                        param_val.as_str()
+                            .map(|string| string.to_owned())
+                            .ok_or(Error::JsonParamNotString)?
+                        ));
+                }
+            },
+            _ => return Err(Error::JsonUnexpectedKey(value.as_str().map(|string| string.to_owned()))),
+        }
+    }
+    if board_index.is_none() { return Err(Error::JsonNoBoardIndex); }
+    let board_index = board_index.unwrap();
+    if pedal_index.is_none() { return Err(Error::JsonNoPedalIndex); }
+    let pedal_index = pedal_index.unwrap();
+
+    // Update the controls of a pedal
+    let mut set = set()
+        .write().await;
+    let board = set
+        .boards
+        .get_mut(board_index)
+        .ok_or(Error::BoardIndexOOB(board_index))?;
+
+    let mut i = 0;
+    let mut pedal_iter = board.pedals.iter_mut();
+    while i < (pedal_index + 1) { // Add one because dummy pedal
+        let _curr_pedal = pedal_iter.next();
+        i += 1;
+    }
+    let mut target_pedal = pedal_iter.next().ok_or(Error::PedalOOB(pedal_index))?;
+    let mut process_stdin = target_pedal
+        .process.as_mut()
+        .ok_or(Error::PedalChildless)?
+        .stdin.as_mut()
+        .ok_or(Error::CommandStdInFailure)?;
+    for (param_name, param_value) in param_updates {
+        let control_string = format!("{param_name}={param_value}");
+        let _response = process_stdin.write_all(control_string.as_bytes());
+    }
+    Ok(Response::new(Full::new(Bytes::new())))
 }
 
 // Adds a pedal to the board.
@@ -416,7 +478,7 @@ async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<
         .spawn()
         .map_err(|e| Error::JalvCannotStart(e))?;
     let client = JackClient {
-        name: "digi0".to_owned(), // TODO: Name must be unique and dynamically generated. Should be linked with jalv.
+        name: "digi0".to_owned(), // TODO: We do not care about name. Only name of ports, which is assigned.
         process: Some(child),
         input_port: audio_in.to_owned(),
         output_port: audio_out.to_owned(),
