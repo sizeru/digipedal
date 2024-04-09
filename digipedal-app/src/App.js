@@ -12,11 +12,36 @@ import {
 
 import { useState, useEffect, useRef } from 'react';
 
+// attaching front end and back end
+import {getPedals} from './firebaseOperations'
+
 
 function App() {
 
   const boardsRef = useRef(boardData.map((board) => board));
   const [boards, setBoards] = useState(boardsRef.current);
+  const [pedalTypeMap, setPedalTypeMap] = useState(null)
+
+  useEffect(() => {
+    const getPedalTypeMap = async () => {
+      console.log("trying to getPedals");
+      let pedalArray = await getPedals()
+
+      console.log("getPedals result: ")
+      console.log(pedalArray)
+
+      console.log("turning getPedals result into an actual map")
+      let pedalMap = new Map()
+      pedalArray.forEach((pedal) =>{
+        pedalMap.set(pedal.id, pedal.name)
+      })
+
+      console.log("resulting pedalMap: ")
+      console.log(pedalMap)
+      setPedalTypeMap(pedalMap)
+    }
+    getPedalTypeMap()
+  }, [])
 
   /* Use with Express Server -- move boards.json outside of src folder 
 
@@ -61,9 +86,9 @@ function App() {
             <Route exact path="/" 
                    element={<Home />} />
             <Route exact path="/board" 
-                   element={<Board boards={boards} pedalData={pedalData}/>} />
+                   element={<Board boards={boards} pedalTypeMap={pedalTypeMap}/>} />
               <Route path="/board/:id"
-                    element={<Board boards={boards} pedalData={pedalData}/>} /> 
+                    element={<Board boards={boards} pedalTypeMap={pedalTypeMap}/>} /> 
         </Routes>
       </Router>
   );

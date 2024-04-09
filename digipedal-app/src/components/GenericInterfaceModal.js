@@ -1,16 +1,9 @@
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Container from 'react-bootstrap/Container';
-import './InfoModal.css';
-import {findPedal} from './pedal_components/PedalFinder'
+import { Modal } from 'react-bootstrap';
 
-function InfoModal( {showing, handleClose, pedalInfo} ) {
-
-    let PedalElement = findPedal(pedalInfo.name);
-    return ( 
-        <div>  
+function GenericInterfaceModal( {params_map} ) {
+    const basePath = process.env.PUBLIC_URL;
+    return (
+        <div>
             <Modal  show={showing} 
                     onHide={handleClose} 
                     size="xl"
@@ -25,7 +18,7 @@ function InfoModal( {showing, handleClose, pedalInfo} ) {
                         <Row>
                             <Col md={6}>
                                 <div className="item-container">
-                                    <PedalElement width={window.innerWidth * .3} height={window.innerHeight * .5} isStatic={true}/>
+                                    <img src={pedalInfo ? basePath + "/pedals" + pedalInfo.image : ""} alt={pedalInfo ? pedalInfo.name : ""} className="pedal-image"/>
                                 </div>
                             </Col>
                             <Col md={6}>
@@ -37,13 +30,13 @@ function InfoModal( {showing, handleClose, pedalInfo} ) {
                                         <p> {pedalInfo ? pedalInfo.description : ""} </p>
                                     </Col>
                                     {pedalInfo ? 
-                                    pedalInfo.parameters.map( (parameter, index) => (
-                                    <Row key={"Parameter " + index}>
+                                    pedalInfo.effects.map( (effect, index) => (
+                                    <Row key={"Effect " + index}>
                                         <Col className="headers" md={3}>
-                                            <h4> {parameter.name} </h4> 
+                                            <h4> {effect.effect_name} </h4> 
                                         </Col>
                                         <Col md={9}>
-                                            <p> {parameter.description} </p>
+                                            <p> {effect.effect_description} </p>
                                         </Col>
                                     </Row>
                                     )) : ""}
@@ -56,13 +49,10 @@ function InfoModal( {showing, handleClose, pedalInfo} ) {
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
-                        Save Changes
-                    </Button>
                 </Modal.Footer>
             </Modal>
         </div>
     );
-};
+}
 
-export default InfoModal;
+export default GenericInterfaceModal;

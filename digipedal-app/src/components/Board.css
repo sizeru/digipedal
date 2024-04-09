@@ -1,12 +1,27 @@
 .pedal {
     width: 15vw;
-    touch-action:initial;
+    touch-action: initial;
+}
+
+svg * {
+  touch-action: auto;
 }
 
 
 #PedalBrowserButton {
-    /* z-index: 100000; */
-    touch-action: auto;
+  z-index: 10000;
+  touch-action: auto;
+  position: fixed;
+  right: 1vw;
+  bottom: 1vh;
+  width: 9vmin;
+  height: 9vmin;
+  font-size: 10vmin;
+  border-radius: 9vmin;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: .75;
 }
 
 #overlayCanvas {
