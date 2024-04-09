@@ -50,51 +50,58 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
     }
 
     const adjuster = () => {
-        return (
-            <Row>
-                { pedalParams.map((param) => {
-                    return param.hide ? 
-                    <div></div> :
+        return <Row>
+        {
+            pedalParams.map((param, index) => {
+                if (param.hide) return null;
+                const inputGroupContent = param.unit === "dropdown" ? (
+                    <div>
+                        <Form.Label> {param.name} </Form.Label>
+                        <Form.Select 
+                            defaultValue={param.options[pedalVals[param.name]]} 
+                            onChange={(e) => changePedalVal(param.name, e.target.value)}>
+                        { param.options.map((option, index) => {
+                            return <option key={index} value={option}> {option} </option>;
+                        })}
+                        </Form.Select>
+                    </div>
+                ) : param.unit === "toggle" ? (
+                    <div>
+                        <Form.Label> {param.name} </Form.Label>
+                        <InputGroup.Checkbox 
+                            id={param.name} 
+                            defaultChecked={pedalVals[param.name]} 
+                            onClick={(e) => changePedalVal(param.name, !e.target.value)} />
+                    </div>
+                ) : (
+                    <div className="slider-con">
+                        <Form.Label> {param.name} </Form.Label>
+                        <Row>
+                            <Col md={8}>
+                                <Slider 
+                                    id={param.name +"Slider"} 
+                                    min={param.minimum} 
+                                    max={param.maximum} 
+                                    defaultValue={pedalVals[param.name]} valueLabelDisplay="auto" 
+                                    valueLabelFormat={value => {return valueLabelFormat(value, param.unit)}}
+                                    step={calculateStep(param)} onChange={(e) => changePedalVal(param.name, e.target.value)}/>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Control type="number" value={newPedalVals[param.name]} onChange={(e) => changePedalVal(param.name, e.target.value)} />
+                            </Col>
+                        </Row>
+                    </div>
+                );
+            return (
+                <Col md={3} key={index}>
                     <InputGroup className="params">
-                        {param.unit === "dropdown" ? (
-                            <div>
-                                <Form.Label> {param.name} </Form.Label>
-                                <Form.Select 
-                                    defaultValue={param.options[pedalVals[param.name]]} 
-                                    onChange={(e) => changePedalVal(param.name, e.target.value)}>
-                                { param.options.map((option, index) => {
-                                    return <option key={index} value={option}> {option} </option>;
-                                })}
-                                </Form.Select>
-                            </div>
-                        ) : param.unit === "toggle" ? (
-                            <div>
-                                <Form.Label> {param.name} </Form.Label>
-                                <InputGroup.Checkbox id={param.name} defaultChecked={pedalVals[param.name]} onClick={(e) => changePedalVal(param.name, !e.target.value)} />
-                            </div>
-                        ) : (
-                            <div className="slider-con">
-                                <Form.Label> {param.name} </Form.Label>
-                                <Row>
-                                    <Col md={8}>
-                                        <Slider 
-                                            id={param.name +"Slider"} 
-                                            min={param.minimum} 
-                                            max={param.maximum} 
-                                            defaultValue={pedalVals[param.name]} valueLabelDisplay="auto" 
-                                            valueLabelFormat={value => {return valueLabelFormat(value, param.unit)}}
-                                            step={calculateStep(param)} onChange={(e) => changePedalVal(param.name, e.target.value)}/>
-                                    </Col>
-                                    <Col md={4}>
-                                        <Form.Control type="number" value={newPedalVals[param.name]} onChange={(e) => changePedalVal(param.name, e.target.value)} />
-                                    </Col>
-                                </Row>
-                            </div>
-                        )}
+                        {inputGroupContent}
                     </InputGroup>
-                })}
-            </Row>
-        );
+                </Col>
+                );
+            })
+        }
+        </Row>
     };
 
     const handleSave = () => {
@@ -106,7 +113,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
             <Modal  show={show} 
                     onHide={() => {handleClose(); setNewPedalVals(pedalVals);}} 
                     aria-labelledby="contained-modal-title-vcenter"
-                    size="lg"
+                    size="xl"
                     className="modal-container"
                     centered>
                 <Modal.Header closeButton> 
