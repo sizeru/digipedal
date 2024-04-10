@@ -15,7 +15,7 @@ curl -X POST --json '{"board_index":0,"pedal_index":0,"pedal_uri":"http://calf.s
 
 Configure the settings of this pedal
 ```
-curl -X PUT --json '{"board_index":0,"pedal_index":0,"param_vals":{"amount":"1"}}'
+curl -X PUT --json '{"board_index":0,"pedal_index":0,"param_vals":{"drive":"15"}}' 127.0.0.1:3444/board/pedal
 ```
 
 ## Usage

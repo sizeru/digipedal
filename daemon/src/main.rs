@@ -487,8 +487,11 @@ async fn update_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Fu
         .stdin.as_mut()
         .ok_or(Error::CommandStdInFailure)?;
     for (param_name, param_value) in param_updates {
-        let control_string = format!("{param_name}={param_value}");
-        let _response = process_stdin.write_all(control_string.as_bytes());
+        let control_string = format!("{param_name}={param_value}\n");
+        info!("Writing to {}: \"{}\"", &target_pedal.name, &control_string);
+        process_stdin
+            .write_all(control_string.as_bytes()).await
+            .map_err(|e| Error::Command(e))?;
     }
     Ok(Response::new(Full::new(Bytes::new())))
 }
@@ -545,6 +548,7 @@ async fn add_pedal(req: Request<hyper::body::Incoming>) -> Result<Response<Full<
     // Instantiate pedal. Insert into list. Add to JACK. Update metadata.
     let child = Command::new("jalv")
         .args(&["-x", "-n", &client.name, &pedal_uri])
+        .stdin(std::process::Stdio::piped())
         .spawn()
         .map_err(|e| Error::JalvCannotStart(e))?;
     client.process = Some(child);
