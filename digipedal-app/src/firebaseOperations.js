@@ -91,9 +91,20 @@ export const getBoards = async () => {
     const boards = collection(db, 'boards');
     const boardsDocs = await getDocs(boards);
     const boardsList = boardsDocs.docs.map( (doc) => {
-      return {id:doc.id, name:doc.data().name, image:doc.data().name + '.png'}
+        return {id:doc.id, name:doc.data().name, image:doc.data().name + '.png'}
     });
+    boardsList.sort((a, b) => a.id - b.id);
     return boardsList;
+}
+
+export const getHighestBoardId = async () => {
+    const boards = collection(db, 'boards');
+    const boardsDocs = await getDocs(boards);
+    const boardsList = boardsDocs.docs.map( (doc) => {
+        return doc.id;
+    });
+    console.log("Boards List:", boardsList)
+    return Math.max(...boardsList);
 }
 
 // Input: boardId (string)
