@@ -262,15 +262,15 @@ function Board( {boards, pedalTypeMap} ) {
         console.log(pedalsMap)
     };
 
-    function deletePedal(pedalId){
-        console.log("deletePedal: " + pedalId);
-        const activePedal = pedalsMap.get(pedalId);
+    function deletePedal(boardId){
+        console.log("deletePedal: " + boardId);
+        const activePedal = pedalsMap.get(boardId);
         
+        console.log(pedalsMap)
         let newMap = new Map(pedalsMap);
         newMap.delete(activePedal.boardId)
-        setPedalMaxId(pedalMaxId - 1);
         setPedalsMap(newMap);
-        console.log(pedalsMap)
+        console.log(newMap)
     }
 
     function togglePedal(boardId){
@@ -314,6 +314,28 @@ function Board( {boards, pedalTypeMap} ) {
 
     }
 
+    function updatePedal(boardId, pedalUpdateFunction){
+        console.log("updatePedal: " + boardId);
+        const activePedal = pedalsMap.get(boardId);
+        console.log(pedalsMap)
+        if(!activePedal){
+            console.log("Could not find activePedal")
+            return;
+        }
+        
+        console.log(pedalsMap);
+        let updatedPedal = pedalUpdateFunction(activePedal);
+        if(!updatedPedal){
+            console.log("updatedPedal was ", updatedPedal);
+            return;
+        }
+        let newMap = new Map(pedalsMap);
+        newMap.set(boardId, updatedPedal);
+        
+        setPedalsMap(newMap);
+        console.log(updatedPedal);
+    }
+
 
     return (
         isLoading ? 
@@ -348,7 +370,7 @@ function Board( {boards, pedalTypeMap} ) {
             <GenericInterfaceModal pedal_id={6} show={helpShow} handleClose={handleClose} />
 
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
-            {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)} /> : null}
+            {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)}/> : null}
             <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
             <canvas id="overlayCanvas" />
             
@@ -368,7 +390,8 @@ function Board( {boards, pedalTypeMap} ) {
                             <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
-                            showInfoModal={() => showInfoModal(pedal.pedal_id)}/>
+                            showInfoModal={() => showInfoModal(pedal.pedal_id)}
+                            updatePedal={(pedalUpdateFunction) => updatePedal(pedal.boardId, pedalUpdateFunction)}/>
                         </Draggable>);
                     })}
                 </Droppable>

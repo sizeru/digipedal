@@ -1,17 +1,57 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 const minAmplifcation = 0;
 const maxAmplifcation = 2;
 
+const defaultAmplifcation = 1;
 
-function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal}) {
+
+function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal}) {
+  useEffect(() => {
+    if(!updatePedal){
+      console.log("No update pedal for AmpPedal yet. Temp setting it");
+      updatePedal = (input) => {console.log(input)};
+    }
+  },[updatePedal])
   
+  function updateAmplifcation(amplification){
+    console.log("updateAmplification: ", amplification)
+    if(isStatic){
+      console.log("Not updating since it is a static pedal");
+      return;
+    }
+    updatePedal((pedal) => {
+      // checking it has param_vals
+      if(!pedal.param_vals){
+        pedal.param_vals = {};
+      }
+      // setting the new amplification
+      pedal.param_vals.amplification = amplification;
+
+      return pedal;
+    })
+  }
+  // setting the default for amp if it is not already set
+  useEffect(() => {
+    // checking if there are param_vals or not
+    console.log("do i need to update?")
+    console.log(!param_vals || !param_vals.amplification)
+    if(!param_vals || param_vals.amplification == null){
+      updateAmplifcation(defaultAmplifcation)
+    }
+  },[])
+
+  // TODO: make this attached to the pedal that was clicked for info
   if(isStatic){
     toggled = true;
     param_vals = {};
   }
-  let [amplification, setAmplification] = useState((param_vals & param_vals.Amplification) ? param_vals.Amplification : 1)
+
+
+  let amplification = (param_vals &&  param_vals.amplification != null)
+? param_vals.amplification : defaultAmplifcation;
+
 
   let amplifcationRotation = amplification / (maxAmplifcation - minAmplifcation) * 270 - 135
 
@@ -31,13 +71,14 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
     if(event.activatorEvent.ctrlKey){
       increment_amount *= -1;
     }
-    let newAmplification = amplification + increment_amount;
+    let newAmplification = Number((amplification + increment_amount).toPrecision(3));
+    console.log("newAmplification: ", newAmplification)
     if(newAmplification > maxAmplifcation){
       newAmplification = minAmplifcation;
     } else if (newAmplification < minAmplifcation){
       newAmplification = maxAmplifcation;
     }
-    setAmplification(newAmplification);
+    updateAmplifcation(newAmplification);
   }
 
   let style = {
