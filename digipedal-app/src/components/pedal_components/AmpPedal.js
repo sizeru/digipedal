@@ -7,7 +7,7 @@ const maxAmplifcation = 2;
 const defaultAmplifcation = 1;
 
 
-function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal}) {
+function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal, index}) {
   useEffect(() => {
     if(!updatePedal){
       console.log("No update pedal for AmpPedal yet. Temp setting it");
@@ -21,6 +21,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
       console.log("Not updating since it is a static pedal");
       return;
     }
+
     updatePedal((pedal) => {
       // checking it has param_vals
       if(!pedal.param_vals){
@@ -47,7 +48,6 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
     toggled = true;
     param_vals = {};
   }
-
 
   let amplification = (param_vals &&  param_vals.amplification != null)
 ? param_vals.amplification : defaultAmplifcation;
@@ -87,7 +87,9 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
 
 
   let svg_output = (
-    <svg width={width} height={height + height/5} viewBox={`0 0 ${width} ${height + height / 5}`} fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <svg width={width} height={height + height/5} viewBox={`0 ${-height/5} ${width} ${height + height/5 + height/5}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+      
+       <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
         <Knob x={width * .5} y={height * .40} width={width * .40} rotation={amplifcationRotation} text="Amplification" isStatic={isStatic} increment={increment_amplification} number={amplification}/>
         <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
