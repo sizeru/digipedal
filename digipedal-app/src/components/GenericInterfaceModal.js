@@ -38,7 +38,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
         if (param.step === "log") {
             return (Math.log(param.maximum) - Math.log(param.minimum)) / (param.maximum - param.minimum);
         } else {
-            return (param.maximum - param.minimum) / 50;
+            return (param.maximum - param.minimum) / 15;
         }
     }
 
@@ -93,7 +93,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                     </div>
                 );
             return (
-                <Col /*md={6}*/ key={index}>
+                <Col md={6} key={index}>
                     <InputGroup className="params">
                         {inputGroupContent}
                     </InputGroup>

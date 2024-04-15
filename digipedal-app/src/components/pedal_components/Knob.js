@@ -6,7 +6,7 @@ function Knob({x, y, width, isStatic, rotation, text, style, increment, number})
 
     style = {
         ...style,
-        "transform-origin": `${x}px ${y}px`,
+        "transformOrigin": `${x}px ${y}px`,
         "transform": `rotate(${rotation}deg)`
     }
 
