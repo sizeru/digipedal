@@ -125,7 +125,7 @@ export const getBoardById = async (boardId) => {
             "name": boardDoc.data(),
             "pedals": pedalsDocs.docs.map( doc => {
                 const data = doc.data();
-                console.log(data);
+                // console.log(data);
                 return {
                     pedal_id: data.pedal_id, 
                     xPercent: data.xPercent,
@@ -138,7 +138,7 @@ export const getBoardById = async (boardId) => {
                     param_vals: data.param_vals
             }})
         }
-        console.log("return Object: ", retObj);
+        // console.log("return Object: ", retObj);
         return retObj;
     } else {
         console.log("No board found!");

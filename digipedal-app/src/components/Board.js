@@ -223,7 +223,7 @@ function Board( {boards, pedalTypeMap} ) {
                 // updating the xPercent and yPercent to a real x and y
                 
                 // comment this in if we want to default the positions of the pedals
-                
+
                 /*
                 if(pedal.xPercent){
                     pedal.x = pedal.xPercent / 100 * window.innerWidth;
@@ -353,7 +353,7 @@ function Board( {boards, pedalTypeMap} ) {
         <>
             <div className="navbar board-nav">
                 <div className="left-side icon-container">
-                    <a className="navbar-brand" /* href={basePath} */ onClick={handleSave}>
+                    <a className="navbar-brand" href={basePath} onClick={handleSave}>
                         <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
                     </a>
                 </div>
