@@ -23,7 +23,7 @@ import PedalBrowser from './PedalBrowser';
 
 
 // attaching to front end
-import {getBoardById, getPedalById} from '../firebaseOperations';
+import {getBoardById, getPedalById, saveAllToBoard} from '../firebaseOperations';
 import {findPedal} from './pedal_components/PedalFinder'
 
 function Board( {boards, pedalTypeMap} ) {
@@ -84,6 +84,24 @@ function Board( {boards, pedalTypeMap} ) {
             console.log("getBoardById results: ");
             console.log(boardRes)
             setCurrBoard(boardRes)
+
+            let pedals = boardRes.pedals;
+            console.log(pedals);
+            let map = new Map();
+            pedals.forEach((pedal, idx) => {
+                map[idx] = {
+                    boardId: id,
+                    pedal_id: pedal.pedal_id,
+                    xPercent: pedal.xPercent,
+                    x: pedal.x,
+                    width: pedal.width,
+                    yPercent: pedal.yPercent,
+                    y: pedal.y,
+                    height: pedal.height,
+                    toggled: pedal.toggled
+                };
+            });
+            setPedalsMap(map);
             // console.log("getPedals results: ");
             // res = await getPedals(id);
             // console.log(res)
@@ -91,24 +109,14 @@ function Board( {boards, pedalTypeMap} ) {
         tryGetBoard()
     }, [id]);
     
-    const undo = () => {
-        console.log("Undo");
-    }
-
-    const redo = () => {
-        console.log("Redo");
-    }
-
     const playPauseToggle = () => {
         console.log("Play/Pause");
         setPlaying(!isPlaying);
-
     }
 
     const shareWindow = () => {
         console.log("Share");
-        setShowShareModal(true);
-        
+        setShowShareModal(true);  
     }
 
     const more = () => {   
@@ -213,6 +221,10 @@ function Board( {boards, pedalTypeMap} ) {
                 // setting the id  for this board
                 pedal.boardId = tempPedalMaxId++;
                 // updating the xPercent and yPercent to a real x and y
+                
+                // comment this in if we want to default the positions of the pedals
+
+                /*
                 if(pedal.xPercent){
                     pedal.x = pedal.xPercent / 100 * window.innerWidth;
                 }else{
@@ -223,6 +235,7 @@ function Board( {boards, pedalTypeMap} ) {
                 }else{
                     pedal.y = null;
                 }
+                */
                 // finding the function to generate the pedal
                 pedal.pedal = findPedal(pedalTypeMap.get(pedal.pedal_id))
                 tempPedals.set(pedal.boardId, pedal);
@@ -311,7 +324,26 @@ function Board( {boards, pedalTypeMap} ) {
             }
             setNewPedalInfo()
         }
+    }
 
+    const handleSave = async () => {
+        let saveObj = [];
+        let decrement = null;
+        pedalsMap.forEach((pedal, key) => {
+            if (decrement == null) decrement = key;
+            saveObj[key - decrement] = {
+                pedal_id: pedal.pedal_id,
+                toggled: pedal.toggled,
+                xPercent: pedal.xPercent,
+                yPercent: pedal.yPercent,
+                x: pedal.x,
+                y: pedal.y,
+                width: pedal.width,
+                height: pedal.height,
+                param_vals: pedal.param_vals
+            };
+        });
+        await saveAllToBoard(id, saveObj);
     }
 
 
@@ -321,11 +353,9 @@ function Board( {boards, pedalTypeMap} ) {
         <>
             <div className="navbar board-nav">
                 <div className="left-side icon-container">
-                    <a className="navbar-brand" href={basePath}>
+                    <a className="navbar-brand" href={basePath} onClick={handleSave}>
                         <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
                     </a>
-                    {/* <button className="nav-btn" onClick={undo}> <img src="../navbar_icons/undo.png" className="undo" alt="Undo" /> </button>
-                    <button className="nav-btn" onClick={redo}> <img src="../navbar_icons/undo.png" className="redo" alt="Redo"/> </button> */}
                 </div>
                 <a className="bungee-regular"> {
                 currBoard.name.name.length > 12 ? currBoard.name.name.substring(0,10) + '...' : currBoard.name.name 
