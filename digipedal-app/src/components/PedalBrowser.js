@@ -24,7 +24,7 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show}) {
           <Modal.Title>Add pedal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            {Array.from(pedalTypeMap).map((pedalEntry) => {
+            {Array.from(pedalTypeMap).map((pedalEntry, idx) => {
               let [pedalId, pedalType] = pedalEntry
               // console.log("pedalType")
               // console.log(pedalType)
@@ -33,7 +33,7 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show}) {
               let PedalElement = findPedal(pedalType);
               // console.log(PedalElement)
               return (
-              <button onClick={(event) => addPedal(event, pedalId)}>
+              <button key={`pedal browser button ${idx} `} onClick={(event) => addPedal(event, pedalId)}>
                   {pedalType}
                   <PedalElement width={140} height={200} isStatic={true}/>
               </button>);
