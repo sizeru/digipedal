@@ -43,7 +43,6 @@ function Board( {boards, pedalTypeMap} ) {
     const handleShow = () => setHelpShow(true);
     const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
-    const [pedalMaxId, setPedalMaxId] = useState(1);
 
     const defaultPedalWidth = window.innerWidth / 10;
     const defaultPedalHeight = defaultPedalWidth * 1.5;
@@ -75,6 +74,7 @@ function Board( {boards, pedalTypeMap} ) {
     useEffect(() => {
         setLoading(currBoard == null);
     }, [currBoard])
+
 
     // trying to get the board when
     useEffect( () => {
@@ -155,19 +155,25 @@ function Board( {boards, pedalTypeMap} ) {
         ctx.lineTo(currX, currY);
         ctx.stroke(); // Render the path
 
-        // drawing an indicator for flow
-        ctx.beginPath()
-        ctx.ellipse(currX - window.innerWidth / 40, currY + window.innerWidth / 66, window.innerWidth / 150, window.innerHeight / 25, 45, 0, 180)
-        ctx.fillStyle = "#006400"
-        ctx.fill()
-        ctx.stroke();
+
+        // drawing the angle
+        let angle = Math.atan2(currY - prevY, currX - prevX);
         
-        ctx.beginPath()
-        ctx.ellipse(currX - window.innerWidth / 40, currY - window.innerWidth / 66, window.innerWidth / 150, window.innerHeight /25, -45, 0, 180)
-        ctx.strokeStyle = null
-        ctx.fillStyle = "#006400"
-        ctx.fill()
+        let length = window.innerWidth / 50; 
+    
+        ctx.beginPath();
+        // point of triangle 
+        ctx.moveTo(currX, currY);
+        // moving to the bottom 
+        ctx.lineTo(currX - length * Math.cos(angle - Math.PI / 6), currY - length * Math.sin(angle - Math.PI / 6));
+        // moving to the top
+        ctx.lineTo(currX - length * Math.cos(angle + Math.PI / 6), currY - length * Math.sin(angle + Math.PI / 6));
+        ctx.lineTo(currX, currY);
+    
+        ctx.strokeStyle = '#006400';
+        ctx.fillStyle = '#006400';
         ctx.stroke();
+        ctx.fill();
     }
 
     function drawLines(){
@@ -184,12 +190,12 @@ function Board( {boards, pedalTypeMap} ) {
         let ctx = canvas.getContext('2d');
 
         let drawnLines = [];
-        const sortedPedalsEntries = [...pedalsMap.entries()].sort((a, b) => a[1].x - b[1].x);
-        console.log(sortedPedalsEntries)
+        const pedalEntries = [...pedalsMap.entries()];
+        console.log(pedalEntries)
         // make it so it draws a from start to first pedal
         let prevX = 0
         let prevY = window.innerHeight *.5;
-        sortedPedalsEntries.forEach((pedalEntry) => {  
+        pedalEntries.forEach((pedalEntry) => {  
             let pedal = pedalEntry[1]
             let [currX, currY] = getPedalXY(pedal);
             currY += Math.round(pedal.height / 2) || 0;
@@ -212,14 +218,13 @@ function Board( {boards, pedalTypeMap} ) {
             console.log("currBoard not loaded need to try again");
             return;
         }
-        let tempPedalMaxId = pedalMaxId;
         let tempPedals = new Map();
         console.log("trying to load pedals with these pedals:")
         console.log(currBoard.pedals)
         if(currBoard && currBoard.pedals){
             currBoard.pedals.forEach((pedal) => {
                 // setting the id  for this board
-                pedal.boardId = tempPedalMaxId++;
+                pedal.boardId = tempPedals.size + 1;
                 // updating the xPercent and yPercent to a real x and y
                 
                 // comment this in if we want to default the positions of the pedals
@@ -243,11 +248,28 @@ function Board( {boards, pedalTypeMap} ) {
         }
         console.log("pedalsMap: ")
         console.log(tempPedals)
-        setPedalMaxId(tempPedalMaxId);
         setPedalsMap(tempPedals);
     }, [currBoard]);
 
     useEffect(() => {
+        console.log("useEffect [pedalsMap]")
+        // is it already sorted (this might be slow with tons of pedals but we will run into other issues first)
+        let sortedPedalMapEntries = [...pedalsMap.entries()].sort((a, b) => a[1].x - b[1].x)
+        let isNotSorted = sortedPedalMapEntries.some((entry, index) => entry[1].boardId !== index + 1);
+        // it is not sorted! we need to sort it
+        if(isNotSorted){
+            console.log("Sorting pedals")
+            let sortedPedalMap = new Map();
+            sortedPedalMapEntries.map((entry, index) => {
+                console.log("dealing with ", index)
+                let updatedPedal = entry[1]
+                console.log(updatedPedal)
+                updatedPedal.boardId = index + 1; // it needs to be + 1 so that 0 doesnt false out of random things
+                console.log(updatedPedal)
+                sortedPedalMap.set(updatedPedal.boardId, updatedPedal);
+            });
+            setPedalsMap(sortedPedalMap);
+        }
         drawLines();
     },[pedalsMap])
 
@@ -260,7 +282,7 @@ function Board( {boards, pedalTypeMap} ) {
             'yPercent': defaultPercent,
             'x': defaultPercent / 100 * window.innerWidth,
             'y': defaultPercent / 100 * window.innerHeight,
-            'boardId': pedalMaxId + 1,
+            'boardId': pedalsMap.size + 1,
             'toggled': true,
             'pedal': findPedal(pedalTypeMap.get(pedalId)),
             'param_vals': {}
@@ -270,20 +292,19 @@ function Board( {boards, pedalTypeMap} ) {
         console.log(newPedal)
 
         // making the new map
-        setPedalMaxId(newPedal.boardId);
         setPedalsMap(prev => new Map(prev).set(newPedal.boardId, newPedal));
         console.log(pedalsMap)
     };
 
-    function deletePedal(pedalId){
-        console.log("deletePedal: " + pedalId);
-        const activePedal = pedalsMap.get(pedalId);
+    function deletePedal(boardId){
+        console.log("deletePedal: " + boardId);
+        const activePedal = pedalsMap.get(boardId);
         
+        console.log(pedalsMap)
         let newMap = new Map(pedalsMap);
         newMap.delete(activePedal.boardId)
-        setPedalMaxId(pedalMaxId - 1);
         setPedalsMap(newMap);
-        console.log(pedalsMap)
+        console.log(newMap)
     }
 
     function togglePedal(boardId){
@@ -346,6 +367,28 @@ function Board( {boards, pedalTypeMap} ) {
         await saveAllToBoard(id, saveObj);
     }
 
+    function updatePedal(boardId, pedalUpdateFunction){
+        console.log("updatePedal: " + boardId);
+        const activePedal = pedalsMap.get(boardId);
+        console.log(pedalsMap)
+        if(!activePedal){
+            console.log("Could not find activePedal")
+            return;
+        }
+        
+        console.log(pedalsMap);
+        let updatedPedal = pedalUpdateFunction(activePedal);
+        if(!updatedPedal){
+            console.log("updatedPedal was ", updatedPedal);
+            return;
+        }
+        let newMap = new Map(pedalsMap);
+        newMap.set(boardId, updatedPedal);
+        
+        setPedalsMap(newMap);
+        console.log(updatedPedal);
+    }
+
 
     return (
         isLoading ? 
@@ -378,27 +421,24 @@ function Board( {boards, pedalTypeMap} ) {
             <GenericInterfaceModal pedal_id={6} show={helpShow} handleClose={handleClose} />
 
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
-            {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)} /> : null}
+            {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)}/> : null}
             <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
             <canvas id="overlayCanvas" />
-            
-
-                    
-                
-           
             
 
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
                     <div ref={pedalBoardRef}/>
-                    {[...pedalsMap.values()].map((pedal) => {
+                    {[...pedalsMap.values()].map((pedal, index) => {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
                             <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
-                            showInfoModal={() => showInfoModal(pedal.pedal_id)}/>
+                            showInfoModal={() => showInfoModal(pedal.pedal_id)}
+                            updatePedal={(pedalUpdateFunction) => updatePedal(pedal.boardId, pedalUpdateFunction)}
+                            index={index}/>
                         </Draggable>);
                     })}
                 </Droppable>
