@@ -147,19 +147,25 @@ function Board( {boards, pedalTypeMap} ) {
         ctx.lineTo(currX, currY);
         ctx.stroke(); // Render the path
 
-        // drawing an indicator for flow
-        ctx.beginPath()
-        ctx.ellipse(currX - window.innerWidth / 40, currY + window.innerWidth / 66, window.innerWidth / 150, window.innerHeight / 25, 45, 0, 180)
-        ctx.fillStyle = "#006400"
-        ctx.fill()
-        ctx.stroke();
+
+        // drawing the angle
+        let angle = Math.atan2(currY - prevY, currX - prevX);
         
-        ctx.beginPath()
-        ctx.ellipse(currX - window.innerWidth / 40, currY - window.innerWidth / 66, window.innerWidth / 150, window.innerHeight /25, -45, 0, 180)
-        ctx.strokeStyle = null
-        ctx.fillStyle = "#006400"
-        ctx.fill()
+        let length = window.innerWidth / 50; 
+    
+        ctx.beginPath();
+        // point of triangle 
+        ctx.moveTo(currX, currY);
+        // moving to the bottom 
+        ctx.lineTo(currX - length * Math.cos(angle - Math.PI / 6), currY - length * Math.sin(angle - Math.PI / 6));
+        // moving to the top
+        ctx.lineTo(currX - length * Math.cos(angle + Math.PI / 6), currY - length * Math.sin(angle + Math.PI / 6));
+        ctx.lineTo(currX, currY);
+    
+        ctx.strokeStyle = '#006400';
+        ctx.fillStyle = '#006400';
         ctx.stroke();
+        ctx.fill();
     }
 
     function drawLines(){
