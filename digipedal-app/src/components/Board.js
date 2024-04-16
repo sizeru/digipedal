@@ -28,7 +28,7 @@ import {findPedal} from './pedal_components/PedalFinder'
 
 import { addJACKPedal, deleteJACKPedalfromBoard, changeJACKPedal } from '../jackOperations';
 
-function Board( {pedalTypeMap, dataMap} ) {
+function Board( {pedalTypeMap, pedalDataMap} ) {
     const { id }  = useParams();
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
@@ -38,8 +38,8 @@ function Board( {pedalTypeMap, dataMap} ) {
 
     const [sharing, setSharing] = useState(false);
     
-    const handleShareClose = () => setSharing(false);
-    const handleShare = () => setSharing(true);
+    const handleShareClose = () => { setSharing(false); setShowBrowserButton(true); }
+    const handleShare = () => { setSharing(true); setShowBrowserButton(false); }
 
     const handleClose = () => setHelpShow(false);
     const handleShow = () => setHelpShow(true);
@@ -68,6 +68,7 @@ function Board( {pedalTypeMap, dataMap} ) {
   
     // pedal browser stuff
     const [showPedalBrowser, setShowPedalBrowser] = useState(false);
+    const [showBrowserButton, setShowBrowserButton] = useState(true);
   
     const handleClosePedalBrowser = () => setShowPedalBrowser(false);
     const handleShowPedalBrowser = () => setShowPedalBrowser(true);
@@ -87,10 +88,10 @@ function Board( {pedalTypeMap, dataMap} ) {
             let pedals = boardRes.pedals;
             console.log(pedals);
             let map = new Map();
-            console.log("BEGIN: ", dataMap)
+            console.log("BEGIN: ", pedalDataMap)
             pedals.forEach((pedal, idx) => {
                 console.log("BING BONG: ", pedal.pedal_id);
-                console.log("STUFUFUSFUSUF: ", dataMap.get(pedal.pedal_id));
+                console.log("STUFUFUSFUSUF: ", pedalDataMap.get(pedal.pedal_id));
                 map[idx] = {
                     boardId: id,
                     pedal_id: pedal.pedal_id,
@@ -101,8 +102,8 @@ function Board( {pedalTypeMap, dataMap} ) {
                     y: pedal.y,
                     height: pedal.height,
                     toggled: pedal.toggled,
-//                    pedal_uri: dataMap[pedal.pedal_id].pedal_uri,
-//                    manifest_uri: dataMap[pedal.pedal_id].manifest_uri,
+//                    pedal_uri: pedalDataMap[pedal.pedal_id].pedal_uri,
+//                    manifest_uri: pedalDataMap[pedal.pedal_id].manifest_uri,
                 };
             });
             setPedalsMap(map);
@@ -117,15 +118,6 @@ function Board( {pedalTypeMap, dataMap} ) {
         console.log("Play/Pause");
         setPlaying(!isPlaying);
     }
-
-    const shareWindow = () => {
-        console.log("Share");
-        setShowShareModal(true);  
-    }
-
-    const more = () => {   
-        console.log("More");
-    };
 
     function getPedalXY(pedal){
         console.log(pedal)
@@ -298,7 +290,7 @@ function Board( {pedalTypeMap, dataMap} ) {
         // making the new map
         setPedalsMap(prev => new Map(prev).set(newPedal.boardId, newPedal));
         console.log(pedalsMap)
-        let pedalData = dataMap.get(pedalId);
+        let pedalData = pedalDataMap.get(pedalId);
 
         addJACKPedal(0, pedalId, pedalData.pedal_uri, "in_l", "out_l", null);
     };
@@ -330,14 +322,17 @@ function Board( {pedalTypeMap, dataMap} ) {
 
     let [pedalInfoMap, setPedalInfoMap] = useState(new Map())
     let [shownPedalId, setShownPedalId] = useState(null)
+
     function showInfoModal(pedal_id){
         // checking that we actually have the info about the pedal
         console.log("showInfoModal for pedal " + pedal_id);
         // we are resetting it back so just set it to null
         if(pedal_id == null){
             setShownPedalId(pedal_id);
+            setShowBrowserButton(true);
             return;
         }
+        setShowBrowserButton(false);
         let pedalInfo = pedalInfoMap.get(pedal_id);
         console.log(pedalInfo)
         if(pedalInfo){
@@ -433,7 +428,7 @@ function Board( {pedalTypeMap, dataMap} ) {
             </Row>
             <GenericInterfaceModal pedal_id={6} show={helpShow} handleClose={handleClose} />
 
-            <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
+            <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} buttonShow={showBrowserButton} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)}/> : null}
             <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
             <canvas id="overlayCanvas" />
