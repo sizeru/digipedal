@@ -28,7 +28,16 @@ export const getPedals = async () => {
   const pedalsDocs = await getDocs(pedals);
   const pedalsList = pedalsDocs.docs.map( (doc, idx) => {
     // console.log(doc.data());
-    return {id:doc.data().id, name:doc.data().name}
+    let data = doc.data();
+    return {
+        id:data.id, 
+        name:data.name, 
+        pedal_uri: data.pedal_uri, 
+        manifest_uri: data.manifest_uri, 
+        mfr:data.mfr,
+        parameters: data.parameters,
+        type: data.type,
+        }
   });
   return pedalsList;
 }
