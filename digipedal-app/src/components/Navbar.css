@@ -40,6 +40,12 @@
     background-color: #F6AEB9;
     border: none;
 }
+
+.save-btn {
+    background-color: #F6AEB9;
+    border: none;
+}
+
 .undo {
     padding: 0% 3%;
     width:5vw;
@@ -78,6 +84,14 @@
 
 .three-dots {
     width:2.5vw;
+    height:auto;
+
+    filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
+    padding-right: 10%;
+}
+
+.save {
+    width:6vw;
     height:auto;
 
     filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);

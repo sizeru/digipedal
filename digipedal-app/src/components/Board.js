@@ -33,7 +33,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
-    const [helpShow, setHelpShow] = useState(false)
+    const [helpShow, setHelpShow] = useState(false);
+    const [saveState, setSaveState] = useState("saved");
 
 
     const [sharing, setSharing] = useState(false);
@@ -105,6 +106,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             // console.log("getPedals results: ");
             // res = await getPedals(id);
             // console.log(res)
+            setSaveState("saved");
         }
         tryGetBoard()
     }, [id]);
@@ -168,6 +170,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     }
 
     function drawLines(){
+        setSaveState("unsaved");
         console.log('drawLines');
         const canvas = document.getElementById('overlayCanvas');
         if(canvas == null){
@@ -265,6 +268,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     },[pedalsMap])
 
     function addPedal(event, pedalId){
+        setSaveState("unsaved");
         // remaking the pedal with the x, y corridnates 
         const defaultPercent = 50
         let newPedal = {
@@ -291,6 +295,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     };
 
     function deletePedal(boardId){
+        setSaveState("unsaved");
         console.log("deletePedal: " + boardId);
         const activePedal = pedalsMap.get(boardId);
         
@@ -304,6 +309,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     }
 
     function togglePedal(boardId){
+        setSaveState("unsaved");
         console.log("togglePedal: " + boardId);
         const activePedal = pedalsMap.get(boardId);
         activePedal.toggled = activePedal.toggled ? false : true;
@@ -349,6 +355,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     }
 
     const handleSave = async () => {
+        setSaveState("saving");
         let saveObj = [];
         let decrement = null;
         pedalsMap.forEach((pedal, key) => {
@@ -365,10 +372,12 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 param_vals: pedal.param_vals
             };
         });
-        await saveAllToBoard(id, saveObj);
+        await saveAllToBoard(id, saveObj).then(() => {setSaveState("saved")});
+        // setSaveState("saved");
     }
 
     function updatePedal(boardId, pedalUpdateFunction){
+        setSaveState("unsaved");
         console.log("updatePedal: " + boardId);
         const activePedal = pedalsMap.get(boardId);
         console.log(pedalsMap)
@@ -407,6 +416,16 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 currBoard.name.name.length > 12 ? currBoard.name.name.substring(0,10) + '...' : currBoard.name.name 
                 } </a>
                 <div className="right-side icon-container-right"> 
+                    
+
+                    {saveState ? 
+                        <button className="save-btn" onClick={handleSave}> 
+                            <img src={`../navbar_icons/save/${saveState}.png`} className="save" alt="Save"></img>
+                        </button> 
+                        : 
+                        <></>
+                    }
+                    
                     <button className="nav-btn" onClick={playPauseToggle}> 
                     {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
 

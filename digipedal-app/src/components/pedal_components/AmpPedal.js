@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 
-const minAmplifcation = 0;
-const maxAmplifcation = 2;
+const minAmplification = 0;
+const maxAmplification = 2;
 
-const defaultAmplifcation = 1;
+const defaultAmplification = 1;
 
 
 function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal, index}) {
@@ -16,7 +16,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
     }
   },[updatePedal])
   
-  function updateAmplifcation(amplification){
+  function updateAmplification(amplification){
     console.log("updateAmplification: ", amplification)
     if(isStatic){
       console.log("Not updating since it is a static pedal");
@@ -40,7 +40,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
     console.log("do i need to update?")
     console.log(!param_vals || !param_vals.Amplification)
     if(!param_vals || param_vals.Amplification == null){
-      updateAmplifcation(defaultAmplifcation)
+      updateAmplification(defaultAmplification)
     }
   },[])
 
@@ -51,10 +51,10 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
   }
 
   let amplification = (param_vals &&  param_vals.Amplification != null)
-? param_vals.Amplification : defaultAmplifcation;
+? param_vals.Amplification : defaultAmplification;
 
 
-  let amplifcationRotation = amplification / (maxAmplifcation - minAmplifcation) * 270 - 135
+  let amplificationRotation = amplification / (maxAmplification - minAmplification) * 270 - 135
 
   function increment_amplification(event) {
     console.log("increment_amplification")
@@ -68,18 +68,18 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
       return ;
     }
 
-    let increment_amount = (maxAmplifcation - minAmplifcation) / 100;
+    let increment_amount = (maxAmplification - minAmplification) / 100;
     if(event.activatorEvent.ctrlKey){
       increment_amount *= -1;
     }
     let newAmplification = Number((amplification + increment_amount).toPrecision(3));
     console.log("newAmplification: ", newAmplification)
-    if(newAmplification > maxAmplifcation){
-      newAmplification = minAmplifcation;
-    } else if (newAmplification < minAmplifcation){
-      newAmplification = maxAmplifcation;
+    if(newAmplification > maxAmplification){
+      newAmplification = minAmplification;
+    } else if (newAmplification < minAmplification){
+      newAmplification = maxAmplification;
     }
-    updateAmplifcation(newAmplification);
+    updateAmplification(newAmplification);
   }
 
   let style = {
@@ -92,7 +92,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
       
        <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
-        <Knob x={width * .5} y={height * .40} width={width * .40} rotation={amplifcationRotation} text="Amplification" isStatic={isStatic} increment={increment_amplification} number={amplification}/>
+        <Knob x={width * .5} y={height * .40} width={width * .40} rotation={amplificationRotation} text="Amplification" isStatic={isStatic} increment={increment_amplification} number={amplification}/>
         <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
     </svg>
   );

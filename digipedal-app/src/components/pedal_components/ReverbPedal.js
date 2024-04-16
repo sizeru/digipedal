@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 
@@ -10,9 +10,11 @@ const minAmount = 0;
 const maxAmount = 2;
 const defaultAmount = 0.25;
 
+/*
 const minOn = 0;
 const maxOn = 1;
 const defaultOn = 1;
+*/
 
 const minDry = 0;
 const maxDry = 2;
@@ -130,15 +132,15 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
     // checking if there are param_vals or not
     console.log("do i need to update?")
     console.log(!param_vals || !param_vals.amplification)
-    if(!param_vals || param_vals.amplification == null){
+    if(!param_vals){
 //      updateAmount(defaultAmount);
 //      updateDelay(defaultDelay);
 //      updateOn(defaultOn);
 //      updateDry(defaultDry);
-      updateParam("amount", defaultAmount);
-      updateParam("delay", defaultDelay);
-      updateParam("on", defaultOn);
-      updateParam("dry", defaultDry);
+      if (!param_vals.amount) updateParam("amount", defaultAmount);
+      if (!param_vals.delay) updateParam("delay", defaultDelay);
+//      updateParam("on", defaultOn);
+      if (!param_vals.dry) updateParam("dry", defaultDry);
     }
   },[])
 
@@ -149,7 +151,7 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
   }
 
   let dry = (param_vals && param_vals.dry != null) ? param_vals.dry : defaultDry;
-  let on = (param_vals && param_vals.on != null) ? param_vals.on : defaultOn;
+ // let on = (param_vals && param_vals.on != null) ? param_vals.on : defaultOn;
   let amount = (param_vals && param_vals.amount != null) ? param_vals.amount : defaultAmount;
   let delay = (param_vals && param_vals.delay != null) ? param_vals.delay : defaultDelay;
 
@@ -233,9 +235,9 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
       
        <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
-        <Knob x={width * .5} y={height * .2} width={width * .18} rotation={delayRotation} text="Delay" isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delayVal}/>
-        <Knob x={width * .25} y={height * .7} width={width * .18} rotation={dryRotation} text="Dry Amount" isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dryVal}/>
-        <Knob x={width * .75} y={height * .7} width={width * .18} rotation={amountRotation} text="Wet Amount" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amtVal}/>
+        <Knob x={width * .5} y={height * .2} width={width * .26} rotation={delayRotation} text=" Delay " isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delayVal}/>
+        <Knob x={width * .25} y={height * .7} width={width * .18} rotation={dryRotation} text="Dry Amt" isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dryVal}/>
+        <Knob x={width * .75} y={height * .7} width={width * .18} rotation={amountRotation} text="Wet Amt" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amtVal}/>
         <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
     </svg>
   );
