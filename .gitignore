@@ -10,3 +10,7 @@ pedals/
 # Plugins
 *.so
 *.zip
+
+# Player
+daemon/target
+daemon/Cargo.lock
