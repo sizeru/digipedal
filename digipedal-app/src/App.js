@@ -18,9 +18,10 @@ import {getPedals} from './firebaseOperations'
 
 function App() {
 
-  const boardsRef = useRef(boardData.map((board) => board));
-  const [boards, setBoards] = useState(boardsRef.current);
+  // const boardsRef = useRef(boardData.map((board) => board));
+  // const [boards, setBoards] = useState(boardsRef.current);
   const [pedalTypeMap, setPedalTypeMap] = useState(null)
+  const [pedalDataMap, setpedalDataMap] = useState(null)
 
   useEffect(() => {
     const getPedalTypeMap = async () => {
@@ -32,13 +33,23 @@ function App() {
 
       console.log("turning getPedals result into an actual map")
       let pedalMap = new Map()
+      let pedalDataMap = new Map()
       pedalArray.forEach((pedal) =>{
         pedalMap.set(pedal.id, pedal.name)
+        pedalDataMap.set(pedal.id, {
+          "mfr": pedal.mfr,
+          "pedal_uri": pedal.pedal_uri,
+          "manifest_uri": pedal.manifest_uri,
+          "parameters": pedal.parameters,
+          "type": pedal.type
+        })
       })
 
       console.log("resulting pedalMap: ")
       console.log(pedalMap)
+      console.log(pedalDataMap)
       setPedalTypeMap(pedalMap)
+      setpedalDataMap(pedalDataMap)
     }
     getPedalTypeMap()
   }, [])
@@ -86,9 +97,9 @@ function App() {
             <Route exact path="/" 
                    element={<Home />} />
             <Route exact path="/board" 
-                   element={<Board boards={boards} pedalTypeMap={pedalTypeMap}/>} />
+                   element={<Board pedalTypeMap={pedalTypeMap} pedalDataMap={pedalDataMap}/>} />
               <Route path="/board/:id"
-                    element={<Board boards={boards} pedalTypeMap={pedalTypeMap}/>} /> 
+                    element={<Board pedalTypeMap={pedalTypeMap} pedalDataMap={pedalDataMap}/>} /> 
         </Routes>
       </Router>
   );

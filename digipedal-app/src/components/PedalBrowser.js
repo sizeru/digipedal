@@ -3,11 +3,11 @@ import {Button, Modal} from 'react-bootstrap';
 
 import {findPedal} from './pedal_components/PedalFinder'
 
-function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show}) {
+function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, buttonShow}) {
   
   return (
     <>
-      <Button id="PedalBrowserButton" variant="primary" onClick={handleShow}>
+      <Button hidden={!buttonShow} id="PedalBrowserButton" variant="primary" onClick={handleShow}>
         +
       </Button>
 
