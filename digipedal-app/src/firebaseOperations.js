@@ -91,9 +91,20 @@ export const getBoards = async () => {
     const boards = collection(db, 'boards');
     const boardsDocs = await getDocs(boards);
     const boardsList = boardsDocs.docs.map( (doc) => {
-      return {id:doc.id, name:doc.data().name, image:doc.data().name + '.png'}
+        return {id:doc.id, name:doc.data().name, image:doc.data().name + '.png'}
     });
+    boardsList.sort((a, b) => a.id - b.id);
     return boardsList;
+}
+
+export const getHighestBoardId = async () => {
+    const boards = collection(db, 'boards');
+    const boardsDocs = await getDocs(boards);
+    const boardsList = boardsDocs.docs.map( (doc) => {
+        return doc.id;
+    });
+    console.log("Boards List:", boardsList)
+    return Math.max(...boardsList);
 }
 
 // Input: boardId (string)
@@ -110,21 +121,24 @@ export const getBoardById = async (boardId) => {
     if (boardDoc.exists()) {
         const pedals = collection(db, 'boards', boardId, 'pedals');
         const pedalsDocs = await getDocs(pedals);
-        const pedalsList = pedalsDocs.docs.map( doc => {
-            const data = doc.data();
-            console.log(data);
-            return {
-                pedal_id: data.pedal_id, 
-                xPercent: data.xPercent, 
-                yPercent: data.yPercent,
-                toggled: data.toggled,
-                param_vals: data.param_vals
-        }});
         const retObj = {
             "name": boardDoc.data(),
-            "pedals": pedalsList
+            "pedals": pedalsDocs.docs.map( doc => {
+                const data = doc.data();
+                // console.log(data);
+                return {
+                    pedal_id: data.pedal_id, 
+                    xPercent: data.xPercent,
+                    x: data.x, 
+                    width: data.width,
+                    yPercent: data.yPercent,
+                    y: data.y,
+                    height: data.height,
+                    toggled: data.toggled,
+                    param_vals: data.param_vals
+            }})
         }
-        console.log(retObj);
+        // console.log("return Object: ", retObj);
         return retObj;
     } else {
         console.log("No board found!");
@@ -158,6 +172,7 @@ export const updateBoardName = async (boardId, newName) => {
       }
       await editPedal("1", "3", newPedal);
 */
+
 // Tested, works
 // Can be used to edit existing or add new pedals
 // To add new pedal, set pedalNumber to the next available number
@@ -194,4 +209,22 @@ export const deletePedalFromBoard = async (boardId, pedalNumber) => {
     } catch (error) {
         console.error("Error getting pedal:", error);
     }
+}
+
+export const deleteAllFromBoard = async (boardId) => {
+    const pedals = collection(db, 'boards', boardId, 'pedals');
+    const pedalsDocs = await getDocs(pedals);
+    pedalsDocs.docs.forEach( async (doc) => {
+        await deleteDoc(doc.ref);
+    });
+    console.log("All pedals removed successfully");
+}
+
+export const saveAllToBoard = async (boardId, pedalList) => {
+    console.log("saving:", boardId, " : ", pedalList);
+    await deleteAllFromBoard(boardId);
+    pedalList.forEach( async (pedal, index) => {
+        await postPedalToBoard(boardId, index.toString(), pedal);
+    });
+    console.log("All pedals saved successfully");
 }
