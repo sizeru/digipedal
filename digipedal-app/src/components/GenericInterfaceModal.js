@@ -1,7 +1,23 @@
 import { Container, Row, Col, Modal, Button, InputGroup, Form } from 'react-bootstrap';
 import { getPedalById } from '../firebaseOperations';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Slider } from '@mui/material';
+
+
+//thanks internet
+function debounce(func, wait) {
+    let timeout;
+
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
 
 function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
     const basePath = process.env.PUBLIC_URL;
@@ -28,11 +44,13 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
         });
     }, []);
 
-    const changePedalVal = (param, value) => {
-        let editingPedalVals = {...newPedalVals};
-        editingPedalVals[param] = value;
-        setNewPedalVals(editingPedalVals);
-    };
+    const changePedalVal = useCallback(debounce((param, value) => {
+        setNewPedalVals({
+            ...newPedalVals,
+            [param]: value
+        });
+    }, 500), []); // Ensure this function doesn't change on re-renders unless necessary
+    
 
     const calculateStep = (param) => {
         if (param.step === "log") {
