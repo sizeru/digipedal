@@ -42,8 +42,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const handleShareClose = () => { setSharing(false); setShowBrowserButton(true); }
     const handleShare = () => { setSharing(true); setShowBrowserButton(false); }
 
-    const handleClose = () => setHelpShow(false);
-    const handleShow = () => setHelpShow(true);
+    const handleClose = () => { setHelpShow(false); setShowBrowserButton(true); }
+    const handleShow = () => { setHelpShow(true); setShowBrowserButton(false); }
     const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
 
@@ -318,7 +318,6 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         setPedalsMap(newMap);
         console.log(newMap);
 
-        // how do?
     }
 
     let [pedalInfoMap, setPedalInfoMap] = useState(new Map())
@@ -363,8 +362,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             saveObj[key - decrement] = {
                 pedal_id: pedal.pedal_id,
                 toggled: pedal.toggled,
-                xPercent: pedal.xPercent,
-                yPercent: pedal.yPercent,
+                xPercent: pedal.x / window.innerWidth,
+                yPercent: pedal.y / window.innerHeight,
                 x: pedal.x,
                 y: pedal.y,
                 width: pedal.width,

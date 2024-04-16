@@ -28,8 +28,11 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
         });
     }, []);
 
-    const changePedalVal = (param, value) => {
+    const changePedalVal = (param, value, index) => {
         let editingPedalVals = {...newPedalVals};
+        console.log("pedalParams:", pedalParams);
+        if (value > pedalParams[index].maximum) value = pedalParams[index].maximum;
+        if (value < pedalParams[index].minimum) value = pedalParams[index].minimum;
         editingPedalVals[param] = value;
         setNewPedalVals(editingPedalVals);
     };
@@ -59,7 +62,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                         <Form.Label> {param.name} </Form.Label>
                         <Form.Select 
                             defaultValue={param.options[pedalVals[param.name]]} 
-                            onChange={(e) => changePedalVal(param.name, e.target.value)}>
+                            onChange={(e) => changePedalVal(param.name, e.target.value, index)}>
                         { param.options.map((option, index) => {
                             return <option key={index} value={option}> {option} </option>;
                         })}
@@ -71,23 +74,25 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                         <InputGroup.Checkbox 
                             id={param.name} 
                             defaultChecked={pedalVals[param.name]} 
-                            onClick={(e) => changePedalVal(param.name, !e.target.value)} />
+                            onClick={(e) => changePedalVal(param.name, !e.target.value, index)} />
                     </div>
                 ) : (
                     <div className="slider-con">
                         <Form.Label> {param.name} </Form.Label>
                         <Row>
                             <Col md={8}>
-                                <Slider 
+                                <Form.Range 
                                     id={param.name +"Slider"} 
                                     min={param.minimum} 
                                     max={param.maximum} 
-                                    defaultValue={pedalVals[param.name]} valueLabelDisplay="auto" 
+                                    value={newPedalVals[param.name]} valueLabelDisplay="auto" 
                                     valueLabelFormat={value => {return valueLabelFormat(value, param.unit)}}
-                                    step={calculateStep(param)} onChange={(e) => changePedalVal(param.name, e.target.value)}/>
+                                    step={calculateStep(param)} onChange={(e) => changePedalVal(param.name, e.target.value, index)} />
                             </Col>
                             <Col md={4}>
-                                <Form.Control type="number" value={newPedalVals[param.name]} onChange={(e) => changePedalVal(param.name, e.target.value)} />
+                                <Form.Control type="number" value={newPedalVals[param.name]} 
+                                onChange={(e) => changePedalVal(param.name, e.target.value, index)} 
+                                />
                             </Col>
                         </Row>
                     </div>
