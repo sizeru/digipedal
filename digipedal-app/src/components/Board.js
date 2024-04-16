@@ -26,7 +26,9 @@ import PedalBrowser from './PedalBrowser';
 import {getBoardById, getPedalById, saveAllToBoard} from '../firebaseOperations';
 import {findPedal} from './pedal_components/PedalFinder'
 
-function Board( {boards, pedalTypeMap} ) {
+import { addJACKPedal, deleteJACKPedalfromBoard, changeJACKPedal } from '../jackOperations';
+
+function Board( {pedalTypeMap, dataMap} ) {
     const { id }  = useParams();
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
@@ -56,7 +58,7 @@ function Board( {boards, pedalTypeMap} ) {
         if (cloneElement && pedalBoardContainer) {
             pedalBoardContainer.appendChild(cloneElement);
         } else if (pedalBoardContainer) {
-            //removing it if cloneElement is now null and the last elemtent is the clone
+            //removing it if cloneElement is now null and the last element is the clone
             let lastChild = pedalBoardContainer.lastElementChild;
             if(lastChild && lastChild.id === 'clone'){
                 pedalBoardContainer.removeChild(lastChild);
@@ -71,10 +73,7 @@ function Board( {boards, pedalTypeMap} ) {
     const handleShowPedalBrowser = () => setShowPedalBrowser(true);
 
     // setting up loading effect
-    useEffect(() => {
-        setLoading(currBoard == null);
-    }, [currBoard])
-
+    useEffect(() => {  setLoading(currBoard == null) }, [currBoard])
 
     // trying to get the board when
     useEffect( () => {
@@ -88,7 +87,10 @@ function Board( {boards, pedalTypeMap} ) {
             let pedals = boardRes.pedals;
             console.log(pedals);
             let map = new Map();
+            console.log("BEGIN: ", dataMap)
             pedals.forEach((pedal, idx) => {
+                console.log("BING BONG: ", pedal.pedal_id);
+                console.log("STUFUFUSFUSUF: ", dataMap.get(pedal.pedal_id));
                 map[idx] = {
                     boardId: id,
                     pedal_id: pedal.pedal_id,
@@ -98,7 +100,9 @@ function Board( {boards, pedalTypeMap} ) {
                     yPercent: pedal.yPercent,
                     y: pedal.y,
                     height: pedal.height,
-                    toggled: pedal.toggled
+                    toggled: pedal.toggled,
+//                    pedal_uri: dataMap[pedal.pedal_id].pedal_uri,
+//                    manifest_uri: dataMap[pedal.pedal_id].manifest_uri,
                 };
             });
             setPedalsMap(map);
@@ -294,6 +298,9 @@ function Board( {boards, pedalTypeMap} ) {
         // making the new map
         setPedalsMap(prev => new Map(prev).set(newPedal.boardId, newPedal));
         console.log(pedalsMap)
+        let pedalData = dataMap.get(pedalId);
+
+        addJACKPedal(0, pedalId, pedalData.pedal_uri, "in_l", "out_l", null);
     };
 
     function deletePedal(boardId){
@@ -304,7 +311,9 @@ function Board( {boards, pedalTypeMap} ) {
         let newMap = new Map(pedalsMap);
         newMap.delete(activePedal.boardId)
         setPedalsMap(newMap);
-        console.log(newMap)
+        console.log(newMap);
+
+        deleteJACKPedalfromBoard(0, activePedal.pedal_id);
     }
 
     function togglePedal(boardId){
@@ -314,7 +323,9 @@ function Board( {boards, pedalTypeMap} ) {
         let newMap = new Map(pedalsMap);
         newMap.set(boardId, activePedal)
         setPedalsMap(newMap);
-        console.log(newMap)
+        console.log(newMap);
+
+        // how do?
     }
 
     let [pedalInfoMap, setPedalInfoMap] = useState(new Map())
@@ -387,6 +398,8 @@ function Board( {boards, pedalTypeMap} ) {
         
         setPedalsMap(newMap);
         console.log(updatedPedal);
+
+        changeJACKPedal(0, updatedPedal.pedal_id, updatedPedal.param_vals);
     }
 
 
