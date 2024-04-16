@@ -125,8 +125,8 @@ function Board( {boards, pedalTypeMap} ) {
     }
 
     const handleDeleteAll = () => {
-
-        currBoard.pedals = [];
+        setCurrBoard({...currBoard, pedals:[]});
+        
         
         closeDeletingPedalsModal();
         
