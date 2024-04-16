@@ -105,13 +105,11 @@ function Board( {boards, pedalTypeMap} ) {
     }
 
     const handleDeleteAll = () => {
-        //setCurrBoard(null);
 
-        currBoard.pedals.forEach((pedal) => {
-            deletePedal(pedal.pedalId);
-        });
+        currBoard.pedals = [];
+        
         closeDeletingPedalsModal();
-        window.location.reload();
+        
     }
 
     const playPauseToggle = () => {
