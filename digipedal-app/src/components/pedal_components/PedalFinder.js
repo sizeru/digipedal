@@ -1,10 +1,13 @@
 import AmpPedal from './AmpPedal'
+import ReverbPedal from './ReverbPedal'
 
 function findPedal(name){
     // setting up to return the correct class 
     switch(name){
         case "myAmp":
             return AmpPedal;
+        case "Calf Reverb":
+            return ReverbPedal;
         default:
     }
     // oh no we didnt find it1

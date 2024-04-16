@@ -88,10 +88,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             let pedals = boardRes.pedals;
             console.log(pedals);
             let map = new Map();
-            console.log("BEGIN: ", pedalDataMap)
             pedals.forEach((pedal, idx) => {
-                console.log("BING BONG: ", pedal.pedal_id);
-                console.log("STUFUFUSFUSUF: ", pedalDataMap.get(pedal.pedal_id));
                 map[idx] = {
                     boardId: id,
                     pedal_id: pedal.pedal_id,
@@ -102,8 +99,6 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                     y: pedal.y,
                     height: pedal.height,
                     toggled: pedal.toggled,
-//                    pedal_uri: pedalDataMap[pedal.pedal_id].pedal_uri,
-//                    manifest_uri: pedalDataMap[pedal.pedal_id].manifest_uri,
                 };
             });
             setPedalsMap(map);
@@ -292,7 +287,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         console.log(pedalsMap)
         let pedalData = pedalDataMap.get(pedalId);
 
-        addJACKPedal(0, pedalId, pedalData.pedal_uri, "in_l", "out_l", null);
+        // addJACKPedal(0, pedalId, pedalDataMap[pedalData.pedal_name].pedal_uri, "in_l", "out_l", null);
     };
 
     function deletePedal(boardId){
@@ -305,7 +300,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         setPedalsMap(newMap);
         console.log(newMap);
 
-        deleteJACKPedalfromBoard(0, activePedal.pedal_id);
+        // deleteJACKPedalfromBoard(0, activePedal.pedal_id);
     }
 
     function togglePedal(boardId){
@@ -394,7 +389,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         setPedalsMap(newMap);
         console.log(updatedPedal);
 
-        changeJACKPedal(0, updatedPedal.pedal_id, updatedPedal.param_vals);
+        // changeJACKPedal(0, updatedPedal.pedal_id, pedalDataMap[updatedPedal.pedal_name].param_vals);
     }
 
 

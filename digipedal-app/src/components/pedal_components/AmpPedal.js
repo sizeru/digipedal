@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
+
 const minAmplifcation = 0;
 const maxAmplifcation = 2;
 
@@ -28,7 +29,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
         pedal.param_vals = {};
       }
       // setting the new amplification
-      pedal.param_vals.amplification = amplification;
+      pedal.param_vals.Amplification = amplification;
 
       return pedal;
     })
@@ -37,8 +38,8 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
   useEffect(() => {
     // checking if there are param_vals or not
     console.log("do i need to update?")
-    console.log(!param_vals || !param_vals.amplification)
-    if(!param_vals || param_vals.amplification == null){
+    console.log(!param_vals || !param_vals.Amplification)
+    if(!param_vals || param_vals.Amplification == null){
       updateAmplifcation(defaultAmplifcation)
     }
   },[])
@@ -49,8 +50,8 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
     param_vals = {};
   }
 
-  let amplification = (param_vals &&  param_vals.amplification != null)
-? param_vals.amplification : defaultAmplifcation;
+  let amplification = (param_vals &&  param_vals.Amplification != null)
+? param_vals.Amplification : defaultAmplifcation;
 
 
   let amplifcationRotation = amplification / (maxAmplifcation - minAmplifcation) * 270 - 135
