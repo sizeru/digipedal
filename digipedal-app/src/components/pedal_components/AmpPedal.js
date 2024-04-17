@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 
@@ -9,6 +9,20 @@ const defaultAmplification = 1;
 
 
 function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal, index}) {
+  
+  const [pedalWidth, setPedalWidth] = useState(width);
+  const [pedalHeight, setPedalHeight] = useState(height);
+
+  const increaseSize = () => {
+    setPedalWidth(prevWidth => prevWidth * 1.1);
+    setPedalHeight(prevHeight => prevHeight * 1.1);
+  };
+
+  const decreaseSize = () => {
+    setPedalWidth(prevWidth => prevWidth / 1.1);
+    setPedalHeight(prevHeight => prevHeight / 1.1);
+  };
+  
   useEffect(() => {
     if(!updatePedal){
       console.log("No update pedal for AmpPedal yet. Temp setting it");
@@ -88,12 +102,14 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
 
 
   let svg_output = (
-    <svg width={width} height={height + height/5} viewBox={`0 ${-height/5} ${width} ${height + height/5 + height/5}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <svg width={pedalWidth} height={pedalHeight + pedalHeight/5} viewBox={`0 ${-pedalHeight/5} ${pedalWidth} ${pedalHeight + pedalHeight/5 + pedalHeight/5}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
       
        <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
-        <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
-        <Knob x={width * .5} y={height * .40} width={width * .40} rotation={amplificationRotation} text="Amplification" isStatic={isStatic} increment={increment_amplification} number={amplification}/>
-        <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
+        <rect width={pedalWidth} height={pedalHeight} rx="1" fill="#D9D9D9"/>
+        <Knob x={pedalWidth * .5} y={pedalHeight * .40} width={pedalWidth * .40} rotation={amplificationRotation} text="Amplification" isStatic={isStatic} increment={increment_amplification} number={amplification}/>
+        <PedalBottom width={pedalWidth} height={pedalHeight/5} startHeight={pedalHeight} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
+        <text x={pedalWidth - 50} y={-pedalHeight / 10} fill="red" fontSize="20" textAnchor="end" onClick={decreaseSize}>-</text>
+        <text x={pedalWidth - 20} y={-pedalHeight / 10} fill="green" fontSize="20" textAnchor="end" onClick={increaseSize}>+</text>
     </svg>
   );
 
