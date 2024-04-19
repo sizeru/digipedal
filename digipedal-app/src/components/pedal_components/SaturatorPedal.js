@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 
@@ -14,15 +14,30 @@ const minBlend = -10;
 const maxBlend = 10;
 const defaultBlend = 10;
 
-/*
-const minBypass = 0;
-const maxBypass = 1;
-const defaultBypass = 1;
-*/
-
-
 function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal, index}) {
   
+  const [pedalWidth, setPedalWidth] = useState(width);
+  const [pedalHeight, setPedalHeight] = useState(height);
+  const [pedalY, setPedalY] = useState(null);
+  const [pedalH, setPedalH] = useState(null);
+
+  const increaseSize = () => {
+    setPedalWidth(prevWidth => prevWidth * 1.1);
+    setPedalHeight(prevHeight => prevHeight * 1.1);
+  };
+
+  const decreaseSize = () => {
+    setPedalWidth(prevWidth => prevWidth / 1.1);
+    setPedalHeight(prevHeight => prevHeight / 1.1);
+  };
+
+  useEffect(() => {
+    if(pedalY == null || pedalH == null){
+      setPedalY(isStatic ? 0 : -pedalHeight/5);
+      setPedalH(isStatic ? height + height/5 : height + height / 5 + height / 5);
+    }
+  },[pedalWidth, pedalHeight]);
+
   useEffect(() => {
     if(!updatePedal){
       console.log("No update pedal for SaturatorPedal yet. Temp setting it");
@@ -128,6 +143,14 @@ function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePed
         <Knob x={width * .25} y={height * .7} width={width * .18} rotation={blendRotation} text=" Blend " isStatic={isStatic} increment={(e) => increment_param(e, "blend", minBlend, maxBlend)} number={blend}/>
         <Knob x={width * .75} y={height * .7} width={width * .18} rotation={mixRotation} text="  Mix  " isStatic={isStatic} increment={(e) => increment_param(e, "mix", minMix, maxMix)} number={mix}/>
         <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
+        {isStatic ? 
+        <></> 
+        :
+        <g>
+          <text x={pedalWidth - 40} y={-pedalHeight / 20} fill="red" fontSize="50" fontWeight="bold" textAnchor="end" onClick={decreaseSize}>-</text>
+          <text x={pedalWidth} y={-pedalHeight / 20} fill="green" fontSize="50" fontWeight="bold" textAnchor="end" onClick={increaseSize}>+</text>
+        </g>
+        }
     </svg>
   );
 
