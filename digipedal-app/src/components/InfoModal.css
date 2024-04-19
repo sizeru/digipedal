@@ -1,6 +1,6 @@
-.btn {
+.default-btn {
     font-family: "Fira Sans Condensed", sans-serif !important;
-    background-color: #F6AEB9 !important;
+    background-color: #F6AEB9;
     color: black !important;
     touch-action: initial;
 }
@@ -48,11 +48,18 @@
     align-items: center;
 }
 
+h2 {
+    font-family: "Fira Sans", sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    text-align: center;
+}
 
 h4 {
     font-family: "Fira Sans", sans-serif;
     font-size: 20px;
     font-weight: 800;
+    word-break: break-word;
 }
 
 p {

@@ -7,7 +7,7 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, bu
   
   return (
     <>
-      <Button hidden={!buttonShow} id="PedalBrowserButton" variant="primary" onClick={handleShow}>
+      <Button className="default-btn" hidden={!buttonShow} id="PedalBrowserButton" variant="primary" onClick={handleShow}>
         +
       </Button>
 
@@ -40,7 +40,7 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, bu
             })}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button className="default-btn" variant="secondary" onClick={handleClose}>
             Close
           </Button>
         </Modal.Footer>

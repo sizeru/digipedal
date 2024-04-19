@@ -26,12 +26,60 @@ a{
   color: black !important;
 }
 
+.rename-field {
+  line-height: 10vh !important;
+  padding: 0 5% !important;
+  background-color: #F9C8CF !important;
+  font-size: x-large !important;
+  
+}
+.create-btn {
+  font-family: "Fira Sans Condensed", sans-serif !important;
+  font-weight: 700 !important;
+  width: 100% !important;
+  background-color: #F69B79 !important;
+  color: black !important;
+  height: 10vh;
+  font-size: x-large !important;
+  border-color: #F69B79 !important;
+}
+
+.create-btn:hover {
+  background-color: #F37E53 !important;
+  color: #F6EEE3 !important;
+  border-color: #F37E53 !important;
+}
+
+.default-btn {
+  font-family: "Fira Sans Condensed", sans-serif !important;
+  background-color: #F6AEB9;
+  color: black !important;
+  touch-action: initial;
+  outline: none !important;
+  --bs-btn-hover-color: #F6AEB9;
+}
+
+.default-btn:hover {
+  background-color: #F37E53 !important;
+  color: #F6EEE3 !important;
+}
+
 .board-title {
   font-family: "Fira Sans Condensed", sans-serif !important;
   font-weight: 700 !important;
   width: 100% !important;
   background-color: #F6AEB9 !important;
   color: black !important;
+  height: 10vh;
+  font-size: x-large !important;
+  border-color: #F6AEB9 !important;
+  border-right-color: #F37E53 !important;
+}
+
+.board-title:hover {
+  background-color: #F37E53 !important;
+  color: #F6EEE3 !important;
+  border-color: #F37E53 !important;
 }
 
 .params {
@@ -56,6 +104,16 @@ a{
 }
 .custom-toggle {
   max-width: 30px !important; 
+  background-color: #F6AEB9 !important;
+  border-color: #F6AEB9 !important;
+  border-left-color: #F37E53 !important;
+  border-left-width: medium !important;
+}
+
+.default-btn:hover {
+  background-color: #F37E53 !important;
+  color: #F6EEE3 !important;
+  border-color: #F37E53 !important;
 }
 
 .btn-full:hover {
