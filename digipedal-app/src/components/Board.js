@@ -34,6 +34,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const [isLoading, setLoading] = useState(true);
     const [isPlaying, setPlaying] = useState(false);
     const [helpShow, setHelpShow] = useState(false);
+    const [genericId, setGenericId] = useState(null);
     const [saveState, setSaveState] = useState("saved");
 
 
@@ -42,8 +43,15 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const handleShareClose = () => { setSharing(false); setShowBrowserButton(true); }
     const handleShare = () => { setSharing(true); setShowBrowserButton(false); }
 
-    const handleClose = () => { setHelpShow(false); setShowBrowserButton(true); }
-    const handleShow = () => { setHelpShow(true); setShowBrowserButton(false); }
+    const handleClose = () => { setHelpShow(false); setShowBrowserButton(true); setGenericId(null); }
+    const handleShow = (id) => { console.log("entered show.."); setGenericId(id); }
+    useEffect(() => {
+        if (genericId !== null) {  
+            console.log("... with id: ", genericId);
+            setHelpShow(true);
+            setShowBrowserButton(false);
+        }
+    }, [genericId]);
     const basePath = process.env.PUBLIC_URL;
     const [pedalsMap, setPedalsMap] = useState(new Map());
 
@@ -436,10 +444,10 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 </div>
             </div>  
             <Row>        
-                <Button className="default-btn" onClick={handleShow}> Modal Tester </Button>
+                {/* <Button className="default-btn" onClick={handleShow}> Modal Tester </Button> */}
                 <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
-            <GenericInterfaceModal pedal_id={2} show={helpShow} handleClose={handleClose} />
+
 
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} buttonShow={showBrowserButton} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)}/> : null}
@@ -458,12 +466,14 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
                             showInfoModal={() => showInfoModal(pedal.pedal_id)}
+                            // showInfoModal={() => handleShow(pedal.pedal_id)}
                             updatePedal={(pedalUpdateFunction) => updatePedal(pedal.boardId, pedalUpdateFunction)}
                             index={index}/>
                         </Draggable>);
                     })}
                 </Droppable>
             </DndContext>
+            <GenericInterfaceModal pedal_id={genericId} show={helpShow} handleClose={handleClose} />
         </>
     );
     

@@ -115,11 +115,14 @@ function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePed
     "opacity": toggled ? 1 : .5,
   }
 
+  const h = isStatic ? height + height/5 : height + height / 5 + height / 5;
+
+  const y = isStatic ? 0 : -height/5;
 
   let svg_output = (
-    <svg width={width} height={height + height/5} viewBox={`0 ${-height/5} ${width} ${height + height/5 + height/5}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <svg width={width} height={height + height/5} viewBox={`0 ${y} ${width} ${h}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
       
-       <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
+       {!isStatic ? <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text> : <></> }
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
         <Knob x={width * .5} y={height * .22} width={width * .28} rotation={driveRotation} text="Saturation" isStatic={isStatic} increment={(e) => increment_param(e, "drive", minDrive, maxDrive)} number={drive}/>
         <Knob x={width * .25} y={height * .7} width={width * .18} rotation={blendRotation} text=" Blend " isStatic={isStatic} increment={(e) => increment_param(e, "blend", minBlend, maxBlend)} number={blend}/>

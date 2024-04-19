@@ -8,9 +8,14 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
     const [newPedalVals, setNewPedalVals] = useState(null);
     const [pedalParams, setPedalParams] = useState(null);
     const [pedalName, setPedalName] = useState("");
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         const getResponse = async () => {
+            if (pedal_id == null) {
+                setLoaded(false);
+                return null;
+            }
             return await getPedalById(pedal_id.toString());
         };
         getResponse().then( (response) => {
@@ -24,8 +29,11 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
             });
             setPedalVals(pedalVals);
             setNewPedalVals(pedalVals);
+            setLoaded(true);
+        }).catch((error) => {
+            console.log(error + " in getPedalById");
         });
-    }, []);
+    }, [pedal_id]);
 
     const changePedalVal = (param, value, index) => {
         let editingPedalVals = {...newPedalVals};
@@ -114,7 +122,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
 
     return (
         <div>
-            <Modal  show={show} 
+            <Modal  show={show && loaded} 
                     onHide={() => {handleClose(); setNewPedalVals(pedalVals);}} 
                     aria-labelledby="contained-modal-title-vcenter"
                     size="xl"
