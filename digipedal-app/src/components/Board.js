@@ -24,6 +24,7 @@ import PedalBrowser from './PedalBrowser';
 // attaching to front end
 import {getBoardById, getPedalById, saveAllToBoard} from '../firebaseOperations';
 import {findPedal} from './pedal_components/PedalFinder'
+import DeleteAllPedals from "./DeleteAllPedals";
 
 import { addJACKPedal, deleteJACKPedalfromBoard, changeJACKPedal } from '../jackOperations';
 
@@ -36,11 +37,17 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const [genericId, setGenericId] = useState(null);
     const [saveState, setSaveState] = useState("saved");
 
+    const [showDeletePedalsModal, setShowDeletingPedalModal] = useState(false);
 
     const [sharing, setSharing] = useState(false);
     
     const handleShareClose = () => { setSharing(false); setShowBrowserButton(true); }
     const handleShare = () => { setSharing(true); setShowBrowserButton(false); }
+    //DeletePedalsModals  
+    const closeDeletingPedalsModal = () => setShowDeletingPedalModal(false);
+    const openDeletingPedalsModal = () => setShowDeletingPedalModal(true);
+
+    //const handleDeleteAll = () => setShowingMod(true);
 
     const handleClose = () => { setHelpShow(false); setShowBrowserButton(true); setGenericId(null); }
     const handleShow = (id) => { setGenericId(id); }
@@ -117,6 +124,22 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         tryGetBoard()
     }, [id]);
     
+    const undo = () => {
+        console.log("Undo");
+    }
+
+    const redo = () => {
+        console.log("Redo");
+    }
+
+    const handleDeleteAll = () => {
+        setCurrBoard({...currBoard, pedals:[]});
+        
+        
+        closeDeletingPedalsModal();
+        
+    }
+
     const playPauseToggle = () => {
         console.log("Play/Pause");
         setPlaying(!isPlaying);
@@ -446,8 +469,9 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} buttonShow={showBrowserButton} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)}/> : null}
             <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
+            <DeleteAllPedals showDeletePedalsModal={showDeletePedalsModal} closeDeletingPedalsModal={closeDeletingPedalsModal} openDeletingPedalsModal={openDeletingPedalsModal} handleDeleteAll={handleDeleteAll}/>
             <canvas id="overlayCanvas" />
-            
+                       
 
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
