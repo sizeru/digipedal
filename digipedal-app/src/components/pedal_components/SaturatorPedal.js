@@ -34,7 +34,7 @@ function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePed
   useEffect(() => {
     if(pedalY == null || pedalH == null){
       setPedalY(isStatic ? 0 : -pedalHeight/5);
-      setPedalH(isStatic ? height + height/5 : height + height / 5 + height / 5);
+      setPedalH(isStatic ? pedalHeight + pedalHeight/5 : pedalHeight + pedalHeight / 5 + pedalHeight / 5);
     }
   },[pedalWidth, pedalHeight]);
 
@@ -130,12 +130,11 @@ function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePed
     "opacity": toggled ? 1 : .5,
   }
 
-  const h = isStatic ? height + height/5 : height + height / 5 + height / 5;
-
-  const y = isStatic ? 0 : -height/5;
-
   let svg_output = (
-    <svg width={width} height={height + height/5} viewBox={`0 ${y} ${width} ${h}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    pedalY == null ? 
+    <></> 
+    : 
+    <svg width={pedalWidth} height={pedalHeight + pedalHeight/5} viewBox={`0 ${pedalY} ${pedalWidth} ${pedalH}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
       
        {!isStatic ? <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text> : <></> }
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>

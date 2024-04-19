@@ -28,7 +28,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
   useEffect(() => {
     if(pedalY == null || pedalH == null){
       setPedalY(isStatic ? 0 : -pedalHeight/5);
-      setPedalH(isStatic ? height + height/5 : height + height / 5 + height / 5);
+      setPedalH(isStatic ? pedalHeight + pedalHeight/5 : pedalHeight + pedalHeight / 5 + pedalHeight / 5);
     }
   },[pedalWidth, pedalHeight]);
   
