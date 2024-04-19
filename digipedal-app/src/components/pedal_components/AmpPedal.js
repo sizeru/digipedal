@@ -12,8 +12,6 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
   
   const [pedalWidth, setPedalWidth] = useState(width);
   const [pedalHeight, setPedalHeight] = useState(height);
-  const [pedalY, setPedalY] = useState(null);
-  const [pedalH, setPedalH] = useState(null);
 
   const increaseSize = () => {
     setPedalWidth(prevWidth => prevWidth * 1.1);
@@ -24,13 +22,6 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
     setPedalWidth(prevWidth => prevWidth / 1.1);
     setPedalHeight(prevHeight => prevHeight / 1.1);
   };
-
-  useEffect(() => {
-    if(pedalY == null || pedalH == null){
-      setPedalY(isStatic ? 0 : -pedalHeight/5);
-      setPedalH(isStatic ? height + height/5 : height + height / 5 + height / 5);
-    }
-  },[pedalWidth, pedalHeight]);
   
   useEffect(() => {
     if(!updatePedal){
@@ -112,7 +103,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
 
 
   let svg_output = (
-    <svg width={pedalWidth} height={pedalHeight + pedalHeight/5} viewBox={`0 ${pedalY} ${pedalWidth} ${pedalH}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <svg width={pedalWidth} height={pedalHeight + pedalHeight/5} viewBox={isStatic ? `0 0 ${pedalWidth} ${pedalHeight + pedalHeight/5}`: `0 ${-pedalHeight/5} ${pedalWidth} ${pedalHeight + pedalHeight/5 + pedalHeight/5}`}  fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
       {isStatic ? 
         <></> 
         :

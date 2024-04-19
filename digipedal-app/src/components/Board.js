@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle'; 
-import {Row, Button} from 'react-bootstrap';
+import {Row, Toast} from 'react-bootstrap';
 
 import './Navbar.css';
 import "./Board.css";
@@ -36,6 +36,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const [helpShow, setHelpShow] = useState(false);
     const [genericId, setGenericId] = useState(null);
     const [saveState, setSaveState] = useState("saved");
+    const [addedPedal, setAddedPedal] = useState(null);
 
     const [showDeletePedalsModal, setShowDeletingPedalModal] = useState(false);
 
@@ -296,7 +297,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         drawLines();
     },[pedalsMap])
 
-    function addPedal(event, pedalId){
+    async function addPedal(event, pedalId){
         setSaveState("unsaved");
         // remaking the pedal with the x, y corridnates 
         const defaultPercent = 50
@@ -320,6 +321,19 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         console.log(pedalsMap)
         let pedalData = pedalDataMap.get(pedalId);
 
+        // if (pedalData != null) {
+        try {
+            setAddedPedal(newPedal.pedal.name);
+            handleClosePedalBrowser();
+            console.log("started...");
+            setTimeout(() => {
+                setAddedPedal(null);
+                console.log("...ended");
+            }, 5000);
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+        // }
         // addJACKPedal(0, pedalId, pedalDataMap[pedalData.pedal_name].pedal_uri, "in_l", "out_l", null);
     };
 
@@ -492,6 +506,9 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 </Droppable>
             </DndContext>
             <GenericInterfaceModal pedal_id={genericId} show={helpShow} handleClose={handleClose} />
+            <Toast show={addedPedal != null} animation={true}>
+                <Toast.Body> {addedPedal} added successfully! </Toast.Body>
+            </Toast>
         </>
     );
     

@@ -67,8 +67,6 @@ svg * {
 }
 
 
-
-
 #overlayCanvas {
   position: fixed;
   top: 0;
@@ -77,4 +75,19 @@ svg * {
   height: 100%;
   background-color: transparent;
   pointer-events: none;
+}
+
+.toast {
+  z-index: 1000;
+  position:fixed;
+  right: 1vw;
+  top: 15vh;
+  /* width: 9vmin; */
+  width: fit-content;
+  height: 6vmin;
+  font-size: 2vmin;
+  font-weight: 300;
+  font-style:italic;
+  font-family: "Fira Sans Condensed", sans-serif !important;
+  
 }
