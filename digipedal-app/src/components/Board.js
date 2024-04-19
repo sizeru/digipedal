@@ -10,7 +10,6 @@ import Loading from './Loading';
 import InfoModal from './InfoModal';
 import GenericInterfaceModal from "./GenericInterfaceModal";
 import ShareModal from './ShareModal';
-import setShowShareModal from './ShareModal';
 
 // drag and drop stuff
 import {DndContext} from '@dnd-kit/core';
@@ -44,10 +43,9 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const handleShare = () => { setSharing(true); setShowBrowserButton(false); }
 
     const handleClose = () => { setHelpShow(false); setShowBrowserButton(true); setGenericId(null); }
-    const handleShow = (id) => { console.log("entered show.."); setGenericId(id); }
+    const handleShow = (id) => { setGenericId(id); }
     useEffect(() => {
         if (genericId !== null) {  
-            console.log("... with id: ", genericId);
             setHelpShow(true);
             setShowBrowserButton(false);
         }
@@ -380,7 +378,6 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             };
         });
         await saveAllToBoard(id, saveObj).then(() => {setSaveState("saved")});
-        // setSaveState("saved");
     }
 
     function updatePedal(boardId, pedalUpdateFunction){
@@ -437,14 +434,11 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                     {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
 
                     <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
-                    
-                    {/* <button className="nav-btn" onClick={share}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
-                    <button className="nav-btn" onClick={more}> <img src="../navbar_icons/three_dots.png" className="three-dots" alt="More"/> </button> */}
+ 
                     <div style={{"opacity": 0}}>||||||||||||</div>
                 </div>
             </div>  
             <Row>        
-                {/* <Button className="default-btn" onClick={handleShow}> Modal Tester </Button> */}
                 <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
 
