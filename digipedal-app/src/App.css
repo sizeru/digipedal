@@ -37,10 +37,16 @@ a{
   font-family: "Fira Sans Condensed", sans-serif !important;
   font-weight: 700 !important;
   width: 100% !important;
-  background-color: #F37E53 !important;
+  background-color: #F69B79 !important;
   color: black !important;
   height: 10vh;
   font-size: x-large !important;
+  border-color: #F69B79 !important;
+}
+
+.create-btn:hover {
+  background-color: #F37E53 !important;
+  color: #F6EEE3 !important;
   border-color: #F37E53 !important;
 }
 
