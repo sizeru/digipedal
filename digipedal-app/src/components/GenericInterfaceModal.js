@@ -1,7 +1,6 @@
 import { Container, Row, Col, Modal, Button, InputGroup, Form } from 'react-bootstrap';
 import { getPedalById } from '../firebaseOperations';
 import { useState, useEffect } from 'react';
-import { Slider } from '@mui/material';
 
 function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
     const basePath = process.env.PUBLIC_URL;
@@ -133,14 +132,14 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                     }
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" 
+                    <Button className="default-btn" variant="secondary" 
                             onClick={() => {
                                 setNewPedalVals(pedalVals);
                                 handleClose(); 
                             }}>
                         Close
                     </Button>
-                    <Button variant="primary" 
+                    <Button className="default-btn" variant="primary" 
                             onClick={() => {handleSave(); handleClose();}}>
                         Save
                     </Button>

@@ -436,10 +436,10 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 </div>
             </div>  
             <Row>        
-                <Button className="modal-DELETE" onClick={handleShow}> Modal Tester </Button>
+                <Button className="default-btn" onClick={handleShow}> Modal Tester </Button>
                 <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
-            <GenericInterfaceModal pedal_id={6} show={helpShow} handleClose={handleClose} />
+            <GenericInterfaceModal pedal_id={2} show={helpShow} handleClose={handleClose} />
 
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} buttonShow={showBrowserButton} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)}/> : null}

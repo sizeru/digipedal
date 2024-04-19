@@ -55,10 +55,10 @@ function InfoModal( {showing, handleClose, pedalInfo} ) {
                     </Container>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
+                    <Button className="info-btn" variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
+                    <Button className="info-btn" variant="primary" onClick={handleClose}>
                         Save Changes
                     </Button>
                 </Modal.Footer>
