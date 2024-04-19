@@ -128,8 +128,8 @@ function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePed
         <></> 
         :
         <g>
-          <text x={pedalWidth - 40} y={-pedalHeight / 20} fill="red" fontSize="50" fontWeight="bold" textAnchor="end" onClick={decreaseSize}>-</text>
-          <text x={pedalWidth} y={-pedalHeight / 20} fill="green" fontSize="50" fontWeight="bold" textAnchor="end" onClick={increaseSize}>+</text>
+          <text x={pedalWidth - 40} y={-pedalHeight / 20} fill="red" fontSize={pedalWidth/3} fontWeight="bold" textAnchor="end" onClick={decreaseSize}>-</text>
+          <text x={pedalWidth} y={-pedalHeight / 20} fill="green" fontSize={pedalWidth/3} fontWeight="bold" textAnchor="end" onClick={increaseSize}>+</text>
         </g>
         }
     </svg>
