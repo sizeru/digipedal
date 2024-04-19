@@ -9,10 +9,12 @@ svg * {
 
 
 #DeleteButton {
+  z-index: 100;
   position: fixed; 
   left: 20px; 
   bottom: 20px; 
   background-color: transparent; 
+  display: flex;
   cursor: pointer; /* Change cursor on hover */
 }
 
@@ -21,11 +23,15 @@ svg * {
   height: auto; 
 }
 
-#PedalBrowserButton {
-  z-index: 10000;
+.pedalControlButton {
+  z-index: 100;
   touch-action: auto;
   position: fixed;
-  right: 1vw;
+  
+}
+
+#PedalBrowserButton {
+  right: 1vw; /* Position it on the right */
   bottom: 1vh;
   width: 9vmin;
   height: 9vmin;
@@ -36,6 +42,22 @@ svg * {
   align-items: center;
   opacity: .75;
 }
+
+#PedalPresetsButton {
+  right: 8vw; /* Position this button to the left of the Pedal Browser Button */
+  bottom: 1vh;
+  width: 12vmin;
+  height: 9vmin;
+  font-size: 3vmin;
+  border-radius: 9vmin;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: .85;
+}
+
+
+
 
 #overlayCanvas {
   position: fixed;

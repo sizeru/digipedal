@@ -104,7 +104,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
   let svg_output = (
     <svg width={pedalWidth} height={pedalHeight + pedalHeight/5} viewBox={`0 ${-pedalHeight/5} ${pedalWidth} ${pedalHeight + pedalHeight/5 + pedalHeight/5}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
       
-       <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
+       <text x={0} y={-pedalHeight/10} fontFamily="BUNGEE" fontSize={pedalHeight/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
         <rect width={pedalWidth} height={pedalHeight} rx="1" fill="#D9D9D9"/>
         <Knob x={pedalWidth * .5} y={pedalHeight * .40} width={pedalWidth * .40} rotation={amplificationRotation} text="Amplification" isStatic={isStatic} increment={increment_amplification} number={amplification}/>
         <PedalBottom width={pedalWidth} height={pedalHeight/5} startHeight={pedalHeight} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
