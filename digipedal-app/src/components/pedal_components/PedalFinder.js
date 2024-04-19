@@ -9,7 +9,7 @@ function findPedal(name){
             return AmpPedal;
         case "Calf Reverb":
             return ReverbPedal;
-        case "Saturator":
+        case "Calf Saturator":
             return SaturatorPedal;
         default:
     }

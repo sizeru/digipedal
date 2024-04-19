@@ -1,6 +1,6 @@
 import { Modal, Button } from 'react-bootstrap';
 
-function WarningModal({showModal, handleClose, handleDelete}) {    
+function WarningModal({showModal, handleClose, handleDelete,}) {    
     return (
     <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>

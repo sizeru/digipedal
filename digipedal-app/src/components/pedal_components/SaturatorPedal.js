@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 
@@ -14,15 +14,21 @@ const minBlend = -10;
 const maxBlend = 10;
 const defaultBlend = 10;
 
-/*
-const minBypass = 0;
-const maxBypass = 1;
-const defaultBypass = 1;
-*/
-
-
 function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal, index}) {
   
+  const [pedalWidth, setPedalWidth] = useState(width);
+  const [pedalHeight, setPedalHeight] = useState(height);
+
+  const increaseSize = () => {
+    setPedalWidth(prevWidth => prevWidth * 1.1);
+    setPedalHeight(prevHeight => prevHeight * 1.1);
+  };
+
+  const decreaseSize = () => {
+    setPedalWidth(prevWidth => prevWidth / 1.1);
+    setPedalHeight(prevHeight => prevHeight / 1.1);
+  };
+
   useEffect(() => {
     if(!updatePedal){
       console.log("No update pedal for SaturatorPedal yet. Temp setting it");
@@ -53,14 +59,10 @@ function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePed
   useEffect(() => {
     // checking if there are param_vals or not
     console.log("do i need to update?")
-    console.log(!param_vals || !param_vals.amplification)
+    console.log(!param_vals)
     if(param_vals == null){
         param_vals = {}
     }
-//      updateAmount(defaultAmount);
-//      updateDelay(defaultDelay);
-//      updateOn(defaultOn);
-//      updateDry(defaultDry);
     if(param_vals.mix == null) updateParam("mix", defaultMix);
     if(param_vals.drive == null) updateParam("drive", defaultDrive);
     if(param_vals.blend == null) updateParam("blend", defaultBlend);
@@ -73,7 +75,6 @@ function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePed
   }
 
   let mix = (param_vals && param_vals.mix != null) ? param_vals.mix : defaultMix;
- // let on = (param_vals && param_vals.on != null) ? param_vals.on : defaultOn;
   let blend = (param_vals && param_vals.blend != null) ? param_vals.blend : defaultBlend;
   let drive = (param_vals && param_vals.drive != null) ? param_vals.drive : defaultDrive;
 
@@ -111,23 +112,26 @@ function SaturatorPedal({width, height, isStatic, toggled, param_vals, togglePed
     updateParam(param, newValue);
   }
 
-  let style = {
-    "opacity": toggled ? 1 : .5,
-  }
-
-  const h = isStatic ? height + height/5 : height + height / 5 + height / 5;
-
-  const y = isStatic ? 0 : -height/5;
+  let style = { "opacity": toggled ? 1 : .5 };
 
   let svg_output = (
-    <svg width={width} height={height + height/5} viewBox={`0 ${y} ${width} ${h}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <svg width={pedalWidth} height={pedalHeight + pedalHeight/5} 
+      viewBox={isStatic ? `0 0 ${pedalWidth} ${pedalHeight + pedalHeight/5}`: `0 ${-pedalHeight/5} ${pedalWidth} ${pedalHeight + pedalHeight/5 + pedalHeight/5}`} fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
       
-       {!isStatic ? <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text> : <></> }
-        <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
-        <Knob x={width * .5} y={height * .22} width={width * .28} rotation={driveRotation} text="Saturation" isStatic={isStatic} increment={(e) => increment_param(e, "drive", minDrive, maxDrive)} number={drive}/>
-        <Knob x={width * .25} y={height * .7} width={width * .18} rotation={blendRotation} text=" Blend " isStatic={isStatic} increment={(e) => increment_param(e, "blend", minBlend, maxBlend)} number={blend}/>
-        <Knob x={width * .75} y={height * .7} width={width * .18} rotation={mixRotation} text="  Mix  " isStatic={isStatic} increment={(e) => increment_param(e, "mix", minMix, maxMix)} number={mix}/>
-        <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
+       {!isStatic ? <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={pedalHeight/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text> : <></> }
+        <rect width={pedalWidth} height={pedalHeight} rx="1" fill="#D9D9D9"/>
+        <Knob x={pedalWidth * .5} y={pedalHeight * .22} width={pedalWidth * .28} rotation={driveRotation} text="Saturation" isStatic={isStatic} increment={(e) => increment_param(e, "drive", minDrive, maxDrive)} number={drive}/>
+        <Knob x={pedalWidth * .25} y={pedalHeight * .7} width={pedalWidth * .18} rotation={blendRotation} text=" Blend " isStatic={isStatic} increment={(e) => increment_param(e, "blend", minBlend, maxBlend)} number={blend}/>
+        <Knob x={pedalWidth * .75} y={pedalHeight * .7} width={pedalWidth * .18} rotation={mixRotation} text="  Mix  " isStatic={isStatic} increment={(e) => increment_param(e, "mix", minMix, maxMix)} number={mix}/>
+        <PedalBottom width={pedalWidth} height={pedalHeight/5} startHeight={pedalHeight} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
+        {isStatic ? 
+        <></> 
+        :
+        <g>
+          <text x={pedalWidth - 40} y={-pedalHeight / 20} fill="red" fontSize={pedalWidth/3} fontWeight="bold" textAnchor="end" onClick={decreaseSize}>-</text>
+          <text x={pedalWidth} y={-pedalHeight / 20} fill="green" fontSize={pedalWidth/3} fontWeight="bold" textAnchor="end" onClick={increaseSize}>+</text>
+        </g>
+        }
     </svg>
   );
 

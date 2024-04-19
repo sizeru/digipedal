@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import 'bootstrap/dist/js/bootstrap.bundle'; 
-import {Row, Button} from 'react-bootstrap';
+import {Row, Toast} from 'react-bootstrap';
 
 import './Navbar.css';
 import "./Board.css";
@@ -24,6 +24,7 @@ import PedalBrowser from './PedalBrowser';
 // attaching to front end
 import {getBoardById, getPedalById, saveAllToBoard} from '../firebaseOperations';
 import {findPedal} from './pedal_components/PedalFinder'
+import DeleteAllPedals from "./DeleteAllPedals";
 
 import { addJACKPedal, deleteJACKPedalfromBoard, changeJACKPedal } from '../jackOperations';
 
@@ -35,12 +36,19 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const [helpShow, setHelpShow] = useState(false);
     const [genericId, setGenericId] = useState(null);
     const [saveState, setSaveState] = useState("saved");
+    const [addedPedal, setAddedPedal] = useState(null);
 
+    const [showDeletePedalsModal, setShowDeletingPedalModal] = useState(false);
 
     const [sharing, setSharing] = useState(false);
     
     const handleShareClose = () => { setSharing(false); setShowBrowserButton(true); }
     const handleShare = () => { setSharing(true); setShowBrowserButton(false); }
+    //DeletePedalsModals  
+    const closeDeletingPedalsModal = () => setShowDeletingPedalModal(false);
+    const openDeletingPedalsModal = () => setShowDeletingPedalModal(true);
+
+    //const handleDeleteAll = () => setShowingMod(true);
 
     const handleClose = () => { setHelpShow(false); setShowBrowserButton(true); setGenericId(null); }
     const handleShow = (id) => { setGenericId(id); }
@@ -117,6 +125,22 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         tryGetBoard()
     }, [id]);
     
+    const undo = () => {
+        console.log("Undo");
+    }
+
+    const redo = () => {
+        console.log("Redo");
+    }
+
+    const handleDeleteAll = () => {
+        setCurrBoard({...currBoard, pedals:[]});
+        
+        
+        closeDeletingPedalsModal();
+        
+    }
+
     const playPauseToggle = () => {
         console.log("Play/Pause");
         setPlaying(!isPlaying);
@@ -273,7 +297,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         drawLines();
     },[pedalsMap])
 
-    function addPedal(event, pedalId){
+    async function addPedal(event, pedalId){
         setSaveState("unsaved");
         // remaking the pedal with the x, y corridnates 
         const defaultPercent = 50
@@ -297,6 +321,19 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         console.log(pedalsMap)
         let pedalData = pedalDataMap.get(pedalId);
 
+        // if (pedalData != null) {
+        try {
+            setAddedPedal(newPedal.pedal.name);
+            handleClosePedalBrowser();
+            console.log("started...");
+            setTimeout(() => {
+                setAddedPedal(null);
+                console.log("...ended");
+            }, 5000);
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+        // }
         // addJACKPedal(0, pedalId, pedalDataMap[pedalData.pedal_name].pedal_uri, "in_l", "out_l", null);
     };
 
@@ -429,11 +466,11 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                         : 
                         <></>
                     }
-                    
+{/*                     
                     <button className="nav-btn" onClick={playPauseToggle}> 
-                    {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
-
-                    <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
+                    {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button> */}
+{/* 
+                    <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button> */}
  
                     <div style={{"opacity": 0}}>||||||||||||</div>
                 </div>
@@ -446,8 +483,9 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} buttonShow={showBrowserButton} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)}/> : null}
             <ShareModal sharing={sharing} handleShareClose={handleShareClose}/>
+            <DeleteAllPedals showDeletePedalsModal={showDeletePedalsModal} closeDeletingPedalsModal={closeDeletingPedalsModal} openDeletingPedalsModal={openDeletingPedalsModal} handleDeleteAll={handleDeleteAll}/>
             <canvas id="overlayCanvas" />
-            
+                       
 
             <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[restrictToParentElement]}>
                 <Droppable className="w-100" modifiers={[restrictToParentElement]} style={{height: `${100 - 17}vh`}}>
@@ -459,17 +497,18 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                             <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
-                            // showInfoModal={() => showInfoModal(pedal.pedal_id)}
-                            showInfoModal={() => handleShow(pedal.pedal_id)}
+                            showInfoModal={() => showInfoModal(pedal.pedal_id)}
+                            // showInfoModal={() => handleShow(pedal.pedal_id)}
                             updatePedal={(pedalUpdateFunction) => updatePedal(pedal.boardId, pedalUpdateFunction)}
                             index={index}/>
                         </Draggable>);
                     })}
                 </Droppable>
             </DndContext>
-            <GenericInterfaceModal pedal_id={genericId} 
-                show={helpShow} handleClose={handleClose} 
-                pedalInfoMap={pedalInfoMap} setPedalInfoMap={setPedalInfoMap}/>
+            <GenericInterfaceModal pedal_id={genericId} show={helpShow} handleClose={handleClose} />
+            <Toast show={addedPedal != null} animation={true}>
+                <Toast.Body> {addedPedal} added successfully! </Toast.Body>
+            </Toast>
         </>
     );
     
