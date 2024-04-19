@@ -1,7 +1,6 @@
 import { Container, Row, Col, Modal, Button, InputGroup, Form } from 'react-bootstrap';
 import { getPedalById } from '../firebaseOperations';
 import { useState, useEffect } from 'react';
-import { Slider } from '@mui/material';
 
 function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
     const basePath = process.env.PUBLIC_URL;
@@ -9,9 +8,14 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
     const [newPedalVals, setNewPedalVals] = useState(null);
     const [pedalParams, setPedalParams] = useState(null);
     const [pedalName, setPedalName] = useState("");
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         const getResponse = async () => {
+            if (pedal_id == null) {
+                setLoaded(false);
+                return null;
+            }
             return await getPedalById(pedal_id.toString());
         };
         getResponse().then( (response) => {
@@ -25,11 +29,17 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
             });
             setPedalVals(pedalVals);
             setNewPedalVals(pedalVals);
+            setLoaded(true);
+        }).catch((error) => {
+            console.log(error + " in getPedalById");
         });
-    }, []);
+    }, [pedal_id]);
 
-    const changePedalVal = (param, value) => {
+    const changePedalVal = (param, value, index) => {
         let editingPedalVals = {...newPedalVals};
+        console.log("pedalParams:", pedalParams);
+        if (value > pedalParams[index].maximum) value = pedalParams[index].maximum;
+        if (value < pedalParams[index].minimum) value = pedalParams[index].minimum;
         editingPedalVals[param] = value;
         setNewPedalVals(editingPedalVals);
     };
@@ -59,7 +69,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                         <Form.Label> {param.name} </Form.Label>
                         <Form.Select 
                             defaultValue={param.options[pedalVals[param.name]]} 
-                            onChange={(e) => changePedalVal(param.name, e.target.value)}>
+                            onChange={(e) => changePedalVal(param.name, e.target.value, index)}>
                         { param.options.map((option, index) => {
                             return <option key={index} value={option}> {option} </option>;
                         })}
@@ -71,23 +81,25 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                         <InputGroup.Checkbox 
                             id={param.name} 
                             defaultChecked={pedalVals[param.name]} 
-                            onClick={(e) => changePedalVal(param.name, !e.target.value)} />
+                            onClick={(e) => changePedalVal(param.name, !e.target.value, index)} />
                     </div>
                 ) : (
                     <div className="slider-con">
                         <Form.Label> {param.name} </Form.Label>
                         <Row>
                             <Col md={8}>
-                                <Slider 
+                                <Form.Range 
                                     id={param.name +"Slider"} 
                                     min={param.minimum} 
                                     max={param.maximum} 
-                                    defaultValue={pedalVals[param.name]} valueLabelDisplay="auto" 
+                                    value={newPedalVals[param.name]} valueLabelDisplay="auto" 
                                     valueLabelFormat={value => {return valueLabelFormat(value, param.unit)}}
-                                    step={calculateStep(param)} onChange={(e) => changePedalVal(param.name, e.target.value)}/>
+                                    step={calculateStep(param)} onChange={(e) => changePedalVal(param.name, e.target.value, index)} />
                             </Col>
                             <Col md={4}>
-                                <Form.Control type="number" value={newPedalVals[param.name]} onChange={(e) => changePedalVal(param.name, e.target.value)} />
+                                <Form.Control type="number" value={newPedalVals[param.name]} 
+                                onChange={(e) => changePedalVal(param.name, e.target.value, index)} 
+                                />
                             </Col>
                         </Row>
                     </div>
@@ -110,7 +122,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
 
     return (
         <div>
-            <Modal  show={show} 
+            <Modal  show={show && loaded} 
                     onHide={() => {handleClose(); setNewPedalVals(pedalVals);}} 
                     aria-labelledby="contained-modal-title-vcenter"
                     size="xl"
@@ -128,14 +140,14 @@ function GenericInterfaceModal( {pedal_id, show, handleClose} ) {
                     }
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" 
+                    <Button className="default-btn" variant="secondary" 
                             onClick={() => {
                                 setNewPedalVals(pedalVals);
                                 handleClose(); 
                             }}>
                         Close
                     </Button>
-                    <Button variant="primary" 
+                    <Button className="default-btn" variant="primary" 
                             onClick={() => {handleSave(); handleClose();}}>
                         Save
                     </Button>

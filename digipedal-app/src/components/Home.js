@@ -58,16 +58,12 @@ function Home() {
               {boards.map((board) => (
                 <div className="col-12 col-md-6 col-lg-4 col-xl-3" id={"bootstrap card:" + board.id}>
                   <div className="card">
-                    <img  src={`${basePath}/board_previews/${board.image}`}    
-                          className="card-img-top" 
-                          alt={board.name} 
-                          key={board.name} /> 
                     <div className="card-body">
                       {board.id != 0 ? 
                         <SplitDropDown id={board.id} setLoading={setLoading} name={board.name}/>
                        : 
                       <div>
-                        <Button className="board-title btn-full" onClick={newBoard}> {board.name} </Button>
+                        <Button className="create-btn" onClick={newBoard}> {board.name} </Button>
                       </div>
                       }
                     </div>

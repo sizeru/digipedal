@@ -30,14 +30,15 @@ function InfoModal( {showing, handleClose, pedalInfo} ) {
                             </Col>
                             <Col md={6}>
                                 <Row key="Description">
-                                    <Col className="headers" md={3}>
-                                        <h4> Info </h4> 
+                                    <Col className="headers" md={12}>
+                                        <h2> Effect Descriptions </h2> 
                                     </Col>
-                                    <Col md={9}>
+                                    <Col md={8}>
                                         <p> {pedalInfo ? pedalInfo.description : ""} </p>
                                     </Col>
                                     {pedalInfo ? 
                                     pedalInfo.parameters.map( (parameter, index) => (
+                                        parameter.name != "Audio In L" && parameter.name != "Audio In R" && parameter.name != "Audio Out L" && parameter.name != "Audio Out R" ?
                                     <Row key={"Parameter " + index}>
                                         <Col className="headers" md={3}>
                                             <h4> {parameter.name} </h4> 
@@ -45,7 +46,8 @@ function InfoModal( {showing, handleClose, pedalInfo} ) {
                                         <Col md={9}>
                                             <p> {parameter.description} </p>
                                         </Col>
-                                    </Row>
+                                    </Row> :
+                                    <></>
                                     )) : ""}
                                 </Row>
                             </Col>
@@ -53,10 +55,10 @@ function InfoModal( {showing, handleClose, pedalInfo} ) {
                     </Container>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
+                    <Button className="info-btn" variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
+                    <Button className="info-btn" variant="primary" onClick={handleClose}>
                         Save Changes
                     </Button>
                 </Modal.Footer>
