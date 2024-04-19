@@ -7,8 +7,8 @@ function DeleteAllPedals({ showDeletePedalsModal, closeDeletingPedalsModal, open
   return (
     <div>
       <Button id="DeleteButton" variant="primary" onClick={openDeletingPedalsModal}>
-                <img src="../navbar_icons/trash.png" className="trash" alt="Trash"/>
-        </Button> 
+        <img src="../navbar_icons/trash.png" className="trash" alt="Trash"/>
+      </Button> 
 
 
       <Modal show={showDeletePedalsModal} onHide={closeDeletingPedalsModal}>

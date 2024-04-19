@@ -16,6 +16,12 @@ svg * {
   background-color: transparent; 
   display: flex;
   cursor: pointer; /* Change cursor on hover */
+  border-color: #F6EEE3 !important;
+  /* background-color: #F6AEB9; */
+}
+
+#DeleteButton:hover {
+  background-color: rgba(255, 0, 0, 0.5); /* Change color on hover */
 }
 
 .trash {
@@ -23,15 +29,11 @@ svg * {
   height: auto; 
 }
 
-.pedalControlButton {
-  z-index: 100;
+#PedalBrowserButton {
+  z-index: 10000;
   touch-action: auto;
   position: fixed;
-  
-}
-
-#PedalBrowserButton {
-  right: 1vw; /* Position it on the right */
+  right: 1vw;
   bottom: 1vh;
   width: 9vmin;
   height: 9vmin;
@@ -41,12 +43,16 @@ svg * {
   justify-content: center;
   align-items: center;
   opacity: .75;
+  border-color: #F6EEE3 !important;
 }
 
 #PedalPresetsButton {
+  z-index: 10000;
+  touch-action: auto;
+  position: fixed;
   right: 8vw; /* Position this button to the left of the Pedal Browser Button */
   bottom: 1vh;
-  width: 12vmin;
+  width: 9vmin;
   height: 9vmin;
   font-size: 3vmin;
   border-radius: 9vmin;
@@ -54,6 +60,10 @@ svg * {
   justify-content: center;
   align-items: center;
   opacity: .85;
+  font-family: "Fira Sans Condensed", sans-serif !important;
+  font-size: x-large;
+  font-weight: bold;
+  border-color: #F6EEE3 !important;
 }
 
 

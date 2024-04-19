@@ -452,11 +452,11 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                         : 
                         <></>
                     }
-                    
+{/*                     
                     <button className="nav-btn" onClick={playPauseToggle}> 
-                    {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button>
-
-                    <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button>
+                    {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button> */}
+{/* 
+                    <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button> */}
  
                     <div style={{"opacity": 0}}>||||||||||||</div>
                 </div>
