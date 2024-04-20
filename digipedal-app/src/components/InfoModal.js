@@ -40,13 +40,13 @@ function InfoModal( {showing, handleClose, handleBack, pedalInfo} ) {
                                     </Col>
                                     {pedalInfo ? 
                                     pedalInfo.parameters.map( (parameter, index) => (
-                                        parameter.name != "Audio In L" && parameter.name != "Audio In R" && parameter.name != "Audio Out L" && parameter.name != "Audio Out R" ?
+                                        !parameter.hide ?
                                     <Row key={"Parameter " + index}>
-                                        <Col className="headers" md={3}>
+                                        <Col className="headers" md={4}>
                                             <h4> {parameter.name} </h4> 
                                         </Col>
-                                        <Col md={9}>
-                                            <p> {parameter.description} </p>
+                                        <Col md={8}>
+                                                <p> {parameter.description} </p>
                                         </Col>
                                     </Row> :
                                     <></>

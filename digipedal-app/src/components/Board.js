@@ -497,15 +497,15 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                             <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
-                            showInfoModal={() => showInfoModal(pedal.pedal_id)}
-                            // showInfoModal={() => handleShow(pedal.pedal_id)}
+                            // showInfoModal={() => showInfoModal(pedal.pedal_id)}
+                            showInfoModal={() => handleShow(pedal.pedal_id)}
                             updatePedal={(pedalUpdateFunction) => updatePedal(pedal.boardId, pedalUpdateFunction)}
                             index={index}/>
                         </Draggable>);
                     })}
                 </Droppable>
             </DndContext>
-            <GenericInterfaceModal pedal_id={genericId} show={helpShow} handleClose={handleClose} />
+            <GenericInterfaceModal pedal_id={genericId} show={helpShow} handleClose={handleClose} pedalInfoMap={pedalInfoMap} setPedalInfoMap={setPedalInfoMap}/>
             <Toast show={addedPedal != null} animation={true}>
                 <Toast.Body> {addedPedal} added successfully! </Toast.Body>
             </Toast>
