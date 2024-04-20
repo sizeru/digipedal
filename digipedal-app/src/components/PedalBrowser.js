@@ -12,9 +12,9 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, bu
         +
       </Button>
 
-      <Button hidden={!buttonShow} className="default-btn" id="PedalPresetsButton" variant="primary" onClick={handleShow}>
+      {/* <Button hidden={!buttonShow} className="default-btn" id="PedalPresetsButton" variant="primary" onClick={handleShow}>
         Presets
-      </Button>
+      </Button> */}
 
       {/* <ul>
         {pedals.map(pedal => (
