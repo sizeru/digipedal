@@ -2,20 +2,20 @@ import React, {useEffect, useState} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 
-const minDelay = 0.4;
-const maxDelay = 15;
-const defaultDelay = 1.5;
+const minModRate = 0.01;
+const maxModRate = 20;
+const defaultModRate = 0.1;
+
+const minVoices = 1;
+const maxVoices = 8;
+const defaultVoices = 4;
 
 const minAmount = 0;
-const maxAmount = 2;
-const defaultAmount = 0.25;
-
-const minDry = 0;
-const maxDry = 2;
-const defaultDry = 1;
+const maxAmount = 4;
+const defaultAmount = 0.5;
 
 
-function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal, index}) {
+function MultiChorusPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal, index}) {
   const [pedalWidth, setPedalWidth] = useState(width);
   const [pedalHeight, setPedalHeight] = useState(height);
 
@@ -66,12 +66,12 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
     if (param_vals.amount == null) {
       updateParam("amount", defaultAmount);
     }
-    if (param_vals.delay == null) {
+    if (param_vals.voices == null) {
       console.log('updateParam("delay", defaultDelay);')
-      updateParam("delay", defaultDelay);}
-    if (param_vals.dry == null){
+      updateParam("voices", defaultVoices);}
+    if (param_vals.mod_rate == null){
       console.log('updateParam("dry", defaultDry);')
-      updateParam("dry", defaultDry);
+      updateParam("mod_rate", defaultModRate);
     }
   },[])
 
@@ -81,16 +81,16 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
     param_vals = {};
   }
 
-  let dry = (param_vals && param_vals.dry != null) ? param_vals.dry : defaultDry;
+  let mod_rate = (param_vals && param_vals.mod_rate != null) ? param_vals.mod_rate : defaultModRate;
+  let voices = (param_vals && param_vals.voices != null) ? param_vals.voices : defaultVoices;
   let amount = (param_vals && param_vals.amount != null) ? param_vals.amount : defaultAmount;
-  let delay = (param_vals && param_vals.delay != null) ? param_vals.delay : defaultDelay;
 
 
-  let dryRotation = dry / (maxDry - minDry) * 270 - 135
+  let modRateRotation = mod_rate / (maxModRate - minModRate) * 270 - 135
 
+  let voicesRotation = voices / (maxVoices) * 270 - 135
+  
   let amountRotation = amount / (maxAmount - minAmount) * 270 - 135
-
-  let delayRotation = delay / (maxDelay - minDelay) * 270 - 135
 
 
   function increment_param(event, param, min, max) {
@@ -106,8 +106,11 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
     }
 
     let increment_amount = (max - min) / 40;
-    if (param == "delay"){
-      increment_amount = (max - min) / 100;
+    if (param == "voices") {
+      increment_amount = 1;
+    } 
+    if (param == "mod_rate") {
+      increment_amount = (Math.log(max) - Math.log(min)) / (max - min)
     }
     if(event.activatorEvent.ctrlKey){
       increment_amount *= -1;
@@ -132,9 +135,9 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
        : 
        <></> }
         <rect width={pedalWidth} height={pedalHeight} rx="1" fill="#D9D9D9"/>
-        <Knob x={pedalWidth * .5} y={pedalHeight * .2} width={pedalWidth * .26} rotation={delayRotation} text="Reverb Delay" isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delay}/>
-        <Knob x={pedalWidth * .25} y={pedalHeight * .7} width={pedalWidth * .18} rotation={dryRotation} text="Dry Amt" isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dry}/>
-        <Knob x={pedalWidth * .75} y={pedalHeight * .7} width={pedalWidth * .18} rotation={amountRotation} text="Wet Amt" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
+        <Knob x={pedalWidth * .5} y={pedalHeight * .2} width={pedalWidth * .26} rotation={modRateRotation} text="Mod Rate" isStatic={isStatic} increment={(e) => increment_param(e, "mod_rate", minModRate, maxModRate)} number={mod_rate}/>
+        <Knob x={pedalWidth * .25} y={pedalHeight * .7} width={pedalWidth * .18} rotation={amountRotation} text="Chorus Amt" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
+        <Knob x={pedalWidth * .75} y={pedalHeight * .7} width={pedalWidth * .18} rotation={voicesRotation} text="Voices" isStatic={isStatic} increment={(e) => increment_param(e, "voices", minVoices, maxVoices)} number={voices}/>
         <PedalBottom width={pedalWidth} height={pedalHeight/5} startHeight={pedalHeight} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
         {isStatic ? 
         <></> 
@@ -151,4 +154,4 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
 }
 
 
-export default ReverbPedal;
+export default MultiChorusPedal;

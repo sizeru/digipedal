@@ -1,5 +1,5 @@
 
-import {Button, Modal} from 'react-bootstrap';
+import {Button, Modal, Row, Col} from 'react-bootstrap';
 
 import {findPedal} from './pedal_components/PedalFinder'
 
@@ -29,20 +29,21 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, bu
           <Modal.Title>Add pedal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <Row>
             {Array.from(pedalTypeMap).map((pedalEntry, idx) => {
               let [pedalId, pedalType] = pedalEntry
-              // console.log("pedalType")
-              // console.log(pedalType)
-              // console.log("pedalId")
-              // console.log(pedalId)
               let PedalElement = findPedal(pedalType);
-              // console.log(PedalElement)
-              return (
-              <button key={`pedal browser button ${idx} `} onClick={(event) => addPedal(event, pedalId)}>
-                  {pedalType}
-                  <PedalElement width={140} height={200} isStatic={true}/>
-              </button>);
+
+              return ( PedalElement &&
+                  <Col className="browser-col" md={4}>
+                    <button key={`pedal browser button ${idx} `} onClick={(event) => addPedal(event, pedalId)}>
+                        <PedalElement width={140} height={200} isStatic={true}/>
+                    <text className="browser-text"> {pedalType} </text>
+                    </button>
+                  </Col>
+              );
             })}
+            </Row>
         </Modal.Body>
         <Modal.Footer>
           <Button className="default-btn" variant="secondary" onClick={handleClose}>

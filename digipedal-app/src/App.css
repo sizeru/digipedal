@@ -85,6 +85,18 @@ a{
   color: #F6EEE3 !important;
 }
 
+.browser-text {
+  font-family: "Fira Sans Condensed", sans-serif !important;
+  font-weight: 700 !important;
+  font-size: x-large !important;
+  color: black !important;
+  text-wrap: normal !important;
+}
+
+.browser-col {
+  padding: 0 !important;
+}
+
 .board-title {
   font-family: "Fira Sans Condensed", sans-serif !important;
   font-weight: 700 !important;
