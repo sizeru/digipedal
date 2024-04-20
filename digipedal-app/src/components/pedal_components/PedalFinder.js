@@ -1,6 +1,7 @@
 import AmpPedal from './AmpPedal'
 import ReverbPedal from './ReverbPedal'
 import SaturatorPedal from './SaturatorPedal'
+import VintageDelayPedal from './VintageDelayPedal';
 
 function findPedal(name){
     // setting up to return the correct class 
@@ -11,6 +12,8 @@ function findPedal(name){
             return ReverbPedal;
         case "Calf Saturator":
             return SaturatorPedal;
+        case "Calf Vintage Delay":
+            return VintageDelayPedal;
         default:
     }
     // oh no we didnt find it1
