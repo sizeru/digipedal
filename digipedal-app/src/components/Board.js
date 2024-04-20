@@ -472,7 +472,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
 {/* 
                     <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button> */}
  
-                    <div style={{"opacity": 0}}>||||||||||||</div>
+                    <div style={{"opacity": 0}}>|||||||</div>
                 </div>
             </div>  
             <Row>        
