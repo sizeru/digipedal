@@ -36,6 +36,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const [helpShow, setHelpShow] = useState(false);
     const [genericId, setGenericId] = useState(null);
     const [genericIdx, setGenericIdx] = useState(null);
+    const [genericParamsMap, setGenericParamsMap] = useState(new Map());
     const [saveState, setSaveState] = useState("saved");
     const [addedPedal, setAddedPedal] = useState(null);
 
@@ -59,7 +60,12 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             setGenericIdx(null);
         }
     }
-    const handleShow = (id, idx) => { setGenericId(id); setGenericIdx(idx); }
+    const handleShow = (id, idx) => { 
+        setGenericId(id); 
+        setGenericIdx(idx); 
+        // setGenericParams(pedalsMap.get(idx).param_vals);
+        // console.log("PARMETERS:", pedalsMap.get(idx).param_vals)
+    }
     useEffect(() => {
         if (genericId !== null) {  
             setHelpShow(true);
@@ -291,6 +297,11 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         console.log("Interface Save");
         console.log(pedal_vals); // name: value
         let newPedal = pedalsMap.get(pedal_id+1);
+
+        let updatedMap = new Map(genericParamsMap);
+        updatedMap.set(genericIdx, pedal_vals);
+        setGenericParamsMap(updatedMap);
+        
         console.log("Pre:", newPedal);
         let paramInfo = pedalDataMap.get(newPedal.pedal_id).parameters;
         console.log("datamap:", paramInfo);
@@ -530,7 +541,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                     })}
                 </Droppable>
             </DndContext>
-            <GenericInterfaceModal pedal_id={genericId} pedal_idx={genericIdx} show={helpShow} handleClose={handleClose} handleInterfaceSave={handleInterfaceSave} pedalInfoMap={pedalInfoMap} setPedalInfoMap={setPedalInfoMap}/>
+            <GenericInterfaceModal pedal_id={genericId} pedal_idx={genericIdx} prevParams={genericParamsMap.get(genericIdx)} show={helpShow} handleClose={handleClose} handleInterfaceSave={handleInterfaceSave} pedalInfoMap={pedalInfoMap} setPedalInfoMap={setPedalInfoMap}/>
             <Toast show={addedPedal != null} animation={true}>
                 <Toast.Body> {addedPedal} added successfully! </Toast.Body>
             </Toast>

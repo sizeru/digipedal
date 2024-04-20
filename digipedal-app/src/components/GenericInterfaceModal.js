@@ -3,7 +3,7 @@ import { getPedalById } from '../firebaseOperations';
 import { useState, useEffect } from 'react';
 import InfoModal  from './InfoModal';
 
-function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalInfoMap, setPedalInfoMap, handleInterfaceSave} ) {
+function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalInfoMap, setPedalInfoMap, handleInterfaceSave, prevParams} ) {
     const [pedalVals, setPedalVals] = useState(null);
     const [newPedalVals, setNewPedalVals] = useState(null);
     const [pedalParams, setPedalParams] = useState(null);
@@ -12,6 +12,30 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
     const [infoShow, setInfoShow] = useState(false);
 
     const handleInfoShow = () => setInfoShow(true);
+    // useEffect(() => {
+    //     const getResponse = async () => {
+    //         if (pedal_id == null) {
+    //             setLoaded(false);
+    //             return null;
+    //         }
+    //         return await getPedalById(pedal_id.toString());
+    //     };
+    //     getResponse().then( (response) => {
+    //         setPedalName(response.name);
+    //         setPedalParams(response.parameters);
+    //         return response.parameters;
+    //     }).then( (response) => {
+    //         let pedalVals = {};
+    //         response.forEach(param => {
+    //             if (!param.hide) pedalVals[param.name] = param.default
+    //         });
+    //         setPedalVals(pedalVals);
+    //         setNewPedalVals(pedalVals);
+    //         setLoaded(true);
+    //     }).catch((error) => {
+    //         console.log(error + " in getPedalById");
+    //     });
+    // }, [pedal_id]);
     useEffect(() => {
         const getResponse = async () => {
             if (pedal_id == null) {
@@ -27,10 +51,12 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
         }).then( (response) => {
             let pedalVals = {};
             response.forEach(param => {
-                if (!param.hide) pedalVals[param.name] = param.default
+                if (prevParams[param.name] != null) pedalVals[param.name] = prevParams[param.name];
+                else if (!param.hide) pedalVals[param.name] = param.default
             });
             setPedalVals(pedalVals);
             setNewPedalVals(pedalVals);
+            console.log("Pedal Vals:", pedalVals);
             setLoaded(true);
         }).catch((error) => {
             console.log(error + " in getPedalById");
