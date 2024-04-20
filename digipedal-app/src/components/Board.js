@@ -323,10 +323,10 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             });
             console.log("Post:", newPedal);
             setTimeout(() => {
-                handleSave();
+                // handleSave();
                 setInterfaceLoading(false);
             }, 10);
-        }, 1000);
+        }, 2000);
     //     console.log(pedal_id);
     //     console.log(pedalsMap);  
     //    console.log(Object.keys(newPedal.param_vals));

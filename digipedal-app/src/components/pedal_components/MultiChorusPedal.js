@@ -136,7 +136,7 @@ function MultiChorusPedal({width, height, isStatic, toggled, param_vals, toggleP
        <></> }
         <rect width={pedalWidth} height={pedalHeight} rx="1" fill="#D9D9D9"/>
         <Knob x={pedalWidth * .5} y={pedalHeight * .2} width={pedalWidth * .26} rotation={modRateRotation} text="Mod Rate" isStatic={isStatic} increment={(e) => increment_param(e, "mod_rate", minModRate, maxModRate)} number={mod_rate}/>
-        <Knob x={pedalWidth * .25} y={pedalHeight * .7} width={pedalWidth * .18} rotation={amountRotation} text="Chorus Amt" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
+        <Knob x={pedalWidth * .25} y={pedalHeight * .7} width={pedalWidth * .18} rotation={amountRotation} text="Amount" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
         <Knob x={pedalWidth * .75} y={pedalHeight * .7} width={pedalWidth * .18} rotation={voicesRotation} text="Voices" isStatic={isStatic} increment={(e) => increment_param(e, "voices", minVoices, maxVoices)} number={voices}/>
         <PedalBottom width={pedalWidth} height={pedalHeight/5} startHeight={pedalHeight} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
         {isStatic ? 

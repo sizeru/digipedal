@@ -120,9 +120,9 @@ function VintageDelayPedal({width, height, isStatic, toggled, param_vals, toggle
       
        {!isStatic ? <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={pedalHeight/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text> : <></> }
         <rect width={pedalWidth} height={pedalHeight} rx="1" fill="#D9D9D9"/>
-        <Knob x={pedalWidth * .5} y={pedalHeight * .7} width={pedalWidth * .28} rotation={timeLRotation} text="Delay Time" isStatic={isStatic} increment={(e) => increment_param(e, "time_l", minTimeL, maxTimeL)} number={time_l}/>
+        <Knob x={pedalWidth * .5} y={pedalHeight * .65} width={pedalWidth * .28} rotation={timeLRotation} text=" Time " isStatic={isStatic} increment={(e) => increment_param(e, "time_l", minTimeL, maxTimeL)} number={time_l}/>
         <Knob x={pedalWidth * .25} y={pedalHeight * .22} width={pedalWidth * .18} rotation={feedbackRotation} text="Feedback" isStatic={isStatic} increment={(e) => increment_param(e, "feedback", minFeedback, maxFeedback)} number={feedback}/>
-        <Knob x={pedalWidth * .75} y={pedalHeight * .22} width={pedalWidth * .18} rotation={amountRotation} text="Wet Amt" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
+        <Knob x={pedalWidth * .75} y={pedalHeight * .22} width={pedalWidth * .18} rotation={amountRotation} text="Amount" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
         <PedalBottom width={pedalWidth} height={pedalHeight/5} startHeight={pedalHeight} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
         {isStatic ? 
         <></> 

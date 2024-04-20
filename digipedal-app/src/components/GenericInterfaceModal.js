@@ -51,7 +51,7 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
         }).then( (response) => {
             let pedalVals = {};
             response.forEach(param => {
-                if (prevParams[param.name] != null) pedalVals[param.name] = prevParams[param.name];
+                if (prevParams != null && prevParams[param.name] != null && prevParams[param.name] != NaN) pedalVals[param.name] = prevParams[param.name];
                 else if (!param.hide) pedalVals[param.name] = param.default
             });
             setPedalVals(pedalVals);
