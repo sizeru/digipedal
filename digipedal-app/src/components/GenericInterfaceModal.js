@@ -3,7 +3,7 @@ import { getPedalById } from '../firebaseOperations';
 import { useState, useEffect } from 'react';
 import InfoModal  from './InfoModal';
 
-function GenericInterfaceModal( {pedal_id, show, handleClose, pedalInfoMap, setPedalInfoMap} ) {
+function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalInfoMap, setPedalInfoMap, handleInterfaceSave} ) {
     const [pedalVals, setPedalVals] = useState(null);
     const [newPedalVals, setNewPedalVals] = useState(null);
     const [pedalParams, setPedalParams] = useState(null);
@@ -27,7 +27,7 @@ function GenericInterfaceModal( {pedal_id, show, handleClose, pedalInfoMap, setP
         }).then( (response) => {
             let pedalVals = {};
             response.forEach(param => {
-                pedalVals[param.name] = param.default
+                if (!param.hide) pedalVals[param.name] = param.default
             });
             setPedalVals(pedalVals);
             setNewPedalVals(pedalVals);
@@ -39,11 +39,12 @@ function GenericInterfaceModal( {pedal_id, show, handleClose, pedalInfoMap, setP
 
     const changePedalVal = (param, value, index) => {
         let editingPedalVals = {...newPedalVals};
-        console.log("pedalParams:", pedalParams);
+        // console.log("pedalParams:", pedalParams);
         if (value > pedalParams[index].maximum) value = pedalParams[index].maximum;
         if (value < pedalParams[index].minimum) value = pedalParams[index].minimum;
-        editingPedalVals[param] = value;
+        editingPedalVals[param] = parseFloat(Number(value).toPrecision(3));
         setNewPedalVals(editingPedalVals);
+        console.log("New Pedal Vals:", newPedalVals);
     };
 
     const calculateStep = (param) => {
@@ -54,11 +55,11 @@ function GenericInterfaceModal( {pedal_id, show, handleClose, pedalInfoMap, setP
         }
     }
 
-    function valueLabelFormat(value, unit) {
-        if (unit == "coef") return value * 100 + "%";
-        else if (unit == "degree") return value + "°";
-        else if (unit === "none" || unit === undefined) return value;
-        return `${value} ${unit}`;
+    function convertUnit(unit) {
+        if (unit == "coef") return "%";
+        else if (unit == "degree") return "°";
+        // else if (unit === "none" || unit === undefined) return "";
+        else return unit;
     }
 
     const adjuster = () => {
@@ -87,20 +88,21 @@ function GenericInterfaceModal( {pedal_id, show, handleClose, pedalInfoMap, setP
                     </div>
                 ) : (
                     <div className="slider-con">
-                        <Form.Label> {param.name} </Form.Label>
+                        <Form.Label> {param.unit == "none" || param.unit == undefined ? param.name : `${param.name} (${convertUnit(param.unit)})`} </Form.Label>
                         <Row>
                             <Col md={8}>
                                 <Form.Range 
                                     id={param.name +"Slider"} 
                                     min={param.minimum} 
                                     max={param.maximum} 
-                                    value={newPedalVals[param.name]} valueLabelDisplay="auto" 
-                                    valueLabelFormat={value => {return valueLabelFormat(value, param.unit)}}
+                                    value={newPedalVals[param.name]}
                                     step={calculateStep(param)} onChange={(e) => changePedalVal(param.name, e.target.value, index)} />
                             </Col>
                             <Col md={4}>
                                 <Form.Control type="number" value={newPedalVals[param.name]} 
-                                onChange={(e) => changePedalVal(param.name, e.target.value, index)} 
+                                onChange={(e) => {
+                                    changePedalVal(param.name, e.target.value, index)
+                                }}
                                 />
                             </Col>
                         </Row>
@@ -120,6 +122,9 @@ function GenericInterfaceModal( {pedal_id, show, handleClose, pedalInfoMap, setP
 
     const handleSave = () => {
         setPedalVals(newPedalVals);
+        handleClose();
+        handleInterfaceSave(newPedalVals, pedal_idx);
+        console.log("Current Pedal:", newPedalVals);
     };
 
     const interfaceModal = () => {

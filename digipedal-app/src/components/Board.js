@@ -32,9 +32,10 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const { id }  = useParams();
     const [currBoard, setCurrBoard] = useState(null);
     const [isLoading, setLoading] = useState(true);
-    const [isPlaying, setPlaying] = useState(false);
+    const [interfaceLoading, setInterfaceLoading] = useState(false);
     const [helpShow, setHelpShow] = useState(false);
     const [genericId, setGenericId] = useState(null);
+    const [genericIdx, setGenericIdx] = useState(null);
     const [saveState, setSaveState] = useState("saved");
     const [addedPedal, setAddedPedal] = useState(null);
 
@@ -43,15 +44,22 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const [sharing, setSharing] = useState(false);
     
     const handleShareClose = () => { setSharing(false); setShowBrowserButton(true); }
-    const handleShare = () => { setSharing(true); setShowBrowserButton(false); }
-    //DeletePedalsModals  
+  
     const closeDeletingPedalsModal = () => setShowDeletingPedalModal(false);
     const openDeletingPedalsModal = () => setShowDeletingPedalModal(true);
 
-    //const handleDeleteAll = () => setShowingMod(true);
-
-    const handleClose = () => { setHelpShow(false); setShowBrowserButton(true); setGenericId(null); }
-    const handleShow = (id) => { setGenericId(id); }
+    const handleClose = (pedal_vals) => { 
+        setHelpShow(false); 
+        setShowBrowserButton(true); 
+        if (pedal_vals) { 
+            setGenericId(null); 
+            setGenericIdx(null);
+        } else {
+            setGenericId(null);
+            setGenericIdx(null);
+        }
+    }
+    const handleShow = (id, idx) => { setGenericId(id); setGenericIdx(idx); }
     useEffect(() => {
         if (genericId !== null) {  
             setHelpShow(true);
@@ -117,33 +125,14 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 };
             });
             setPedalsMap(map);
-            // console.log("getPedals results: ");
-            // res = await getPedals(id);
-            // console.log(res)
             setSaveState("saved");
         }
         tryGetBoard()
     }, [id]);
-    
-    const undo = () => {
-        console.log("Undo");
-    }
-
-    const redo = () => {
-        console.log("Redo");
-    }
 
     const handleDeleteAll = () => {
         setCurrBoard({...currBoard, pedals:[]});
-        
-        
         closeDeletingPedalsModal();
-        
-    }
-
-    const playPauseToggle = () => {
-        console.log("Play/Pause");
-        setPlaying(!isPlaying);
     }
 
     function getPedalXY(pedal){
@@ -165,6 +154,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         }
         return [pedal.x, pedal.y];
     }
+
     function drawLine(ctx, prevX, prevY, currX, currY){
         ctx.beginPath();
         // https://stackoverflow.com/questions/61122649/how-to-add-gradient-to-strokestyle-canvas-in-javascript#:~:text=You%20can%20create%20a%20CanvasGradient%20by%20calling%20the,it%20by%20calling%20the%20method%20addColorStop%20%28offset%2C%20color%29.
@@ -297,6 +287,40 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         drawLines();
     },[pedalsMap])
 
+    const handleInterfaceSave = (pedal_vals, pedal_id) => {
+        console.log("Interface Save");
+        console.log(pedal_vals); // name: value
+        let newPedal = pedalsMap.get(pedal_id+1);
+        console.log("Pre:", newPedal);
+        let paramInfo = pedalDataMap.get(newPedal.pedal_id).parameters;
+        console.log("datamap:", paramInfo);
+        
+        let newPedalVals = new Map();
+        paramInfo.map((key,value) => {
+            newPedalVals.set(key.symbol, parseFloat(pedal_vals[key.name]));
+        });
+
+        console.log(newPedalVals); // symbol : value
+        setInterfaceLoading(true);
+        setTimeout(() => {
+
+            Object.keys(newPedal.param_vals).forEach((key) => { 
+                console.log(key);
+                console.log(newPedal.param_vals);
+                console.log("getting:", newPedalVals.get(key));
+                newPedal.param_vals[key] = newPedalVals.get(key); 
+            });
+            console.log("Post:", newPedal);
+            setTimeout(() => {
+                handleSave();
+                setInterfaceLoading(false);
+            }, 10);
+        }, 1000);
+    //     console.log(pedal_id);
+    //     console.log(pedalsMap);  
+    //    console.log(Object.keys(newPedal.param_vals));
+    }
+
     async function addPedal(event, pedalId){
         setSaveState("unsaved");
         // remaking the pedal with the x, y corridnates 
@@ -417,6 +441,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         await saveAllToBoard(id, saveObj).then(() => {setSaveState("saved")});
     }
 
+
     function updatePedal(boardId, pedalUpdateFunction){
         setSaveState("unsaved");
         console.log("updatePedal: " + boardId);
@@ -498,16 +523,19 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
                             // showInfoModal={() => showInfoModal(pedal.pedal_id)}
-                            showInfoModal={() => handleShow(pedal.pedal_id)}
+                            showInfoModal={() => handleShow(pedal.pedal_id, index)}
                             updatePedal={(pedalUpdateFunction) => updatePedal(pedal.boardId, pedalUpdateFunction)}
                             index={index}/>
                         </Draggable>);
                     })}
                 </Droppable>
             </DndContext>
-            <GenericInterfaceModal pedal_id={genericId} show={helpShow} handleClose={handleClose} pedalInfoMap={pedalInfoMap} setPedalInfoMap={setPedalInfoMap}/>
+            <GenericInterfaceModal pedal_id={genericId} pedal_idx={genericIdx} show={helpShow} handleClose={handleClose} handleInterfaceSave={handleInterfaceSave} pedalInfoMap={pedalInfoMap} setPedalInfoMap={setPedalInfoMap}/>
             <Toast show={addedPedal != null} animation={true}>
                 <Toast.Body> {addedPedal} added successfully! </Toast.Body>
+            </Toast>
+            <Toast show={interfaceLoading} animation={true}>
+                <Toast.Body> Editing Pedal Settings... </Toast.Body>
             </Toast>
         </>
     );

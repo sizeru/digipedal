@@ -67,7 +67,7 @@ function MultiChorusPedal({width, height, isStatic, toggled, param_vals, toggleP
       updateParam("amount", defaultAmount);
     }
     if (param_vals.voices == null) {
-      console.log('updateParam("delay", defaultDelay);')
+      console.log('updateParam("voices", defaultDelay);')
       updateParam("voices", defaultVoices);}
     if (param_vals.mod_rate == null){
       console.log('updateParam("dry", defaultDry);')
