@@ -10,12 +10,6 @@ const minAmount = 0;
 const maxAmount = 2;
 const defaultAmount = 0.25;
 
-/*
-const minOn = 0;
-const maxOn = 1;
-const defaultOn = 1;
-*/
-
 const minDry = 0;
 const maxDry = 2;
 const defaultDry = 1;
@@ -63,98 +57,23 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
     })
   }
 
-  /*
-  function updateDry(dry){
-    console.log("updateDry: ", dry)
-    if(isStatic){
-      console.log("Not updating since it is a static pedal");
-      return;
-    }
-
-    updatePedal((pedal) => {
-      // checking it has param_vals
-      if(!pedal.param_vals){
-        pedal.param_vals = {};
-      }
-      // setting the new amplification
-      pedal.param_vals.dry = dry;
-
-      return pedal;
-    })
-  }
-
-  function updateOn(on){
-    console.log("updateOn: ", on)
-    if(isStatic){
-      console.log("Not updating since it is a static pedal");
-      return;
-    }
-
-    updatePedal((pedal) => {
-      // checking it has param_vals
-      if(!pedal.param_vals){
-        pedal.param_vals = {};
-      }
-      // setting the new amplification
-      pedal.param_vals.on = on;
-
-      return pedal;
-    })
-  }
-
-  function updateAmount(amount){
-    console.log("updateAmount: ", amount)
-    if(isStatic){
-      console.log("Not updating since it is a static pedal");
-      return;
-    }
-
-    updatePedal((pedal) => {
-      // checking it has param_vals
-      if(!pedal.param_vals){
-        pedal.param_vals = {};
-      }
-      // setting the new amplification
-      pedal.param_vals.amount = amount;
-
-      return pedal;
-    })
-  }
-
-  function updateDelay(delay){
-    console.log("updateDelay: ", delay)
-    if(isStatic){
-      console.log("Not updating since it is a static pedal");
-      return;
-    }
-
-    updatePedal((pedal) => {
-      // checking it has param_vals
-      if(!pedal.param_vals){
-        pedal.param_vals = {};
-      }
-      // setting the new amplification
-      pedal.param_vals.delay = delay;
-
-      return pedal;
-    })
-  }
-  */
-
   // setting the default for amp if it is not already set
   useEffect(() => {
     // checking if there are param_vals or not
     console.log("do i need to update?")
-    console.log(!param_vals || !param_vals.amplification)
-    if(!param_vals){
-//      updateAmount(defaultAmount);
-//      updateDelay(defaultDelay);
-//      updateOn(defaultOn);
-//      updateDry(defaultDry);
-      if (!param_vals.amount) updateParam("amount", defaultAmount);
-      if (!param_vals.delay) updateParam("delay", defaultDelay);
-//      updateParam("on", defaultOn);
-      if (!param_vals.dry) updateParam("dry", defaultDry);
+    console.log(param_vals)
+    if(param_vals == null){
+      param_vals = {}
+    }
+    if (param_vals.amount == null) {
+      updateParam("amount", defaultAmount);
+    }
+    if (param_vals.delay == null) {
+      console.log('updateParam("delay", defaultDelay);')
+      updateParam("delay", defaultDelay);}
+    if (param_vals.dry == null){
+      console.log('updateParam("dry", defaultDry);')
+      updateParam("dry", defaultDry);
     }
   },[])
 
@@ -176,11 +95,6 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
 
   let delayRotation = delay / (maxDelay - minDelay) * 270 - 135
 
-  let dryVal = (param_vals && param_vals.dry) ? param_vals.dry : dry;
-  
-  let amtVal = (param_vals && param_vals.amount) ? param_vals.amount : amount;
-
-  let delayVal = (param_vals && param_vals.delay) ? param_vals.delay : delay;
 
   function increment_param(event, param, min, max) {
     console.log("increment_param")
@@ -211,38 +125,13 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
     updateParam(param, newValue);
   }
 
-  /*
-  function increment_amplification(event) {
-    console.log("increment_amplification")
-    console.log(event)
-    if(event == null || event.activatorEvent == null){
-      console.log("returning early since: event == null || event.activatorEvent == null");
-      return 
-    }
-    if(isStatic){
-      console.log("not doing anything cause static")
-      return ;
-    }
-
-    let increment_amount = (maxAmplifcation - minAmplifcation) / 100;
-    if(event.activatorEvent.ctrlKey){
-      increment_amount *= -1;
-    }
-    let newAmplification = Number((amplification + increment_amount).toPrecision(3));
-    console.log("newAmplification: ", newAmplification)
-    if(newAmplification > maxAmplifcation){
-      newAmplification = minAmplifcation;
-    } else if (newAmplification < minAmplifcation){
-      newAmplification = maxAmplifcation;
-    }
-    updateAmplifcation(newAmplification);
-  }
-  */
-
   let style = {
     "opacity": toggled ? 1 : .5,
   }
 
+  const h = isStatic ? height + height/5 : height + height / 5 + height / 5;
+
+  const y = isStatic ? 0 : -height/5;
 
   let svg_output = (
     <svg width={pedalWidth} height={pedalHeight + pedalHeight/5} viewBox={`0 ${-pedalHeight/5} ${pedalWidth} ${pedalHeight + pedalHeight/5 + pedalHeight/5}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>

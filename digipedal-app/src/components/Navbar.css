@@ -105,7 +105,3 @@
     filter: invert(47%) sepia(99%) saturate(3803%) hue-rotate(351deg) brightness(103%) contrast(88%);
     padding-right: 10%;
 }
-
-.modal-DELETE {
-    /* margin-top:20%; this makes it way down from the top?? */
-}

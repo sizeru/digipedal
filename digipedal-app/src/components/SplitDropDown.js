@@ -58,7 +58,7 @@ function SplitDropDown({id, name}) {
       <Dropdown className="w-100 custom-button-group" as={ButtonGroup}>
         {isRenaming ?
         <InputGroup> 
-          <Form.Control autoFocus placeholder={name} onChange={(e) => {
+          <Form.Control className="rename-field" autoFocus placeholder={name} onChange={(e) => {
             setNewName(e.target.value); 
           }} onKeyDown={handleKeyDown}>
           </Form.Control>
@@ -66,7 +66,7 @@ function SplitDropDown({id, name}) {
         : 
         <Button className="board-title" variant="success" onClick={() => {navigate(`/board/${id}`)}}>{name}</Button>
         }
-        <Dropdown.Toggle split variant="success" className="custom-toggle" id="dropdown-split-basic" />
+        <Dropdown.Toggle split variant="default" className="custom-toggle default-btn" id="dropdown-split-basic" />
 
         <Dropdown.Menu>
           {isRenaming ?
