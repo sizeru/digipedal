@@ -1,43 +1,45 @@
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Container from 'react-bootstrap/Container';
 import './InfoModal.css';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 
-function ShareModal( {sharing, handleShareClose}) {
-    const [showShareModal, setShowShareModal] = useState(false); // State for the sharing modal visibility
-    const [emailAddress, setEmailAddress] = useState(''); // State for the email address input
+function ShareModal( {sharing, handleShareClose, linkToShare}) {
+    
+    const [isCopied, setIsCopied] = useState(false);
 
-    const share = () => {
-        console.log("Share");
-    }                                            //change onhide = to handleShareClose or some
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(linkToShare).then(() => {
+            // Alert the user that the action took place.
+            setIsCopied(true);
+            // Optionally, revert the 'Copied' state back to 'Copy' after few seconds
+            setTimeout(() => setIsCopied(false), 3000);
+        }, (err) => {
+            console.error('Async: Could not copy text: ', err);
+        });
+    }                                         //change onhide = to handleShareClose or some
     
     return ( 
         <div>                                         
              <Modal show={sharing} onHide={handleShareClose}>
                 <Modal.Header closeButton>
-                  <Modal.Title>Share via Email</Modal.Title>
+                  <Modal.Title>Share your Board URL</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <form>
-                    <label htmlFor="emailInput">To:</label>
-                    <input
-                        type="email"
-                        id="emailInput"
-                        value={emailAddress}
-                        onChange={(e) => setEmailAddress(e.target.value)}
-                        className="form-control"
-                    />
-                    </form>
+                    <div className="input-group">
+                        <input
+                            type="text"
+                            value={linkToShare}
+                            readOnly
+                            className="form-control"
+                        />
+                        <Button onClick={copyToClipboard}>
+                            {isCopied ? <><span className="checkmark">✓</span>Copied</> : 'Copy'}
+                        </Button>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowShareModal(false)}>
+                    <Button variant="secondary" onClick={handleShareClose}>
                         Cancel
-                    </Button>
-                    <Button variant="primary" onClick={share}>
-                        Send Email
                     </Button>
                     </Modal.Footer>
             </Modal>

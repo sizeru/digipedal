@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 
@@ -23,6 +23,20 @@ const defaultDry = 1;
 
 function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal, deletePedal, showInfoModal, updatePedal, index}) {
   
+
+  const [pedalWidth, setPedalWidth] = useState(width);
+  const [pedalHeight, setPedalHeight] = useState(height);
+
+  const increaseSize = () => {
+    setPedalWidth(prevWidth => prevWidth * 1.1);
+    setPedalHeight(prevHeight => prevHeight * 1.1);
+  };
+
+  const decreaseSize = () => {
+    setPedalWidth(prevWidth => prevWidth / 1.1);
+    setPedalHeight(prevHeight => prevHeight / 1.1);
+  };
+
   useEffect(() => {
     if(!updatePedal){
       console.log("No update pedal for ReverbPedal yet. Temp setting it");
@@ -231,14 +245,16 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
 
 
   let svg_output = (
-    <svg width={width} height={height + height/5} viewBox={`0 ${-height/5} ${width} ${height + height/5 + height/5}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <svg width={pedalWidth} height={pedalHeight + pedalHeight/5} viewBox={`0 ${-pedalHeight/5} ${pedalWidth} ${pedalHeight + pedalHeight/5 + pedalHeight/5}`}fill="none" xmlns="http://www.w3.org/2000/svg" style={style}>
       
-       <text x={0} y={-height/10} fontFamily="BUNGEE" fontSize={height/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
-        <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
-        <Knob x={width * .5} y={height * .2} width={width * .26} rotation={delayRotation} text=" Delay " isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delayVal}/>
-        <Knob x={width * .25} y={height * .7} width={width * .18} rotation={dryRotation} text="Dry Amt" isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dryVal}/>
-        <Knob x={width * .75} y={height * .7} width={width * .18} rotation={amountRotation} text="Wet Amt" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amtVal}/>
-        <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
+       <text x={0} y={-pedalHeight/10} fontFamily="BUNGEE" fontSize={pedalHeight/5} fill="black" dominant-baseline="middle" text-anchor="left" opacity="75%">{index + 1}</text>
+        <rect width={pedalWidth} height={pedalHeight} rx="1" fill="#D9D9D9"/>
+        <Knob x={pedalWidth * .5} y={pedalHeight * .2} width={pedalWidth * .26} rotation={delayRotation} text=" Delay " isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delayVal}/>
+        <Knob x={pedalWidth * .25} y={pedalHeight * .7} width={pedalWidth * .18} rotation={dryRotation} text="Dry Amt" isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dryVal}/>
+        <Knob x={pedalWidth * .75} y={pedalHeight * .7} width={pedalWidth * .18} rotation={amountRotation} text="Wet Amt" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amtVal}/>
+        <PedalBottom width={pedalWidth} height={pedalHeight/5} startHeight={pedalHeight} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
+        <text x={pedalWidth - 50} y={-pedalHeight / 10} fill="red" fontSize="20" textAnchor="end" onClick={decreaseSize}>-</text>
+        <text x={pedalWidth - 20} y={-pedalHeight / 10} fill="green" fontSize="20" textAnchor="end" onClick={increaseSize}>+</text>
     </svg>
   );
 
