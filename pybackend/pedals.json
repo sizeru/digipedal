@@ -1,0 +1,989 @@
+{
+    "1": {
+        "mfr": "Calf",
+        "pedal_uri": "file:///usr/lib/lv2/calf.lv2/Reverb.ttl",
+        "type": "Reverb",
+        "manifest_uri": "file:///usr/lib/lv2/calf.lv2/manifest.ttl",
+        "id": 1,
+        "parameters": [
+            {
+                "default": 1.5,
+                "unit": "s",
+                "symbol": "decay_time",
+                "minimum": 0.4,
+                "maximum": 15,
+                "step": "log",
+                "name": "Decay Time",
+                "description": "The time it takes for the reverb to fade out"
+            },
+            {
+                "default": 5000,
+                "unit": "hz",
+                "symbol": "hf_damp",
+                "minimum": 2000,
+                "maximum": 20000,
+                "step": "log",
+                "name": "High Frq Damp",
+                "description": "Cutoff frequency of the reflections - causes higher frequencies to decay faster"
+            },
+            {
+                "options": [
+                    "Small",
+                    "Medium",
+                    "Large",
+                    "Tunnel-like",
+                    "Large/smooth",
+                    "Experimental"
+                ],
+                "name": "Room size",
+                "unit": "dropdown",
+                "symbol": "room_size",
+                "default": 2,
+                "description": "Size of the space that simulated reverberation occurs in - determines times between reflections"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Diffusion",
+                "unit": "none",
+                "symbol": "diffusion",
+                "default": 0.5, 
+                "description": "Increase this for less uniform reverberation"
+            },
+            {
+                "minimum": 0,
+                "maximum": 2,
+                "name": "Dry Amount",
+                "unit": "none",
+                "symbol": "dry",
+                "default": 1, 
+                "description": "Amount of unprocessed signal in the output"
+            },
+            {
+                "minimum": 0,
+                "maximum": 2,
+                "name": "Wet Amount",
+                "unit": "none",
+                "symbol": "amount",
+                "default": 0.25,
+                "description": "Amount of processed signal (reverberation) in the output"
+            },
+            {
+                "minimum": 0,
+                "maximum": 500,
+                "name": "Pre Delay",
+                "unit": "ms",
+                "symbol": "predelay",
+                "default": 0,
+                "description": "Additional delay - corresponds to a distance between sound source and the nearest wall"
+            },
+            {
+                "default": 300,
+                "unit": "hz",
+                "symbol": "bass_cut",
+                "minimum": 20,
+                "maximum": 20000,
+                "step": "log",
+                "name": "Bass Cut",
+                "description": "Removes low frequencies from the reverberation"
+            },
+            {
+                "default": 5000,
+                "unit": "hz",
+                "symbol": "treble_cut",
+                "minimum": 20,
+                "maximum": 20000,
+                "step": "log",
+                "name": "Treble Cut", 
+                "description": "Removes high frequencies from the reverberation"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Active",
+                "unit": "toggle",
+                "symbol": "on",
+                "default": 1, 
+                "description": "Turns the effect on or off"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Input Gain",
+                "unit": "none",
+                "symbol": "level_in",
+                "default": 1,
+                "description": "Increases or decreases the volume of the input signal"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Output Gain",
+                "unit": "none",
+                "symbol": "level_out",
+                "default": 1,
+                "description": "Increases or decreases the volume of the output signal"
+            },
+            {
+                "hide": true,
+                "symbol": "in_l",
+                "name": "Audio In"
+            },
+            {
+                "hide": true,
+                "symbol": "out_l",
+                "name": "Audio Out"
+            }
+        ],
+        "name": "Calf Reverb"
+    },
+    "2": {
+        "mfr": "Calf",
+        "pedal_uri": "file:///usr/lib/lv2/calf.lv2/Saturator.ttl",
+        "type": "Distortion",
+        "manifest_uri": "file:///usr/lib/lv2/calf.lv2/manifest.ttl",
+        "id": 2,
+        "name": "Calf Saturator",
+        "parameters": [
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Bypass",
+                "unit": "toggle",
+                "symbol": "bypass",
+                "default": 0,
+                "description": "Turns the effect on or off"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Input Gain",
+                "unit": "none",
+                "symbol": "level_in",
+                "default": 1,
+                "description": "Increases or decreases the volume of the input signal"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Output Gain",
+                "unit": "none",
+                "symbol": "level_out",
+                "default": 1,
+                "description": "Increases or decreases the volume of the output signal"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Mix",
+                "unit": "none",
+                "symbol": "mix",
+                "default": 1,
+                "description": "Controls how much of the original signal is audible (0% is only the original signal, 100% is only the wet signal)."
+            },
+            {
+                "minimum": 0.1,
+                "maximum": 10,
+                "name": "Saturation",
+                "unit": "coef",
+                "symbol": "drive",
+                "default": 5,
+                "description": "Amount of distortion and saturation applied to the signal"
+            },
+            {
+                "minimum": -10,
+                "maximum": 10,
+                "name": "Blend",
+                "unit": "coef",
+                "symbol": "blend",
+                "default": 10,
+                "description": "Mixes the clean and processed signals, used more for bass effects, to preserve the clarity and punch"
+            },
+            {
+                "default": 10,
+                "unit": "hz",
+                "symbol": "hp_pre_freq",
+                "minimum": 10,
+                "maximum": 2000,
+                "step": "log",
+                "name": "Highpass",
+                "description": "Allows frequencies higher than the cutoff to pass through and reduces frequencies below that cutoff. Reduces low-frequency noise"
+            },
+            {
+                "default": 2000,
+                "unit": "hz",
+                "symbol": "lp_pre_freq",
+                "minimum": 10,
+                "maximum": 2000,
+                "step": "log",
+                "name": "Lowpass",
+                "description": "Allows frequencies lower than the cutoff to pass through and increases frequencies below that cutoff. Removes high-frequency noise"
+            },
+            {
+                "default": 2000,
+                "unit": "hz",
+                "symbol": "p_freq",
+                "minimum": 80,
+                "maximum": 8000,
+                "step": "log",
+                "name": "Tone",
+                "description": "Adjusts the frequency of the peak filter, higher makes a brighter sound while lower makes a warmer sound"
+            },
+            {
+                "minimum": 0.0625,
+                "maximum": 16,
+                "name": "Amount",
+                "unit": "none",
+                "symbol": "p_level",
+                "default": 1,
+                "description": "Increasing the amount will lead to more pronounced saturation, resulting in a richer harmonic content and a more distorted sound"
+            },
+            {
+                "default": "1",
+                "unit": "coef",
+                "symbol": "p_q",
+                "minimum": 0.1,
+                "maximum": 10,
+                "step": "log",
+                "name": "Gradient",
+                "description": "Adjusts how quickly the saturation responds to changes in the input signal"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Activate Pre",
+                "unit": "toggle",
+                "symbol": "pre",
+                "default": 0,
+                "description": "Applies the effect before any other signals"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Activate Post",
+                "unit": "toggle",
+                "symbol": "post",
+                "default": 0,
+                "description": "Applies the effect after all other signals"
+            },
+            {
+                "hide": true,
+                "symbol": "in_l",
+                "name": "Audio In"
+            },
+            {
+                "hide": true,
+                "symbol": "out_l",
+                "name": "Audio Out"
+            }
+        ]
+    },
+    "3": {
+        "mfr": "BMusic",
+        "pedal_uri": "",
+        "type": "Amplifier",
+        "manifest_uri": "",
+        "id": 3,
+        "name": "myAmp",
+        "parameters": [
+            {
+                "minimum": 0,
+                "description": "Increases or decrease the volume of the signal",
+                "maximum": 2,
+                "name": "Amplification",
+                "default": 1
+            },
+            {
+                "hide": true,
+                "symbol": "in_l",
+                "name": "Audio In L"
+            },
+            {
+                "hide": true,
+                "symbol": "out_l",
+                "name": "Audio Out L"
+            }
+        ]
+    },
+    "4": {
+        "mfr": "Calf",
+        "pedal_uri": "file:///usr/lib/lv2/calf.lv2/VintageDelay.ttl",
+        "type": "Delay",
+        "manifest_uri": "file:///usr/lib/lv2/calf.lv2/manifest.ttl",
+        "id": 4,
+        "parameters": [
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Active",
+                "unit": "toggle",
+                "symbol": "on",
+                "default": 1,
+                "description": "Turns the effect on or off"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Input Gain",
+                "unit": "none",
+                "symbol": "level_in",
+                "default": 1,
+                "description": "Increases or decreases the volume of the input signal"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Output Gain",
+                "unit": "none",
+                "symbol": "level_out",
+                "default": 1,
+                "description": "Increases or decreases the volume of the output signal"
+            },
+            {
+                "default": 4,
+                "unit": "none",
+                "symbol": "subdiv",
+                "minimum": 1,
+                "maximum": 16,
+                "step": "integer",
+                "name": "Subdivide",
+                "description": "Fraction of a beat to use as a unit of delay time (1 = quarter note, 2 = quaver/8th note, 4 = semiquaver/16th note, 3 = 8th note triplet and so on)"
+            },
+            {
+                "default": 3,
+                "unit": "none",
+                "symbol": "time_l",
+                "minimum": 1,
+                "maximum": 16,
+                "step": "integer",
+                "name": "Time L",
+                "description": "Delay time for the left channel. In units specified by BPM and Subdivide. If Delay is 3 and Subdivide is 4, then delay time is 3/16ths."
+            },
+            {
+                "default": 5,
+                "unit": "none",
+                "symbol": "time_r",
+                "minimum": 1,
+                "maximum": 16,
+                "step": "integer",
+                "name": "Time R",
+                "description": "Delay time for the right channel."
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Feedback",
+                "unit": "none",
+                "symbol": "feedback",
+                "default": 0.5,
+                "description": "Percentage of delayed signal fed back to delay line. Setting it to zero creates a single copy, setting it to higher values creates a repeating echo"
+            },
+            {
+                "minimum": 0,
+                "maximum": 4,
+                "name": "Wet",
+                "unit": "none",
+                "symbol": "amount",
+                "default": 0.25, 
+                "description":"Amount of processed (delayed) signal in the output"
+            },
+            {
+                "name": "Mix mode",
+                "options": [
+                    "Stereo",
+                    "Ping-Pong",
+                    "L then R",
+                    "R then L"
+                ],
+                "unit": "dropdown",
+                "symbol": "mix_mode",
+                "default": 1,
+                "description": "Stereo: works as two independent delay effects, one per channel. Ping-Pong: feedback paths are cross-wired to cause the sound to bounce back between two channels. L then R/ R then L: uses the output of one channel's delay line as the input of another."
+            },
+            {
+                "options": [
+                    "Plain",
+                    "Tape",
+                    "Old Tape"
+                ],
+                "name": "Medium",
+                "unit": "dropdown",
+                "symbol": "medium",
+                "default": 1,
+                "description": "Plain: clean delay. Tape: adds a bit of saturation and high frequency roll-off. Old Tape: adds more saturation and high frequency roll-off."
+            },
+            {
+                "minimum": 0,
+                "maximum": 4,
+                "name": "Dry",
+                "unit": "none",
+                "symbol": "dry",
+                "default": 1,
+                "description": "Amount of unprocessed signal in the output"
+            },
+            {
+                "minimum": -1,
+                "maximum": 1,
+                "name": "Stereo Width",
+                "unit": "none",
+                "symbol": "width",
+                "default": 1,
+                "description": "Controls the stereo panning of delayed signal."
+            },
+            {
+                "name": "Fragmentation",
+                "options": [
+                    "Repeating",
+                    "Pattern"
+                ],
+                "unit": "dropdown",
+                "symbol": "fragmentation",
+                "default": 0,
+                "description": "Repeating: repeats the same delay time. Pattern: uses a pattern of delay times."
+            },
+            {
+                "default": 4,
+                "unit": "coef",
+                "symbol": "pbeats",
+                "minimum": 1,
+                "maximum": 8,
+                "step": "integer",
+                "name": "Pattern Beats",
+                "description": "Number of beats in the pattern"
+            },
+            {
+                "default": 4,
+                "unit": "coef",
+                "symbol": "pfrag",
+                "minimum": 1,
+                "maximum": 8,
+                "step": "integer",
+                "name": "Pattern Fragmentation",
+                "description": "Number of fragments in the pattern"
+            },
+            {
+                "options": [
+                    "BPM",
+                    "ms",
+                    "Hz",
+                    "Sync"
+                ],
+                "name": "Timing",
+                "unit": "dropdown",
+                "symbol": "timing",
+                "default": 0,
+                "description": "BPM: delay time is set in beats per minute. ms: delay time is set in milliseconds. Hz: delay time is set in Hertz. Sync: delay time is set in sync with the host."
+            },
+            {
+                "minimum": 30,
+                "maximum": 300,
+                "name": "BPM",
+                "unit": "bpm",
+                "symbol": "bpm",
+                "default": 120,
+                "description": "Beats per minute"
+            },
+            {
+                "default": 500,
+                "unit": "ms",
+                "symbol": "ms",
+                "minimum": 10,
+                "maximum": 2000,
+                "step": "integer",
+                "name": "ms",
+                "description": "Delay time in milliseconds"
+            },
+            {
+                "default": 2,
+                "unit": "hz",
+                "symbol": "hz",
+                "minimum": 0.01,
+                "maximum": 100,
+                "step": "log",
+                "name": "Frequency",
+                "description": "Delay time in Hertz"
+            },
+            {
+                "minimum": 1,
+                "maximum": 300,
+                "name": "Host BPM",
+                "unit": "bpm",
+                "symbol": "bpm_host",
+                "default": 120,
+                "description": "Beats per minute of the host"
+            },
+            {
+                "hide": true,
+                "symbol": "in_l",
+                "name": "Audio In"
+            },
+            {
+                "hide": true,
+                "symbol": "out_l",
+                "name": "Audio Out"
+            }
+        ],
+        "name": "Calf Vintage Delay"
+    },
+    "5": {
+        "mfr": "Calf",
+        "pedal_uri": "file:///usr/lib/lv2/calf.lv2/MultiChorus.ttl",
+        "type": "Modulator",
+        "manifest_uri": "file:///usr/lib/lv2/calf.lv2/manifest.ttl",
+        "id": 5,
+        "parameters": [
+            {
+                "default": 5,
+                "unit": "ms",
+                "symbol": "min_delay",
+                "minimum": 0.1,
+                "maximum": 10,
+                "step": "log",
+                "name": "Min Delay",
+                "description": "Minimum delay time"
+            },
+            {
+                "default": 6,
+                "unit": "ms",
+                "symbol": "mod_depth",
+                "minimum": 0.1,
+                "maximum": 10,
+                "step": "log",
+                "name": "Mod Depth",
+                "description": "Amount of modulation applied to the delay time"
+            },
+            {
+                "default": 0.1,
+                "unit": "hz",
+                "symbol": "mod_rate",
+                "minimum": 0.01,
+                "maximum": 20,
+                "step": "log",
+                "name": "Mod Rate",
+                "description": "Speed of modulation"
+            },
+            {
+                "minimum": 0,
+                "maximum": 360,
+                "name": "Stereo Phase",
+                "unit": "degree",
+                "symbol": "stereo",
+                "default": 180,
+                "description": "Phase difference between left and right channels"
+            },
+            {
+                "minimum": 1,
+                "maximum": 8,
+                "name": "Voices",
+                "step": "integer",
+                "symbol": "voices",
+                "default": 4,
+                "description": "Number of voices"
+            },
+            {
+                "minimum": 0,
+                "maximum": 360,
+                "name": "Inter-Voice Phase",
+                "unit": "degree",
+                "symbol": "vphase",
+                "default": 64,
+                "description": "Phase difference between voices"
+            },
+            {
+                "minimum": 0,
+                "maximum": 4,
+                "name": "Amount",
+                "symbol": "amount",
+                "default": 0.5,
+                "description": "Amount of modulation applied to the delay time"
+            },
+            {
+                "minimum": 0,
+                "maximum": 4,
+                "name": "Dry Amount",
+                "symbol": "dry",
+                "default": 0.5,
+                "description": "Amount of unprocessed signal in the output"
+            },
+            {
+                "minimum": 10,
+                "maximum": 20000,
+                "name": "Center Frq 1",
+                "step": "log",
+                "symbol": "freq",
+                "default": 100,
+                "description": "Center frequency of the modulation"
+            },
+            {
+                "minimum": 10,
+                "maximum": 20000,
+                "name": "Center Frq 2",
+                "step": "log",
+                "symbol": "freq2",
+                "default": 5000,
+                "description": "Center frequency of the modulation"
+            },
+            {
+                "default": 0.125,
+                "unit": "coef",
+                "symbol": "q",
+                "minimum": 0.125,
+                "maximum": 8,
+                "step": "log",
+                "name": "Q",
+                "description": "Gradient factor of the modulation"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Overlap",
+                "symbol": "overlap",
+                "default": 0.75,
+                "description": "Amount of overlap between signals"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Active",
+                "unit": "toggle",
+                "symbol": "on",
+                "default": 1,
+                "description": "Turns the effect on or off"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Input Gain",
+                "symbol": "level_in",
+                "default": 1,
+                "description": "Increases or decreases the volume of the input signal"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Output Gain",
+                "symbol": "level_out",
+                "default": 1,
+                "description": "Increases or decreases the volume of the output signal"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "LFO",
+                "unit": "toggle",
+                "symbol": "lfo",
+                "default": 1,
+                "description": "Turns the Low Frequency Oscillator on or off"
+            },
+            {
+                "hide": true,
+                "symbol": "in_l",
+                "name": "Audio In"
+            },
+            {
+                "hide": true,
+                "symbol": "out_l",
+                "name": "Audio Out"
+            }
+        ],
+        "name": "Calf Multi Chorus"
+    },
+    "6": {
+        "mfr": "Calf",
+        "pedal_uri": "file:///usr/lib/lv2/calf.lv2/Equalizer5Band.ttl",
+        "type": "EQ",
+        "manifest_uri": "file:///usr/lib/lv2/calf.lv2/manifest.ttl",
+        "id": 6,
+        "parameters": [
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Bypass",
+                "unit": "toggle",
+                "symbol": "bypass",
+                "default": 0,
+                "description": "Turns the effect on or off"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Input Gain",
+                "symbol": "level_in",
+                "default": 1,
+                "description": "Increases or decreases the volume of the input signal"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Output Gain",
+                "symbol": "level_out",
+                "default": 1,
+                "description": "Increases or decreases the volume of the output signal"
+            },
+            {
+                "name": "LS Active",
+                "options": [
+                    " OFF",
+                    "ON",
+                    "Left",
+                    "Right",
+                    "Mid",
+                    "Side"
+                ],
+                "unit": "dropdown",
+                "symbol": "ls_active",
+                "default": 0,
+                "description": "Turns the Low Shelf filter on or off, with a choice of which channel to apply it to"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Level L",
+                "symbol": "ls_level",
+                "default": 1,
+                "description": "Amount of gain or attenuation applied to the low shelf filter"
+            },
+            {
+                "default": 100,
+                "unit": "hz",
+                "symbol": "ls_freq",
+                "minimum": 10,
+                "maximum": 20000,
+                "step": "log",
+                "name": "Freq L",
+                "description": "Center frequency of the low shelf filter"
+            },
+            {
+                "default": 0.707,
+                "unit": "coef",
+                "symbol": "ls_q",
+                "minimum": 0.1,
+                "maximum": 10,
+                "step": "log",
+                "name": "LS Q",
+                "description": "Gradient factor of the low shelf filter"
+            },
+            {
+                "options": [
+                    "OFF",
+                    "ON",
+                    "Left",
+                    "Right",
+                    "Mid",
+                    "Side"
+                ],
+                "name": "HS Active",
+                "unit": "dropdown",
+                "symbol": "hs_active",
+                "default": 0,
+                "description": "Turns the High Shelf filter on or off, with a choice of which channel to apply it to"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Level H",
+                "symbol": "hs_level",
+                "default": 1,
+                "description": "Amount of gain or attenuation applied to the high shelf filter"
+            },
+            {
+                "default": 5000,
+                "unit": "hz",
+                "symbol": "hs_freq",
+                "minimum": 10,
+                "maximum": 20000,
+                "step": "log",
+                "name": "Freq H",
+                "description": "Center frequency of the high shelf filter"
+            },
+            {
+                "default": 0.707,
+                "unit": "coef",
+                "symbol": "hs_q",
+                "minimum": 0.1,
+                "maximum": 10,
+                "step": "log",
+                "name": "HS Q",
+                "description": "Gradient factor of the high shelf filter"
+            },
+            {
+                "name": "F1 Active",
+                "options": [
+                    "OFF",
+                    "ON",
+                    "Left",
+                    "Right",
+                    "Mid",
+                    "Side"
+                ],
+                "unit": "dropdown",
+                "symbol": "p1_active",
+                "default": 0,
+                "description": "Turns the first peak filter on or off, with a choice of which channel to apply it to"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Level 1",
+                "symbol": "p1_level",
+                "default": 1,
+                "description": "Amount of gain or attenuation applied to the first peak filter"
+            },
+            {
+                "default": 250,
+                "unit": "hz",
+                "symbol": "p1_freq",
+                "minimum": 10,
+                "maximum": 20000,
+                "step": "log",
+                "name": "Freq 1",
+                "description": "Center frequency of the first peak filter"
+            },
+            {
+                "default": 1,
+                "unit": "coef",
+                "symbol": "p1_q",
+                "minimum": 0.1,
+                "maximum": 100,
+                "step": "log",
+                "name": "Q1",
+                "description": "Gradient factor of the first peak filter"
+            },
+            {
+                "name": "F2 Active",
+                "options": [
+                    "OFF",
+                    "ON",
+                    "Left",
+                    "Right",
+                    "Mid",
+                    "Side"
+                ],
+                "unit": "dropdown",
+                "symbol": "p2_active",
+                "default": 0,
+                "description": "Turns the second peak filter on or off, with a choice of which channel to apply it to"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Level 2",
+                "symbol": "p2_level",
+                "default": 1,
+                "description": "Amount of gain or attenuation applied to the second peak filter"
+            },
+            {
+                "default": 1000,
+                "unit": "hz",
+                "symbol": "p2_freq",
+                "minimum": 10,
+                "maximum": 20000,
+                "step": "log",
+                "name": "Freq 2",
+                "description": "Center frequency of the second peak filter"
+            },
+            {
+                "default": 1,
+                "unit": "coef",
+                "symbol": "p2_q",
+                "minimum": 0.1,
+                "maximum": 100,
+                "step": "log",
+                "name": "Q 2",
+                "description": "Gradient factor of the second peak filter"
+            },
+            {
+                "name": "F3 Active",
+                "options": [
+                    "OFF",
+                    "ON",
+                    "Left",
+                    "Right",
+                    "Mid",
+                    "Side"
+                ],
+                "unit": "dropdown",
+                "symbol": "p3_active",
+                "default": 0,
+                "description": "Turns the third peak filter on or off, with a choice of which channel to apply it to"
+            },
+            {
+                "minimum": 0.015625,
+                "maximum": 64,
+                "name": "Level 3",
+                "symbol": "p3_level",
+                "default": 1,
+                "description": "Amount of gain or attenuation applied to the third peak filter"
+            },
+            {
+                "default": 4000,
+                "unit": "hz",
+                "symbol": "p3_freq",
+                "minimum": 10,
+                "maximum": 20000,
+                "step": "log",
+                "name": "Freq 3",
+                "description": "Center frequency of the third peak filter"
+            },
+            {
+                "default": 1,
+                "unit": "coef",
+                "symbol": "p3_q",
+                "minimum": 0.1,
+                "maximum": 100,
+                "step": "log",
+                "name": "Q 3",
+                "description": "Gradient factor of the third peak filter"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Individual Filters",
+                "unit": "toggle",
+                "symbol": "individuals",
+                "default": 1,
+                "description": "Turns the individual filters on or off"
+            },
+            {
+                "minimum": 0.0625,
+                "maximum": 1,
+                "name": "Zoom",
+                "symbol": "zoom",
+                "default": 0.25,
+                "description": "Zooms in on the frequency spectrum"
+            },
+            {
+                "minimum": 0,
+                "maximum": 1,
+                "name": "Analyzer Active",
+                "unit": "toggle",
+                "symbol": "analyzer",
+                "default": 0,
+                "description": "Turns the analyzer on or off"
+            },
+            {
+                "options": [
+                    "Input",
+                    "Output",
+                    "Difference"
+                ],
+                "name": "Analyzer Mode",
+                "unit": "dropdown",
+                "symbol": "analyzer_mode",
+                "default": 1,
+                "description": "Input: shows the input signal. Output: shows the output signal. Difference: shows the difference between the input and output signals."
+            },
+            {
+                "hide": true,
+                "symbol": "in_l",
+                "name": "Audio In"
+            },
+            {
+                "hide": true,
+                "symbol": "out_l",
+                "name": "Audio Out"
+            }
+        ],
+        "name": "Calf Equalizer 5 Band"
+    }
+}
