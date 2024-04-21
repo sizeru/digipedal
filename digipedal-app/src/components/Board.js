@@ -533,8 +533,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                             <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
-                            // showInfoModal={() => showInfoModal(pedal.pedal_id)}
-                            showInfoModal={() => handleShow(pedal.pedal_id, index)}
+                            showInfoModal={() => showInfoModal(pedal.pedal_id)}
+                            // showInfoModal={() => handleShow(pedal.pedal_id, index)}
                             updatePedal={(pedalUpdateFunction) => updatePedal(pedal.boardId, pedalUpdateFunction)}
                             index={index}/>
                         </Draggable>);
