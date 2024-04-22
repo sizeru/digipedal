@@ -66,8 +66,8 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
     const changePedalVal = (param, value, index) => {
         let editingPedalVals = {...newPedalVals};
         // console.log("pedalParams:", pedalParams);
-        if (value > pedalParams[index].maximum) value = pedalParams[index].maximum;
-        if (value < pedalParams[index].minimum) value = pedalParams[index].minimum;
+        // if (value > pedalParams[index].maximum) value = pedalParams[index].maximum;
+        // if (value < pedalParams[index].minimum) value = pedalParams[index].minimum;
         editingPedalVals[param] = parseFloat(Number(value).toPrecision(3));
         setNewPedalVals(editingPedalVals);
         console.log("New Pedal Vals:", newPedalVals);
