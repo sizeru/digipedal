@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container';
 import './InfoModal.css';
 import {findPedal} from './pedal_components/PedalFinder'
 
-function InfoModal( {showing, handleClose, handleBack, pedalInfo} ) {
+function InfoModal( {showing, handleClose, pedalInfo} ) {
 
     let PedalElement = findPedal(pedalInfo.name);
     return ( 
@@ -18,8 +18,6 @@ function InfoModal( {showing, handleClose, handleBack, pedalInfo} ) {
                     className="modal-container"
                     centered>
                 <Modal.Header closeButton> 
-                    <Button className="help-btn" onClick={handleBack}> <text className="help-txt"> {"<"} </text> </Button>
-
                     <Modal.Title className="modal-title-centered"> {pedalInfo ? (pedalInfo.name + ": " + pedalInfo.type) : 0} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="grid">
