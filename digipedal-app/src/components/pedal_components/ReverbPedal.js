@@ -2,9 +2,9 @@ import React, {useEffect, useState} from 'react';
 import Knob from './Knob';
 import PedalBottom from './PedalBottom';
 
-const minDelay = 0.4;
-const maxDelay = 15;
-const defaultDelay = 1.5;
+const minDecay = 0.4;
+const maxDecay = 15;
+const defaultDecay = 1.5;
 
 const minAmount = 0;
 const maxAmount = 2;
@@ -68,9 +68,9 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
     if (param_vals.amount == null) {
       updateParam("amount", defaultAmount);
     }
-    if (param_vals.delay == null) {
-      console.log('updateParam("delay", defaultDelay);')
-      updateParam("delay", defaultDelay);}
+    if (param_vals.decay_time == null) {
+      console.log('updateParam("decay", defaultDecay);')
+      updateParam("decay_time", defaultDecay);}
     if (param_vals.dry == null){
       console.log('updateParam("dry", defaultDry);')
       updateParam("dry", defaultDry);
@@ -85,14 +85,14 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
 
   let dry = (param_vals && param_vals.dry != null) ? param_vals.dry : defaultDry;
   let amount = (param_vals && param_vals.amount != null) ? param_vals.amount : defaultAmount;
-  let delay = (param_vals && param_vals.delay != null) ? param_vals.delay : defaultDelay;
+  let decay = (param_vals && param_vals.decay_time != null) ? param_vals.decay_time : defaultDecay;
 
 
   let dryRotation = dry / (maxDry - minDry) * 270 - 135
 
   let amountRotation = amount / (maxAmount - minAmount) * 270 - 135
 
-  let delayRotation = delay / (maxDelay - minDelay) * 270 - 135
+  let decayRotation = decay / (maxDecay - minDecay) * 270 - 135
 
 
   function increment_param(event, param, min, max) {
@@ -108,7 +108,7 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
     }
 
     let increment_amount = (max - min) / 40;
-    if (param == "delay"){
+    if (param == "decay_time"){
       increment_amount = (max - min) / 100;
     }
     if(event.activatorEvent.ctrlKey){
@@ -134,7 +134,7 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
        : 
        <></> }
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
-        <Knob x={width * .5} y={height * .2} width={width * .26} rotation={delayRotation} text="Decay" isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delay}/>
+        <Knob x={width * .5} y={height * .2} width={width * .26} rotation={decayRotation} text="Decay" isStatic={isStatic} increment={(e) => increment_param(e, "decay_time", minDecay, maxDecay)} number={decay}/>
         <Knob x={width * .25} y={height * .7} width={width * .18} rotation={dryRotation} text=" Dry " isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dry}/>
         <Knob x={width * .75} y={height * .7} width={width * .18} rotation={amountRotation} text=" Wet " isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
         <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
