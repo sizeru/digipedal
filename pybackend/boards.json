@@ -1,0 +1,94 @@
+{
+    "Backup A": {
+        "0": {
+            "y": 234,
+            "pedal_id": 1,
+            "yPercent": 0.31117021276595747,
+            "height": 275.0375061035156,
+            "param_vals": {
+                "dry": 1,
+                "amount": 0.25,
+                "delay": 1.5
+            },
+            "x": 228,
+            "toggled": true,
+            "width": 152.8000030517578,
+            "xPercent": 0.14921465968586387
+        },
+        "1": {
+            "y": 233,
+            "pedal_id": 5,
+            "yPercent": 0.3098404255319149,
+            "height": 275.0375061035156,
+            "param_vals": {
+                "mod_rate": 0.1,
+                "voices": 4,
+                "amount": 0.5
+            },
+            "x": 590,
+            "toggled": true,
+            "width": 152.8000030517578,
+            "xPercent": 0.38612565445026176
+        },
+        "2": {
+            "y": 229,
+            "pedal_id": 3,
+            "yPercent": 0.3045212765957447,
+            "height": 275.0375061035156,
+            "param_vals": {
+                "Amplification": 1
+            },
+            "x": 924,
+            "toggled": true,
+            "width": 152.8000030517578,
+            "xPercent": 0.6047120418848168
+        }
+    },
+    "Backup B": {
+        "0": {
+            "y": 250,
+            "pedal_id": 2,
+            "yPercent": 0.3324468085106383,
+            "height": 275.0375061035156,
+            "param_vals": {
+                "drive": 5,
+                "mix": 1,
+                "blend": 10
+            },
+            "x": 272,
+            "toggled": true,
+            "width": 152.8000030517578,
+            "xPercent": 0.17801047120418848
+        },
+        "1": {
+            "y": 252,
+            "pedal_id": 4,
+            "yPercent": 0.3351063829787234,
+            "height": 275.0375061035156,
+            "param_vals": {
+                "time_l": 3,
+                "feedback": 0.5,
+                "amount": 0.25
+            },
+            "x": 649,
+            "toggled": true,
+            "width": 152.8000030517578,
+            "xPercent": 0.424738219895288
+        },
+        "2": {
+            "y": 244,
+            "pedal_id": 2,
+            "yPercent": 0.324468085106383,
+            "height": 275.0375061035156,
+            "param_vals": {
+                "drive": 5,
+                "mix": 1,
+                "blend": 10
+            },
+            "x": 1047,
+            "toggled": true,
+            "width": 152.8000030517578,
+            "xPercent": 0.6852094240837696
+        }
+    }
+}

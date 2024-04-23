@@ -4,7 +4,8 @@ settings.json
 fftw-3.3.10/
 *.o
 
-pybackend/
+pybackend/vnev
+pybackend/digipedal-76f51-firebase-adminsdk-de95y-cb73d73347.json
 pedals/
 
 # Plugins

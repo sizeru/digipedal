@@ -132,9 +132,9 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
        : 
        <></> }
         <rect width={pedalWidth} height={pedalHeight} rx="1" fill="#D9D9D9"/>
-        <Knob x={pedalWidth * .5} y={pedalHeight * .2} width={pedalWidth * .26} rotation={delayRotation} text="Reverb Delay" isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delay}/>
-        <Knob x={pedalWidth * .25} y={pedalHeight * .7} width={pedalWidth * .18} rotation={dryRotation} text="Dry Amt" isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dry}/>
-        <Knob x={pedalWidth * .75} y={pedalHeight * .7} width={pedalWidth * .18} rotation={amountRotation} text="Wet Amt" isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
+        <Knob x={pedalWidth * .5} y={pedalHeight * .2} width={pedalWidth * .26} rotation={delayRotation} text="Delay" isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delay}/>
+        <Knob x={pedalWidth * .25} y={pedalHeight * .7} width={pedalWidth * .18} rotation={dryRotation} text=" Dry " isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dry}/>
+        <Knob x={pedalWidth * .75} y={pedalHeight * .7} width={pedalWidth * .18} rotation={amountRotation} text=" Wet " isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
         <PedalBottom width={pedalWidth} height={pedalHeight/5} startHeight={pedalHeight} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
         {isStatic ? 
         <></> 
