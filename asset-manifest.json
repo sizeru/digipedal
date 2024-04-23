@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/digipedal/static/css/main.0f612fc5.css",
-    "main.js": "/digipedal/static/js/main.281b308b.js",
+    "main.js": "/digipedal/static/js/main.f823b293.js",
     "static/js/453.a2cfe05c.chunk.js": "/digipedal/static/js/453.a2cfe05c.chunk.js",
     "index.html": "/digipedal/index.html",
     "main.0f612fc5.css.map": "/digipedal/static/css/main.0f612fc5.css.map",
-    "main.281b308b.js.map": "/digipedal/static/js/main.281b308b.js.map",
+    "main.f823b293.js.map": "/digipedal/static/js/main.f823b293.js.map",
     "453.a2cfe05c.chunk.js.map": "/digipedal/static/js/453.a2cfe05c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0f612fc5.css",
-    "static/js/main.281b308b.js"
+    "static/js/main.f823b293.js"
   ]
 }
