@@ -361,7 +361,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
 
         // if (pedalData != null) {
         try {
-            setAddedPedal(newPedal.pedal.name);
+            // console.log("ASKJPOEF", newPedal);
+            setAddedPedal(newPedal.pedal);
             handleClosePedalBrowser();
             console.log("started...");
             setTimeout(() => {
@@ -545,8 +546,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 </Droppable>
             </DndContext>
             <GenericInterfaceModal pedal_id={genericId} pedal_idx={genericIdx} prevParams={genericParamsMap.get(genericIdx)} show={helpShow} handleClose={handleClose} handleInterfaceSave={handleInterfaceSave} pedalInfoMap={pedalInfoMap} setPedalInfoMap={setPedalInfoMap}/>
-            <Toast show={addedPedal != null} animation={true}>
-                <Toast.Body> {addedPedal} added successfully! </Toast.Body>
+            <Toast show={addedPedal !== null} animation={true}>
+                <Toast.Body> Pedal added successfully! </Toast.Body>
             </Toast>
             <Toast show={interfaceLoading} animation={true}>
                 <Toast.Body> Editing Pedal Settings... </Toast.Body>
