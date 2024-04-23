@@ -141,20 +141,24 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         closeDeletingPedalsModal();
     }
 
-    function getPedalXY(pedal){
+    function updatePedalXY(pedal){
         console.log(pedal)
-        console.log('getPedalXY')
-        const currElem = document.getElementById(`${pedal.boardId}d`);
-        if(currElem){
-            const currElemRect = currElem.getBoundingClientRect();
-            pedal.x = currElemRect.x;
-            pedal.y = currElemRect.y;
-            pedal.width = currElemRect.width;
-            pedal.height = currElemRect.height;
-            console.log("getPedalXY pedal:")
-            console.log(pedal)
+        if(pedal.x && pedal.y && pedal.height && pedal.width){
+            console.log('getPedalXY: already have x and y and height and width')
+        } else {
+            console.log('getPedalXY: need x or y or height or width')
+            const currElem = document.getElementById(`${pedal.boardId}d`);
+            if(currElem){
+                const currElemRect = currElem.getBoundingClientRect();
+                pedal.x = currElemRect.x;
+                pedal.y = currElemRect.y;
+                pedal.width = currElemRect.width;
+                pedal.height = currElemRect.height;
+                console.log("getPedalXY pedal:")
+                console.log(pedal)
+            }
         }
-        return [pedal.x, pedal.y, pedal.width, pedal.height];
+        return;
     }
 
     function drawLine(ctx, prevX, prevY, currX, currY){
@@ -213,11 +217,12 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         let prevY = window.innerHeight *.5;
         pedalEntries.forEach((pedalEntry) => {  
             let pedal = pedalEntry[1]
-            let [currX, currY] = getPedalXY(pedal);
-            currY += Math.round(pedal.height / 2) || 0;
+            updatePedalXY(pedal)
+            let [currX, currY, currWidth, currHeight] = [pedal.x, pedal.y, pedal.width, pedal.height];
+            currY += Math.round(currHeight / 2) || 0;
             drawnLines.push({prevX: prevX, prevY: prevY, currX: currX, currY:currY})
             drawLine(ctx, prevX, prevY, currX, currY)
-            prevX = currX + pedal.width;
+            prevX = currX + currWidth;
             prevY = currY;
         });
         // drawing a line from last pedal to the end
@@ -271,6 +276,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         console.log("useEffect [pedalsMap]")
         // is it already sorted (this might be slow with tons of pedals but we will run into other issues first)
         let sortedPedalMapEntries = [...pedalsMap.entries()].sort((a, b) => a[1].x - b[1].x)
+
         let isNotSorted = sortedPedalMapEntries.some((entry, index) => entry[1].boardId !== index + 1);
         // it is not sorted! we need to sort it
         if(isNotSorted){
