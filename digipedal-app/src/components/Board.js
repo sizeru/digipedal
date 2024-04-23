@@ -143,22 +143,18 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
 
     function getPedalXY(pedal){
         console.log(pedal)
-        if(pedal.x && pedal.y && pedal.height && pedal.width){
-            console.log('getPedalXY: already have x and y and height and width')
-        } else {
-            console.log('getPedalXY: need x or y or height or width')
-            const currElem = document.getElementById(`${pedal.boardId}d`);
-            if(currElem){
-                const currElemRect = currElem.getBoundingClientRect();
-                pedal.x = currElemRect.x;
-                pedal.y = currElemRect.y;
-                pedal.width = currElemRect.width;
-                pedal.height = currElemRect.height;
-                console.log("getPedalXY pedal:")
-                console.log(pedal)
-            }
+        console.log('getPedalXY')
+        const currElem = document.getElementById(`${pedal.boardId}d`);
+        if(currElem){
+            const currElemRect = currElem.getBoundingClientRect();
+            pedal.x = currElemRect.x;
+            pedal.y = currElemRect.y;
+            pedal.width = currElemRect.width;
+            pedal.height = currElemRect.height;
+            console.log("getPedalXY pedal:")
+            console.log(pedal)
         }
-        return [pedal.x, pedal.y];
+        return [pedal.x, pedal.y, pedal.width, pedal.height];
     }
 
     function drawLine(ctx, prevX, prevY, currX, currY){
@@ -182,12 +178,12 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     
         ctx.beginPath();
         // point of triangle 
-        ctx.moveTo(currX, currY);
+        ctx.moveTo(currX + 1, currY - 1);
         // moving to the bottom 
-        ctx.lineTo(currX - length * Math.cos(angle - Math.PI / 6), currY - length * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(currX - length * Math.cos(angle - Math.PI / 6) , currY - length * Math.sin(angle - Math.PI / 6));
         // moving to the top
         ctx.lineTo(currX - length * Math.cos(angle + Math.PI / 6), currY - length * Math.sin(angle + Math.PI / 6));
-        ctx.lineTo(currX, currY);
+        ctx.lineTo(currX + 1, currY + 1);
     
         ctx.strokeStyle = '#006400';
         ctx.fillStyle = '#006400';
