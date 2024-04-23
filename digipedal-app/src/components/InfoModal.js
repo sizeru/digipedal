@@ -7,6 +7,8 @@ import './InfoModal.css';
 import {findPedal} from './pedal_components/PedalFinder'
 
 function InfoModal( {showing, handleClose, handleBack, pedalInfo} ) {
+    const pedalWidth = window.innerWidth / 3;
+    const pedalHeight = pedalWidth * 1.5;
 
     let PedalElement = findPedal(pedalInfo.name);
     return ( 
@@ -27,7 +29,7 @@ function InfoModal( {showing, handleClose, handleBack, pedalInfo} ) {
                         <Row>
                             <Col md={6}>
                                 <div className="item-container">
-                                    <PedalElement width={window.innerWidth * .3} height={window.innerHeight * .5} isStatic={true}/>
+                                    <PedalElement width={pedalWidth} height={pedalHeight} isStatic={true}/>
                                 </div>
                             </Col>
                             <Col md={6}>

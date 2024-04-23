@@ -4,6 +4,8 @@ import {Button, Modal, Row, Col} from 'react-bootstrap';
 import {findPedal} from './pedal_components/PedalFinder'
 
 function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, buttonShow}) {
+  const pedalWidth = window.innerWidth / 10;
+  const pedalHeight = pedalWidth * 1.5;
   
   return (
     <>
@@ -37,7 +39,7 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, bu
               return ( PedalElement &&
                   <Col className="browser-col" md={4}>
                     <button key={`pedal browser button ${idx} `} onClick={(event) => addPedal(event, pedalId)}>
-                        <PedalElement width={140} height={200} isStatic={true}/>
+                        <PedalElement width={pedalWidth} height={pedalHeight} isStatic={true}/>
                     <text className="browser-text"> {pedalType} </text>
                     </button>
                   </Col>

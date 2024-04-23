@@ -344,6 +344,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             'yPercent': defaultPercent,
             'x': defaultPercent / 100 * window.innerWidth,
             'y': defaultPercent / 100 * window.innerHeight,
+            'width': defaultPedalWidth,
+            'height': defaultPedalHeight,
             'boardId': pedalsMap.size + 1,
             'toggled': true,
             'pedal': findPedal(pedalTypeMap.get(pedalId)),
@@ -532,7 +534,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                         let PedalElement = pedal.pedal;
                         return (
                         <Draggable id={pedal.boardId} x={pedal.x} y={pedal.y}>
-                            <PedalElement width={defaultPedalWidth} height={defaultPedalHeight} toggled={pedal.toggled} param_vals={pedal.param_vals} 
+                            <PedalElement width={pedal.width} height={pedal.height} toggled={pedal.toggled} param_vals={pedal.param_vals} 
                             deletePedal={() => deletePedal(pedal.boardId)}
                             togglePedal={() => togglePedal(pedal.boardId)}
                             // showInfoModal={() => showInfoModal(pedal.pedal_id)}
