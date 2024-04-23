@@ -30,7 +30,7 @@ svg * {
 }
 
 #PedalBrowserButton {
-  z-index: 10000;
+  z-index: 100;
   touch-action: auto;
   position: fixed;
   right: 1vw;
@@ -47,7 +47,7 @@ svg * {
 }
 
 #PedalPresetsButton {
-  z-index: 10000;
+  z-index: 100;
   touch-action: auto;
   position: fixed;
   right: 8vw; /* Position this button to the left of the Pedal Browser Button */

@@ -20,6 +20,8 @@ import {restrictToParentElement} from '@dnd-kit/modifiers';
 // pedal browser stuff
 import PedalBrowser from './PedalBrowser';
 
+import PresetsBrowser from './PresetsBrowser';
+
 
 // attaching to front end
 import {getBoardById, getPedalById, saveAllToBoard} from '../firebaseOperations';
@@ -98,9 +100,14 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     // pedal browser stuff
     const [showPedalBrowser, setShowPedalBrowser] = useState(false);
     const [showBrowserButton, setShowBrowserButton] = useState(true);
-  
+
     const handleClosePedalBrowser = () => setShowPedalBrowser(false);
     const handleShowPedalBrowser = () => setShowPedalBrowser(true);
+
+    const [showPresets, setShowPresets] = useState(false);
+
+    const handleClosePresets = () => setShowPresets(false);
+    const handleShowPresets = () => setShowPresets(true);
 
     // setting up loading effect
     useEffect(() => {  setLoading(currBoard == null) }, [currBoard])
@@ -515,6 +522,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} show={showPedalBrowser}/>
             </Row>
 
+            <PresetsBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPresets} handleClose={handleClosePresets}  show={showPresets}/>
 
             <PedalBrowser pedalTypeMap={pedalTypeMap} addPedal={addPedal} handleShow={handleShowPedalBrowser} handleClose={handleClosePedalBrowser} buttonShow={showBrowserButton} show={showPedalBrowser}/>
             {shownPedalId ? <InfoModal showing={true} handleClose={() => showInfoModal(null)} pedalInfo={pedalInfoMap.get(shownPedalId)}/> : null}

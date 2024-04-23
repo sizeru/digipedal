@@ -1,16 +1,15 @@
-
 import {Button, Modal, Row, Col} from 'react-bootstrap';
 
 import {findPedal} from './pedal_components/PedalFinder'
 
-function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, buttonShow}) {
+function PresetsBrowser({presetsTypeMap, addPedal, handleShow, handleClose, show}) {
   
   return (
     <>
 
-      <Button className="default-btn" hidden={!buttonShow} id="PedalBrowserButton" variant="primary" onClick={handleShow}>
-        +
-      </Button>
+      { <Button className="default-btn" id="PedalPresetsButton" variant="primary" onClick={handleShow}>
+        Presets
+      </Button> }
 
       
 
@@ -24,11 +23,11 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, bu
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Add pedal</Modal.Title>
+          <Modal.Title>Add preset</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Row>
-            {Array.from(pedalTypeMap).map((pedalEntry, idx) => {
+            {Array.from(presetsTypeMap).map((pedalEntry, idx) => {
               let [pedalId, pedalType] = pedalEntry
               let PedalElement = findPedal(pedalType);
 
@@ -53,4 +52,4 @@ function PedalBrowser({pedalTypeMap, addPedal, handleShow, handleClose, show, bu
   );
 }
 
-export default PedalBrowser;
+export default PresetsBrowser;
