@@ -134,7 +134,7 @@ function ReverbPedal({width, height, isStatic, toggled, param_vals, togglePedal,
        : 
        <></> }
         <rect width={width} height={height} rx="1" fill="#D9D9D9"/>
-        <Knob x={width * .5} y={height * .2} width={width * .26} rotation={delayRotation} text="Delay" isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delay}/>
+        <Knob x={width * .5} y={height * .2} width={width * .26} rotation={delayRotation} text="Decay" isStatic={isStatic} increment={(e) => increment_param(e, "delay", minDelay, maxDelay)} number={delay}/>
         <Knob x={width * .25} y={height * .7} width={width * .18} rotation={dryRotation} text=" Dry " isStatic={isStatic} increment={(e) => increment_param(e, "dry", minDry, maxDry)} number={dry}/>
         <Knob x={width * .75} y={height * .7} width={width * .18} rotation={amountRotation} text=" Wet " isStatic={isStatic} increment={(e) => increment_param(e, "amount", minAmount, maxAmount)} number={amount}/>
         <PedalBottom width={width} height={height/5} startHeight={height} toggled={toggled} togglePedal={togglePedal} deletePedal={deletePedal} showInfoModal={showInfoModal}/>
