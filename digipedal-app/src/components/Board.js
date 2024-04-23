@@ -302,7 +302,6 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
 
         let updatedMap = new Map(genericParamsMap);
         updatedMap.set(genericIdx, pedal_vals);
-        setGenericParamsMap(updatedMap);
         
         console.log("Pre:", newPedal);
         let paramInfo = pedalDataMap.get(newPedal.pedal_id).parameters;
@@ -316,7 +315,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         console.log(newPedalVals); // symbol : value
         setInterfaceLoading(true);
         setTimeout(() => {
-
+            setGenericParamsMap(updatedMap);
             Object.keys(newPedal.param_vals).forEach((key) => { 
                 console.log(key);
                 console.log(newPedal.param_vals);
