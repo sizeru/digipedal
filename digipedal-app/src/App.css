@@ -1,8 +1,13 @@
 html, body, #root{
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   touch-action: none;
+}
+
+.home-body {
+  overflow-y: scroll;
 }
 a{
   touch-action: initial;

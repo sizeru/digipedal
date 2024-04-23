@@ -10,7 +10,7 @@ function Draggable(props) {
   });
 
   let style = {
-    position: `absolute`,
+    position: `fixed`,
     left: `${props.x}px`,
     top: `${props.y}px`,
     transform: CSS.Translate.toString(transform),
