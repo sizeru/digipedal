@@ -143,7 +143,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
 
     function updatePedalXY(pedal){
         console.log(pedal)
-        if(pedal.x && pedal.y && pedal.height && pedal.width){
+        if(pedal.x != null && pedal.y != null && pedal.height != null && pedal.width != null){
             console.log('getPedalXY: already have x and y and height and width')
         } else {
             console.log('getPedalXY: need x or y or height or width')
