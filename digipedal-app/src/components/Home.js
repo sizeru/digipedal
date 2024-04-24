@@ -51,7 +51,7 @@ function Home() {
           </div>
           <div className="logo-container">  </div> 
       </div>
-      <div className="container-fluid">
+      <div className="container-fluid home-body">
         <div>
           <div className="col-12">
             <div className="row board-margins">

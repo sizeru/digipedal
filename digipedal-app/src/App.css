@@ -2,12 +2,12 @@ html, body, #root{
   width: 100vw;
   height: 100vh;
   overflow-x: hidden;
-  overflow-y: visible;
+  scrollbar-width: none;
   touch-action: none;
 }
 
 .home-body {
-  overflow-y: scroll;
+  overflow-x: hidden;
 }
 a{
   touch-action: initial;
