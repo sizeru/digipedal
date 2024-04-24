@@ -324,8 +324,15 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         console.log("datamap:", paramInfo);
         
         let newPedalVals = new Map();
+
         paramInfo.map((key,value) => {
-            newPedalVals.set(key.symbol, parseFloat(pedal_vals[key.name]));
+            let val = parseFloat(pedal_vals[key.name]);
+            if (val != null && val != NaN) {
+                if (val > key.maximum) val = key.maximum;
+                if (val < key.minimum) val = key.minimum;
+                newPedalVals.set(key.symbol, val);
+                console.log(val);
+            }
         });
 
         console.log(newPedalVals); // symbol : value
@@ -336,10 +343,14 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 console.log(key);
                 console.log(newPedal.param_vals);
                 console.log("getting:", newPedalVals.get(key));
-                newPedal.param_vals[key] = newPedalVals.get(key); 
+                let val = newPedalVals.get(key);
+                if (val != null && val != NaN) {
+                    newPedal.param_vals[key] = newPedalVals.get(key); 
+                }
             });
             console.log("Post:", newPedal);
             setTimeout(() => {
+                console.log(genericParamsMap);
                 setInterfaceLoading(false);
             }, 10);
         }, 2000);

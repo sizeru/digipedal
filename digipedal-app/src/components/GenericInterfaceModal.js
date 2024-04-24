@@ -36,6 +36,10 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
                     pedalVals[param.name] = prevParams[param.name];
                 }
                 else if (!param.hide) pedalVals[param.name] = param.default
+
+                if (pedalVals[param.name] > param.maximum) pedalVals[param.name] = param.maximum;
+
+                else if (pedalVals[param.name] < param.minimum) pedalVals[param.name] = param.minimum;
             });
             setPedalVals(pedalVals);
             setNewPedalVals(pedalVals);
