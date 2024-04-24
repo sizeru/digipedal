@@ -38,7 +38,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
     const [genericIdx, setGenericIdx] = useState(null);
     const [genericParamsMap, setGenericParamsMap] = useState(new Map());
     const [saveState, setSaveState] = useState("saved");
-    const [addedPedal, setAddedPedal] = useState(null);
+    const [addingPedal, setAddingPedal] = useState(null);
 
     const [showDeletePedalsModal, setShowDeletingPedalModal] = useState(false);
 
@@ -77,6 +77,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
 
     const defaultPedalWidth = window.innerWidth / 10;
     const defaultPedalHeight = defaultPedalWidth * 1.5;
+    console.log("defaultPedalWidth: " + defaultPedalWidth);
+    console.log("defaultPedalHeight: " + defaultPedalHeight);
 
     // all the cloning shadow stuff
     const [cloneElement, setCloneElement] = useState(null);
@@ -148,12 +150,20 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         } else {
             console.log('getPedalXY: need x or y or height or width')
             const currElem = document.getElementById(`${pedal.boardId}d`);
-            if(currElem){
+            if(currElem != null){
                 const currElemRect = currElem.getBoundingClientRect();
-                pedal.x = currElemRect.x;
-                pedal.y = currElemRect.y;
-                pedal.width = currElemRect.width;
-                pedal.height = currElemRect.height;
+                if(currElemRect){
+                    console.log("We need to set it to defaults since it has not been rendered before");
+                    pedal.x = window.innerWidth / 2;
+                    pedal.y = window.innerHeight / 2;
+                    pedal.width = defaultPedalWidth;
+                    pedal.height = defaultPedalHeight;
+                }else{
+                    pedal.x = currElemRect.x;
+                    pedal.y = currElemRect.y;
+                    pedal.width = currElemRect.width;
+                    pedal.height = currElemRect.height;
+                }
                 console.log("getPedalXY pedal:")
                 console.log(pedal)
             }
@@ -362,11 +372,11 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
         // if (pedalData != null) {
         try {
             // console.log("ASKJPOEF", newPedal);
-            setAddedPedal(newPedal.pedal);
+            setAddingPedal(true);
             handleClosePedalBrowser();
             console.log("started...");
             setTimeout(() => {
-                setAddedPedal(null);
+                setAddingPedal(null);
                 console.log("...ended");
             }, 5000);
         } catch (error) {
@@ -546,7 +556,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                 </Droppable>
             </DndContext>
             <GenericInterfaceModal pedal_id={genericId} pedal_idx={genericIdx} prevParams={genericParamsMap.get(genericIdx)} show={helpShow} handleClose={handleClose} handleInterfaceSave={handleInterfaceSave} pedalInfoMap={pedalInfoMap} setPedalInfoMap={setPedalInfoMap}/>
-            <Toast show={addedPedal !== null} animation={true}>
+            <Toast show={addingPedal !== null} animation={true}>
                 <Toast.Body> Pedal added successfully! </Toast.Body>
             </Toast>
             <Toast show={interfaceLoading} animation={true}>
