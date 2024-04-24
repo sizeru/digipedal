@@ -12,30 +12,7 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
     const [infoShow, setInfoShow] = useState(false);
 
     const handleInfoShow = () => setInfoShow(true);
-    // useEffect(() => {
-    //     const getResponse = async () => {
-    //         if (pedal_id == null) {
-    //             setLoaded(false);
-    //             return null;
-    //         }
-    //         return await getPedalById(pedal_id.toString());
-    //     };
-    //     getResponse().then( (response) => {
-    //         setPedalName(response.name);
-    //         setPedalParams(response.parameters);
-    //         return response.parameters;
-    //     }).then( (response) => {
-    //         let pedalVals = {};
-    //         response.forEach(param => {
-    //             if (!param.hide) pedalVals[param.name] = param.default
-    //         });
-    //         setPedalVals(pedalVals);
-    //         setNewPedalVals(pedalVals);
-    //         setLoaded(true);
-    //     }).catch((error) => {
-    //         console.log(error + " in getPedalById");
-    //     });
-    // }, [pedal_id]);
+
     useEffect(() => {
         const getResponse = async () => {
             if (pedal_id == null) {
@@ -52,8 +29,12 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
             let pedalVals = {};
             console.log("PREVIOUS VALS:", prevParams);
             response.forEach(param => {
-                if (prevParams != null && prevParams[param.symbol] != null && prevParams[param.symbol] != NaN) 
-                pedalVals[param.name] = prevParams[param.symbol];
+                if (prevParams != null && prevParams[param.symbol] != null && prevParams[param.symbol] != NaN) {
+                    pedalVals[param.name] = prevParams[param.symbol];
+                }
+                else if (prevParams != null && prevParams[param.name] != null && prevParams[param.name] != NaN) {
+                    pedalVals[param.name] = prevParams[param.name];
+                }
                 else if (!param.hide) pedalVals[param.name] = param.default
             });
             setPedalVals(pedalVals);
@@ -67,9 +48,6 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
 
     const changePedalVal = (param, value, index) => {
         let editingPedalVals = {...newPedalVals};
-        // console.log("pedalParams:", pedalParams);
-        // if (value > pedalParams[index].maximum) value = pedalParams[index].maximum;
-        // if (value < pedalParams[index].minimum) value = pedalParams[index].minimum;
         editingPedalVals[param] = parseFloat(Number(value).toPrecision(3));
         setNewPedalVals(editingPedalVals);
         console.log("New Pedal Vals:", newPedalVals);
@@ -86,7 +64,6 @@ function GenericInterfaceModal( {pedal_id, pedal_idx, show, handleClose, pedalIn
     function convertUnit(unit) {
         if (unit == "coef") return "%";
         else if (unit == "degree") return "°";
-        // else if (unit === "none" || unit === undefined) return "";
         else return unit;
     }
 

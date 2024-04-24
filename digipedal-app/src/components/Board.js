@@ -340,7 +340,6 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             });
             console.log("Post:", newPedal);
             setTimeout(() => {
-                // handleSave();
                 setInterfaceLoading(false);
             }, 10);
         }, 2000);
