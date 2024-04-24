@@ -44,7 +44,7 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
         pedal.param_vals = {};
       }
       // setting the new amplification
-      pedal.param_vals.Amplification = amplification;
+      pedal.param_vals["amplification"] = amplification;
 
       return pedal;
     })
@@ -53,8 +53,8 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
   useEffect(() => {
     // checking if there are param_vals or not
     console.log("do i need to update?")
-    console.log(!param_vals || !param_vals.Amplification)
-    if(!param_vals || param_vals.Amplification == null){
+    console.log(!param_vals || !param_vals.amplification)
+    if(!param_vals || param_vals.amplification == null){
       updateAmplification(defaultAmplification)
     }
   },[])
@@ -65,8 +65,8 @@ function AmpPedal({width, height, isStatic, toggled, param_vals, togglePedal, de
     param_vals = {};
   }
 
-  let amplification = (param_vals &&  param_vals.Amplification != null)
-? param_vals.Amplification : defaultAmplification;
+  let amplification = (param_vals &&  param_vals.amplification != null)
+? param_vals.amplification : defaultAmplification;
 
 
   let amplificationRotation = amplification / (maxAmplification - minAmplification) * 270 - 135

@@ -119,6 +119,7 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
             let pedals = boardRes.pedals;
             console.log(pedals);
             let map = new Map();
+            let gMap = new Map();
             pedals.forEach((pedal, idx) => {
                 map[idx] = {
                     boardId: id,
@@ -131,7 +132,12 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                     height: pedal.height,
                     toggled: pedal.toggled,
                 };
+                gMap.set(idx, pedal.param_vals);
             });
+            console.log("RESULTS!!!");
+            console.log(map);
+            setGenericParamsMap(gMap);
+            console.log(gMap);
             setPedalsMap(map);
             setSaveState("saved");
         }
