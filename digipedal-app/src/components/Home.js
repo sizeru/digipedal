@@ -43,9 +43,11 @@ function Home() {
     <Loading /> :
     <div>
       <div className="navbar">
-          <a className="navbar-brand" href={basePath}>
-              <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
-          </a>
+        <div className="left-side icon-container">
+            <a className="navbar-brand" href={basePath}>
+                <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
+            </a>
+          </div>
           <div className="navbar-nav">
               <a className="bungee-regular"> Digipedal </a>
           </div>

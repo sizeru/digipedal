@@ -7,6 +7,12 @@
     overflow-y: hidden;
 }
 
+.title {
+    max-width: 74vw;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
 .logo-container {
     width: 8vw;
     padding-left: 1%;
@@ -14,11 +20,6 @@
     border-right: 3px solid #F05A24;
 }
 .icon-container {
-    width: 24vw;
-    padding-left: 1%;
-}
-.icon-container-right {
-    width: 20vw;
     padding-left: 1%;
 }
 

@@ -503,12 +503,8 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                         <img src={`${basePath}/logo.png`} className="logo-container" alt="Digipedal Logo"/>
                     </a>
                 </div>
-                <a className="bungee-regular"> {
-                currBoard.name.name.length > 12 ? currBoard.name.name.substring(0,10) + '...' : currBoard.name.name 
-                } </a>
-                <div className="right-side icon-container-right"> 
-                    
-
+                <a className="bungee-regular title"> {currBoard.name.name} </a>
+                <div className="right-side icon-container"> 
                     {saveState ? 
                         <button className="save-btn" onClick={handleSave}> 
                             <img src={`../navbar_icons/save/${saveState}.png`} className="save" alt="Save"></img>
@@ -516,12 +512,6 @@ function Board( {pedalTypeMap, pedalDataMap} ) {
                         : 
                         <></>
                     }
-{/*                     
-                    <button className="nav-btn" onClick={playPauseToggle}> 
-                    {isPlaying ? <img src="../navbar_icons/play.png" className="play" alt="Play"/> : <img src="../navbar_icons/pause.png" className="pause" alt="Pause"/>} </button> */}
-{/* 
-                    <button className="nav-btn" onClick={handleShare}> <img src="../navbar_icons/share.png" className="share" alt="Share"/> </button> */}
- 
                     <div style={{"opacity": 0}}>|||||||</div>
                 </div>
             </div>  
